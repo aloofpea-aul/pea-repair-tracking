@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>บันทึกการตรวจ</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Sarabun',sans-serif;}
+body{background:#f0f4f8;color:#1a2b3c;padding-bottom:80px;}
+.topbar{background:#1a3c5e;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:10px;}
+.topbar .title{font-size:18px;font-weight:700;}
+.topbar .spacer{flex:1;}
+.topbar a{color:#fff;font-size:13px;opacity:.85;text-decoration:none;}
+.container{max-width:860px;margin:0 auto;padding:20px;}
+.card{background:#fff;border-radius:10px;border:1px solid #dde3ea;margin-bottom:16px;overflow:hidden;}
+.card-hdr{background:#1a3c5e;color:#fff;padding:11px 16px;font-size:14px;font-weight:600;display:flex;align-items:center;}
+.card-hdr .ms{margin-left:auto;opacity:.75;font-size:12px;}
+.card-body{padding:16px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+@media(max-width:580px){.form-row{grid-template-columns:1fr;}}
+.fg{display:flex;flex-direction:column;gap:4px;}
+.fg label{font-size:12px;font-weight:600;color:#4b5563;}
+.fg input,.fg select,.fg textarea{padding:8px 10px;border:1px solid #c8d0da;border-radius:6px;font-size:13px;font-family:inherit;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:#1a3c5e;}
+.ci{border-bottom:1px solid #edf0f3;padding:12px 0;}
+.ci:last-child{border-bottom:none;}
+.ci-top{display:flex;align-items:flex-start;gap:10px;}
+.ci-no{min-width:28px;height:28px;background:#1a3c5e;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px;}
+.ci-topic{font-size:13px;flex:1;line-height:1.5;}
+.ci-max{font-size:11px;color:#9ca3af;}
+.ci-crit{font-size:11px;color:#5b6e80;margin:6px 0 8px 38px;line-height:1.6;background:#f8fafc;padding:6px 8px;border-radius:4px;border-left:3px solid #c8d0da;}
+.ci-inputs{display:flex;gap:10px;margin-left:38px;flex-wrap:wrap;}
+.ss{padding:6px 10px;border:1px solid #c8d0da;border-radius:6px;font-size:12px;min-width:100px;}
+.ni{flex:1;min-width:150px;padding:6px 10px;border:1px solid #c8d0da;border-radius:6px;font-size:12px;}
+.ss:focus,.ni:focus{outline:none;border-color:#e84c0a;}
+.ss.empty{border-color:#fca5a5;background:#fff5f5;}
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:#1a3c5e;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:16px;z-index:10;}
+.score-big{font-size:24px;font-weight:700;}
+.score-lbl{font-size:11px;opacity:.75;}
+.grade-lbl{font-size:15px;font-weight:700;margin-left:6px;}
+.btn-save{background:#e84c0a;color:#fff;border:none;padding:10px 26px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;}
+.btn-save:hover{background:#c93d07;}
+.btn-save:disabled{opacity:.5;cursor:not-allowed;}
+.toast{position:fixed;top:20px;right:20px;padding:12px 18px;border-radius:8px;font-size:13px;z-index:999;display:none;max-width:340px;color:#fff;}
+.toast.show{display:block;}
+.t-ok{background:#166534;}.t-err{background:#dc2626;}.t-info{background:#1a3c5e;}
+.loading{text-align:center;padding:60px;color:#6b7c8d;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="title">📋 บันทึกการตรวจประเมิน</div>
+  <div class="spacer"></div>
+  <a href="?page=index">← กลับหน้าหลัก</a>
+</div>
+<div class="container"><div id="content" class="loading">⏳ กำลังโหลดข้อมูล...</div></div>
+<div class="bottom-bar" id="bar" style="display:none">
+  <div>
+    <div class="score-lbl">คะแนนรวม</div>
+    <div><span class="score-big" id="sdis">0</span><span style="font-size:13px;opacity:.6"> / 100</span><span class="grade-lbl" id="gdis"></span></div>
+  </div>
+  <div style="flex:1"></div>
+  <button class="btn-save" id="sbtn" onclick="submit()">💾 บันทึกการตรวจ</button>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+let CL=[],ST=[];
+google.script.run.withSuccessHandler(cl=>{CL=cl;google.script.run.withSuccessHandler(st=>{ST=st;build();}).withFailureHandler(e=>err(e.message)).getStations();}).withFailureHandler(e=>err(e.message)).getChecklist();
+
+function build(){
+  const cats={};
+  CL.forEach(item=>{if(!cats[item.category])cats[item.category]=[];cats[item.category].push(item);});
+  const params=new URLSearchParams(window.location.search);
+  const pre=params.get('station')||'';
+  let h='';
+  h+=`<div class="card"><div class="card-hdr">📝 ข้อมูลการตรวจ</div><div class="card-body">
+  <div class="form-row">
+    <div class="fg"><label>หน่วยงานที่รับการตรวจ *</label>
+      <select id="sid"><option value="">-- เลือกหน่วยงาน --</option>
+      ${ST.map(s=>`<option value="${s.station_id}" ${s.station_id===pre?'selected':''}>${s.name} (${s.type})</option>`).join('')}
+      </select></div>
+    <div class="fg"><label>วันที่ตรวจ *</label>
+      <input type="date" id="idate" value="${new Date().toISOString().slice(0,10)}"></div>
+  </div>
+  <div class="form-row">
+    <div class="fg"><label>ชื่อผู้ตรวจ *</label><input type="text" id="iname" placeholder="ชื่อ-นามสกุล"></div>
+    <div class="fg"><label>Email ผู้ตรวจ</label><input type="email" id="iemail" placeholder="xxx@pea.co.th"></div>
+  </div>
+  <div class="fg"><label>หมายเหตุภาพรวม</label><textarea id="gnote" rows="2" placeholder="หมายเหตุ / ข้อสังเกตภาพรวม"></textarea></div>
+  </div></div>`;
+  Object.keys(cats).forEach(cat=>{
+    const items=cats[cat];
+    const catMax=items[0].category_max;
+    h+=`<div class="card"><div class="card-hdr">📌 ${cat}<span class="ms">เต็ม ${catMax} คะแนน</span></div><div class="card-body">`;
+    items.forEach(item=>{
+      h+=`<div class="ci" data-id="${item.item_id}" data-max="${item.max_score}">
+        <div class="ci-top">
+          <div class="ci-no">${item.item_no}</div>
+          <div class="ci-topic">${item.topic} <span class="ci-max">(เต็ม ${item.max_score})</span></div>
+        </div>
+        <div class="ci-crit">${(item.criteria||'').replace(/\|/g,'<br>')}</div>
+        <div class="ci-inputs">
+          <select class="ss empty" data-id="${item.item_id}" data-max="${item.max_score}" onchange="this.classList.remove('empty');recalc()">
+            <option value="">-- คะแนน --</option>
+            ${opts(item.max_score)}
+          </select>
+          <input class="ni" data-note="${item.item_id}" type="text" placeholder="หมายเหตุรายการนี้">
+        </div>
+      </div>`;
+    });
+    h+='</div></div>';
+  });
+  document.getElementById('content').innerHTML=h;
+  document.getElementById('bar').style.display='flex';
+  recalc();
+}
+
+function opts(max){
+  max=Number(max)||0;
+  let o='';
+  const step=max<=2?0.5:1;
+  for(let v=0;v<=max;v+=step){
+    const vv=parseFloat(v.toFixed(1));
+    o+=`<option value="${vv}">${vv}</option>`;
+    if(vv>=max)break;
+  }
+  return o;
+}
+
+function recalc(){
+  let total=0;
+  document.querySelectorAll('.ss').forEach(s=>{total+=parseFloat(s.value)||0;});
+  total=Math.round(total*10)/10;
+  document.getElementById('sdis').textContent=total;
+  const p=Math.round(total);
+  let g='';
+  if(p>=90)g='🏆 A ดีเยี่ยม';
+  else if(p>=80)g='🥈 B ดี';
+  else if(p>=70)g='🥉 C พอใช้';
+  else if(p>=60)g='⚠️ D ต้องปรับปรุง';
+  else g='❌ F ไม่ผ่าน';
+  document.getElementById('gdis').textContent=g;
+}
+
+function submit(){
+  const sid=document.getElementById('sid');
+  if(!sid.value){toast('กรุณาเลือกหน่วยงาน','err');return;}
+  const iname=document.getElementById('iname').value.trim();
+  if(!iname){toast('กรุณาใส่ชื่อผู้ตรวจ','err');return;}
+  const empty=[];
+  document.querySelectorAll('.ss').forEach(s=>{if(!s.value)empty.push(s.dataset.id);});
+  if(empty.length>0&&!confirm(`ยังไม่ได้ลงคะแนน ${empty.length} รายการ ต้องการบันทึกต่อหรือไม่?`))return;
+  const scores=[];
+  document.querySelectorAll('.ss').forEach(s=>{
+    const n=document.querySelector(`[data-note="${s.dataset.id}"]`);
+    scores.push({item_id:s.dataset.id,score:parseFloat(s.value)||0,note:n?n.value:''});
+  });
+  const sname=sid.options[sid.selectedIndex].text;
+  const payload={
+    station_id:sid.value,station_name:sname,
+    inspect_date:document.getElementById('idate').value,
+    inspector_name:iname,
+    inspector_email:document.getElementById('iemail').value,
+    note:document.getElementById('gnote').value,
+    scores:scores
+  };
+  document.getElementById('sbtn').disabled=true;
+  document.getElementById('sbtn').textContent='⏳ กำลังบันทึก...';
+  google.script.run
+    .withSuccessHandler(res=>{
+      if(res.success){
+        toast(`✅ บันทึกสำเร็จ! ${res.total_score}/${res.max_score} คะแนน (${res.percent}%) เกรด ${res.grade}`,'ok');
+        setTimeout(()=>{window.top.location.href='?page=index';},2500);
+      }else{toast('บันทึกล้มเหลว: '+res.error,'err');reset();}
+    })
+    .withFailureHandler(e=>{toast('เกิดข้อผิดพลาด: '+e.message,'err');reset();})
+    .saveInspection(payload);
+}
+
+function reset(){
+  document.getElementById('sbtn').disabled=false;
+  document.getElementById('sbtn').textContent='💾 บันทึกการตรวจ';
+}
+
+function toast(msg,type){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className=`toast show t-${type||'info'}`;
+  setTimeout(()=>t.className='toast',5000);
+}
+
+function err(msg){document.getElementById('content').innerHTML=`<div style="text-align:center;padding:60px;color:#dc2626">❌ ${msg}</div>`;}
+</script>
+</body>
+</html>

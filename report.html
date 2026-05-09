@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>รายงานการตรวจ</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Sarabun',sans-serif;}
+body{background:#f0f4f8;color:#1a2b3c;}
+.topbar{background:#1a3c5e;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:10px;}
+.topbar .title{font-size:18px;font-weight:700;}
+.topbar .spacer{flex:1;}
+.topbar a{color:#fff;font-size:13px;opacity:.85;text-decoration:none;}
+.container{max-width:1100px;margin:0 auto;padding:20px;}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.filters input,.filters select{padding:7px 12px;border:1px solid #c8d0da;border-radius:6px;font-size:13px;background:#fff;}
+.filters input{flex:1;min-width:200px;}
+.btn{padding:7px 16px;border:none;border-radius:6px;font-size:13px;cursor:pointer;color:#fff;}
+.btn-s{background:#1a3c5e;}.btn-s:hover{background:#152e47;}
+.btn-d{background:#dc2626;}.btn-d:hover{background:#b91c1c;}
+.btn-sm{padding:4px 10px;font-size:12px;}
+.tbl-wrap{background:#fff;border-radius:10px;overflow:auto;border:1px solid #dde3ea;}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:680px;}
+thead th{background:#1a3c5e;color:#fff;padding:10px 12px;text-align:left;font-weight:600;}
+tbody tr{border-bottom:1px solid #edf0f3;}
+tbody tr:hover{background:#f5f8fb;}
+tbody td{padding:10px 12px;}
+.gA{color:#166534;font-weight:700;}.gB{color:#1e40af;font-weight:700;}
+.gC{color:#92400e;font-weight:700;}.gD{color:#b45309;font-weight:700;}
+.gF{color:#dc2626;font-weight:700;}
+.bar-bg{background:#e5e7eb;border-radius:4px;height:6px;width:80px;display:inline-block;vertical-align:middle;}
+.bar-fg{background:#e84c0a;border-radius:4px;height:6px;}
+.empty,.loading{text-align:center;padding:50px;color:#9ca3af;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:center;justify-content:center;}
+.overlay.show{display:flex;}
+.modal{background:#fff;border-radius:12px;padding:24px;max-width:700px;width:92%;max-height:88vh;overflow-y:auto;}
+.modal-title{font-size:16px;font-weight:700;color:#1a3c5e;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:#6b7c8d;line-height:1;}
+.sc-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f0f4f8;}
+.sc-row:last-child{border-bottom:none;}
+.sc-topic{flex:1;font-size:13px;}
+.sc-note{font-size:11px;color:#9ca3af;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sc-val{min-width:60px;text-align:center;font-weight:700;font-size:14px;}
+.cat-hdr{background:#eef3f9;padding:6px 8px;font-size:12px;font-weight:700;color:#1a3c5e;margin:10px 0 4px;border-radius:4px;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="title">📊 รายงานการตรวจประเมิน</div>
+  <div class="spacer"></div>
+  <a href="?page=index">← หน้าหลัก</a>
+</div>
+<div class="container">
+  <div class="filters">
+    <input type="text" id="sq" placeholder="ค้นหาหน่วยงาน / ผู้ตรวจ..." oninput="ft()">
+    <select id="gf" onchange="ft()">
+      <option value="">ทุกเกรด</option>
+      <option>A (ดีเยี่ยม)</option><option>B (ดี)</option>
+      <option>C (พอใช้)</option><option>D (ต้องปรับปรุง)</option><option>F (ไม่ผ่าน)</option>
+    </select>
+    <button class="btn btn-s" onclick="exportCSV()">📥 Export CSV</button>
+  </div>
+  <div id="content" class="loading">⏳ กำลังโหลดข้อมูล...</div>
+</div>
+<div class="overlay" id="ov" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-title"><span id="mt">รายละเอียด</span><button class="modal-close" onclick="closeModal()">×</button></div>
+    <div id="mb"></div>
+  </div>
+</div>
+<script>
+let allData=[];
+google.script.run
+  .withSuccessHandler(d=>{allData=d;render(d);})
+  .withFailureHandler(e=>{document.getElementById('content').innerHTML=`<div class="empty">❌ ${e.message}</div>`;})
+  .getInspections();
+
+function render(data){
+  if(!data||data.length===0){document.getElementById('content').innerHTML='<div class="tbl-wrap"><div class="empty">ยังไม่มีข้อมูลการตรวจ</div></div>';return;}
+  data.sort((a,b)=>String(b.inspect_date).localeCompare(String(a.inspect_date)));
+  let h='<div class="tbl-wrap"><table id="rt"><thead><tr><th>#</th><th>หน่วยงาน</th><th>วันที่ตรวจ</th><th>ผู้ตรวจ</th><th>คะแนน</th><th>%</th><th>เกรด</th><th></th></tr></thead><tbody>';
+  data.forEach((r,i)=>{
+    const pct=r.percent||0;
+    h+=`<tr data-q="${((r.station_name||'')+' '+(r.inspector_name||'')).toLowerCase()}" data-g="${r.grade||''}">
+      <td style="color:#9ca3af">${i+1}</td>
+      <td><strong>${r.station_name||''}</strong></td>
+      <td>${r.inspect_date||''}</td>
+      <td>${r.inspector_name||''}</td>
+      <td>${r.total_score||0}/${r.max_score||100}</td>
+      <td><span class="bar-bg"><span class="bar-fg" style="width:${pct}%"></span></span> ${pct}%</td>
+      <td class="${gc(r.grade)}">${r.grade||'-'}</td>
+      <td>
+        <button class="btn btn-s btn-sm" onclick="view('${r.inspection_id}','${esc(r.station_name)}')">ดู</button>
+        <button class="btn btn-d btn-sm" onclick="del('${r.inspection_id}','${esc(r.station_name)}')" style="margin-left:4px">ลบ</button>
+      </td></tr>`;
+  });
+  h+='</tbody></table></div>';
+  document.getElementById('content').innerHTML=h;
+}
+
+function gc(g){if(!g)return'';if(g[0]==='A')return'gA';if(g[0]==='B')return'gB';if(g[0]==='C')return'gC';if(g[0]==='D')return'gD';if(g[0]==='F')return'gF';return'';}
+function esc(s){return(s||'').replace(/'/g,"\\'");}
+
+function ft(){
+  const q=document.getElementById('sq').value.toLowerCase();
+  const g=document.getElementById('gf').value;
+  document.querySelectorAll('#rt tbody tr').forEach(r=>{
+    r.style.display=((!q||r.dataset.q.includes(q))&&(!g||r.dataset.g===g))?'':'none';
+  });
+}
+
+function view(id,name){
+  document.getElementById('mt').textContent='รายละเอียด: '+name;
+  document.getElementById('mb').innerHTML='<div style="text-align:center;padding:20px;color:#9ca3af">⏳ กำลังโหลด...</div>';
+  document.getElementById('ov').classList.add('show');
+  google.script.run
+    .withSuccessHandler(res=>{
+      if(!res||!res.inspection){document.getElementById('mb').innerHTML='<div style="color:#dc2626">ไม่พบข้อมูล</div>';return;}
+      const ins=res.inspection;const scores=res.scores||[];
+      let h=`<p style="font-size:13px;color:#6b7c8d;margin-bottom:10px">วันที่: <strong>${ins.inspect_date}</strong> · ผู้ตรวจ: <strong>${ins.inspector_name}</strong></p>
+        <p style="font-size:13px;margin-bottom:12px">คะแนน: <strong>${ins.total_score}/${ins.max_score}</strong> (${ins.percent}%) เกรด: <strong class="${gc(ins.grade)}">${ins.grade}</strong></p>`;
+      if(ins.note)h+=`<p style="font-size:12px;color:#6b7c8d;margin-bottom:12px">📝 ${ins.note}</p>`;
+      const catMap={};
+      scores.forEach(s=>{if(!catMap[s.category])catMap[s.category]=[];catMap[s.category].push(s);});
+      Object.keys(catMap).forEach(cat=>{
+        h+=`<div class="cat-hdr">${cat}</div>`;
+        catMap[cat].forEach(s=>{
+          const color=s.score>=s.max_score?'#166534':s.score>0?'#92400e':'#dc2626';
+          h+=`<div class="sc-row">
+            <span style="min-width:22px;font-size:11px;color:#9ca3af">${s.item_no}</span>
+            <span class="sc-topic">${s.topic}</span>
+            <span class="sc-note">${s.note||''}</span>
+            <span class="sc-val" style="color:${color}">${s.score}/${s.max_score}</span>
+          </div>`;
+        });
+      });
+      document.getElementById('mb').innerHTML=h;
+    })
+    .withFailureHandler(e=>{document.getElementById('mb').innerHTML=`<div style="color:#dc2626">${e.message}</div>`;})
+    .getInspectionById(id);
+}
+
+function closeModal(e){
+  if(!e||e.target===document.getElementById('ov'))
+    document.getElementById('ov').classList.remove('show');
+}
+
+function del(id,name){
+  if(!confirm(`ต้องการลบการตรวจ "${name}" ใช่ไหม?`))return;
+  google.script.run
+    .withSuccessHandler(res=>{if(res.success)location.reload();else alert('ลบไม่สำเร็จ: '+res.error);})
+    .deleteInspection(id);
+}
+
+function exportCSV(){
+  let csv='\ufeffหน่วยงาน,วันที่ตรวจ,ผู้ตรวจ,คะแนน,เปอร์เซ็นต์,เกรด\n';
+  allData.forEach(r=>{csv+=`"${r.station_name||''}","${r.inspect_date||''}","${r.inspector_name||''}","${r.total_score||0}/${r.max_score||100}","${r.percent||0}%","${r.grade||''}"\n`;});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='รายงานตรวจงานแก้ไฟ_2569.csv';
+  a.click();
+}
+</script>
+</body>
+</html>

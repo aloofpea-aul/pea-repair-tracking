@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ระบบตรวจงานแก้ไฟฟ้าขัดข้อง</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Sarabun',sans-serif;}
+body{background:#f0f4f8;color:#1a2b3c;}
+.topbar{background:#1a3c5e;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:12px;}
+.topbar .logo{font-size:20px;font-weight:700;}
+.topbar .sub{font-size:12px;opacity:.75;margin-top:2px;}
+.topbar .spacer{flex:1;}
+.topbar a{color:#fff;text-decoration:none;background:rgba(255,255,255,.15);padding:7px 14px;border-radius:6px;font-size:13px;}
+.topbar a:hover{background:rgba(255,255,255,.25);}
+.topbar a.accent{background:#e84c0a;}
+.topbar a.accent:hover{background:#c93d07;}
+.container{max-width:1200px;margin:0 auto;padding:20px;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px;}
+.stat{background:#fff;border-radius:10px;padding:16px;border:1px solid #dde3ea;}
+.stat .num{font-size:34px;font-weight:700;color:#1a3c5e;}
+.stat .lbl{font-size:12px;color:#6b7c8d;margin-top:4px;}
+.stat.warn .num{color:#b45309;}
+.stat.ok .num{color:#166534;}
+.sec-title{font-size:15px;font-weight:600;color:#1a3c5e;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.sec-title::before{content:'';display:block;width:4px;height:18px;background:#e84c0a;border-radius:2px;}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px;margin-bottom:24px;}
+.cat{background:#fff;border-radius:8px;padding:12px 14px;border:1px solid #dde3ea;}
+.cat-name{font-size:11px;color:#6b7c8d;margin-bottom:4px;line-height:1.4;}
+.cat-score{font-size:22px;font-weight:700;color:#1a3c5e;}
+.cat-sub{font-size:11px;color:#9ca3af;}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.filters input,.filters select{padding:7px 12px;border:1px solid #c8d0da;border-radius:6px;font-size:13px;background:#fff;}
+.filters input{flex:1;min-width:200px;}
+.tbl-wrap{background:#fff;border-radius:10px;overflow:hidden;border:1px solid #dde3ea;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{background:#1a3c5e;color:#fff;padding:10px 12px;text-align:left;font-weight:600;}
+tbody tr{border-bottom:1px solid #edf0f3;}
+tbody tr:hover{background:#f5f8fb;}
+tbody td{padding:10px 12px;}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;}
+.bL{background:#dbeafe;color:#1e40af;}.bM{background:#dcfce7;color:#166534;}
+.bS{background:#fef9c3;color:#713f12;}.bXS{background:#fce7f3;color:#9d174d;}
+.gA{color:#166534;font-weight:700;}.gB{color:#1e40af;font-weight:700;}
+.gC{color:#92400e;font-weight:700;}.gD{color:#b45309;font-weight:700;}
+.gF{color:#dc2626;font-weight:700;}.gNone{color:#9ca3af;}
+.bar-bg{background:#e5e7eb;border-radius:4px;height:6px;width:90px;display:inline-block;vertical-align:middle;}
+.bar-fg{background:#e84c0a;border-radius:4px;height:6px;}
+.btn{display:inline-block;padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer;border:none;text-decoration:none;}
+.btn-p{background:#e84c0a;color:#fff;}.btn-p:hover{background:#c93d07;}
+.empty,.loading{text-align:center;padding:50px;color:#9ca3af;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div><div class="logo">⚡ ระบบตรวจงานแก้ไฟฟ้าขัดข้อง</div><div class="sub">กฟต.2 ประจำปี 2569</div></div>
+  <div class="spacer"></div>
+  <a href="?page=report" style="margin-right:6px">📊 รายงาน</a>
+  <a href="?page=form" class="accent">+ บันทึกการตรวจ</a>
+</div>
+<div class="container">
+  <div id="content" class="loading">⏳ กำลังโหลดข้อมูล...</div>
+</div>
+<script>
+google.script.run
+  .withSuccessHandler(render)
+  .withFailureHandler(e=>document.getElementById('content').innerHTML='<div class="empty">❌ '+e.message+'</div>')
+  .getDashboardData();
+
+function render(d){
+  const notInspected=d.totalStations-d.inspectedCount;
+  let h='';
+  h+='<div class="stats">';
+  h+=sc(d.totalStations,'หน่วยงานทั้งหมด','');
+  h+=sc(d.inspectedCount,'ตรวจแล้ว','ok');
+  h+=sc(notInspected,'ยังไม่ได้ตรวจ',notInspected>0?'warn':'ok');
+  h+=sc(d.totalInspect,'ครั้งที่ตรวจรวม','');
+  h+='</div>';
+  h+='<div class="sec-title">สัดส่วนคะแนนแต่ละหมวด</div><div class="cat-grid">';
+  d.catSummary.forEach(c=>{
+    h+=`<div class="cat"><div class="cat-name">${c.category}</div>
+      <div class="cat-score">${c.category_max} <span style="font-size:13px;font-weight:400;color:#9ca3af">คะแนน</span></div>
+      <div class="cat-sub">${c.item_count} รายการ</div></div>`;
+  });
+  h+='</div>';
+  h+='<div class="sec-title">สถานะการตรวจแต่ละหน่วยงาน</div>';
+  h+='<div class="filters"><input id="sq" placeholder="ค้นหาหน่วยงาน..." oninput="ft()">';
+  h+='<select id="tf" onchange="ft()"><option value="">ทุกประเภท</option><option>L</option><option>M</option><option>S</option><option>XS</option></select>';
+  h+='<select id="sf" onchange="ft()"><option value="">ทุกสถานะ</option><option value="done">ตรวจแล้ว</option><option value="pending">ยังไม่ตรวจ</option></select></div>';
+  h+='<div class="tbl-wrap"><table id="t"><thead><tr><th>#</th><th>หน่วยงาน</th><th>ประเภท</th><th>ตรวจล่าสุด</th><th>คะแนน</th><th>%</th><th>เกรด</th><th></th></tr></thead><tbody>';
+  d.stations.forEach((s,i)=>{
+    const done=!!s.last_inspect;
+    const pct=s.last_percent||0;
+    h+=`<tr data-n="${s.name.toLowerCase()}" data-t="${s.type}" data-s="${done?'done':'pending'}">
+      <td style="color:#9ca3af">${i+1}</td>
+      <td><strong>${s.name}</strong><br><span style="font-size:11px;color:#9ca3af">${s.short_name} · ${s.province||''}</span></td>
+      <td><span class="badge b${s.type}">${s.type}</span></td>
+      <td>${done?String(s.last_inspect).slice(0,10):'<span class="gNone">-</span>'}</td>
+      <td>${done?(s.last_score||0)+'/100':'<span class="gNone">-</span>'}</td>
+      <td>${done?`<span class="bar-bg"><span class="bar-fg" style="width:${pct}%"></span></span> ${pct}%`:'<span class="gNone">-</span>'}</td>
+      <td class="${gc(s.last_grade)}">${s.last_grade||'<span class="gNone">ยังไม่ตรวจ</span>'}</td>
+      <td><a href="?page=form&station=${s.station_id}" class="btn btn-p">+ ตรวจ</a></td></tr>`;
+  });
+  h+='</tbody></table></div>';
+  document.getElementById('content').innerHTML=h;
+}
+function sc(n,l,cls){return`<div class="stat ${cls}"><div class="num">${n}</div><div class="lbl">${l}</div></div>`;}
+function gc(g){if(!g)return'';if(g[0]==='A')return'gA';if(g[0]==='B')return'gB';if(g[0]==='C')return'gC';if(g[0]==='D')return'gD';if(g[0]==='F')return'gF';return'';}
+function ft(){
+  const q=document.getElementById('sq').value.toLowerCase();
+  const t=document.getElementById('tf').value;
+  const s=document.getElementById('sf').value;
+  document.querySelectorAll('#t tbody tr').forEach(r=>{
+    r.style.display=((!q||r.dataset.n.includes(q))&&(!t||r.dataset.t===t)&&(!s||r.dataset.s===s))?'':'none';
+  });
+}
+</script>
+</body>
+</html>
