@@ -55,8 +55,8 @@ tbody td{padding:10px 12px;}
 <div class="topbar">
   <div><div class="logo">⚡ ระบบตรวจงานแก้ไฟฟ้าขัดข้อง</div><div class="sub">กฟต.2 ประจำปี 2569</div></div>
   <div class="spacer"></div>
-  <a href="?page=report" style="margin-right:6px">📊 รายงาน</a>
-  <a href="?page=form" class="accent">+ บันทึกการตรวจ</a>
+  <a href="#" onclick="window.top.location.href='?page=report'" style="margin-right:6px">📊 รายงาน</a>
+  <a href="#" onclick="window.top.location.href='?page=form'" class="accent">+ บันทึกการตรวจ</a>
 </div>
 <div class="container">
   <div id="content" class="loading">⏳ กำลังโหลดข้อมูล...</div>
@@ -99,7 +99,7 @@ function render(d){
       <td>${done?(s.last_score||0)+'/100':'<span class="gNone">-</span>'}</td>
       <td>${done?`<span class="bar-bg"><span class="bar-fg" style="width:${pct}%"></span></span> ${pct}%`:'<span class="gNone">-</span>'}</td>
       <td class="${gc(s.last_grade)}">${s.last_grade||'<span class="gNone">ยังไม่ตรวจ</span>'}</td>
-      <td><a href="?page=form&station=${s.station_id}" class="btn btn-p">+ ตรวจ</a></td></tr>`;
+      <td><a href="#" onclick="window.top.location.href='?page=form&station=${s.station_id}'" class="btn btn-p">+ ตรวจ</a></td></tr>`;
   });
   h+='</tbody></table></div>';
   document.getElementById('content').innerHTML=h;
