@@ -71,3 +71,7 @@ function writeLog(action, detail, user) {
     });
   } catch(e) {}
 }
+
+function getScriptUrl() {
+  return ScriptApp.getService().getUrl();
+}
