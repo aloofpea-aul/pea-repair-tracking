@@ -3,193 +3,588 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>บันทึกการตรวจ</title>
+<title>แบบฟอร์มตรวจประเมิน</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Sarabun',sans-serif;}
-body{background:#f0f4f8;color:#1a2b3c;padding-bottom:80px;}
-.topbar{background:#1a3c5e;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:10px;}
-.topbar .title{font-size:18px;font-weight:700;}
-.topbar .spacer{flex:1;}
-.topbar a{color:#fff;font-size:13px;opacity:.85;text-decoration:none;}
-.container{max-width:860px;margin:0 auto;padding:20px;}
+body{background:#f0f4f8;color:#1a2b3c;}
+.topbar{background:#1a3c5e;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:12px;}
+.topbar .logo{font-size:15px;font-weight:700;}
+.topbar .sub{font-size:11px;opacity:.75;margin-top:2px;}
+.score-box{background:rgba(255,255,255,.12);border-radius:8px;padding:8px 16px;margin-left:auto;text-align:center;border:1px solid rgba(255,255,255,.2);}
+.score-num{font-size:26px;font-weight:700;line-height:1;}
+.score-lbl{font-size:10px;opacity:.8;}
+.score-grade{font-size:12px;font-weight:700;}
+.tab-bar{background:#fff;border-bottom:2px solid #1a3c5e;display:flex;overflow-x:auto;}
+.tab-btn{padding:9px 15px;border:none;background:none;cursor:pointer;font-size:12.5px;font-weight:400;color:#1a3c5e;border-bottom:3px solid transparent;white-space:nowrap;font-family:Sarabun,sans-serif;transition:color .15s;}
+.tab-btn.active{font-weight:700;color:#e84c0a;border-bottom-color:#e84c0a;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.container{max-width:900px;margin:0 auto;padding:20px;}
 .card{background:#fff;border-radius:10px;border:1px solid #dde3ea;margin-bottom:16px;overflow:hidden;}
-.card-hdr{background:#1a3c5e;color:#fff;padding:11px 16px;font-size:14px;font-weight:600;display:flex;align-items:center;}
-.card-hdr .ms{margin-left:auto;opacity:.75;font-size:12px;}
+.card-hdr{background:#1a3c5e;color:#fff;padding:10px 16px;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;}
+.card-hdr .ms{font-size:11px;opacity:.85;}
 .card-body{padding:16px;}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
 @media(max-width:580px){.form-row{grid-template-columns:1fr;}}
 .fg{display:flex;flex-direction:column;gap:4px;}
-.fg label{font-size:12px;font-weight:600;color:#4b5563;}
-.fg input,.fg select,.fg textarea{padding:8px 10px;border:1px solid #c8d0da;border-radius:6px;font-size:13px;font-family:inherit;}
+.fg label{font-size:12px;font-weight:700;color:#4b5563;}
+.fg input,.fg select,.fg textarea{padding:8px 10px;border:1px solid #c8d0da;border-radius:6px;font-size:13px;font-family:Sarabun,sans-serif;width:100%;}
 .fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:#1a3c5e;}
-.ci{border-bottom:1px solid #edf0f3;padding:12px 0;}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:18px;}
+.cat-card{background:#fff;border-radius:8px;padding:10px 12px;border:1px solid #dde3ea;}
+.cat-card .cat-name{font-size:10px;color:#6b7c8d;line-height:1.3;margin-bottom:4px;}
+.cat-card .cat-score{font-size:20px;font-weight:700;color:#1a3c5e;}
+.cat-card .cat-max{font-size:11px;color:#9ca3af;}
+.cat-bar-bg{height:4px;background:#e5e7eb;border-radius:2px;margin-top:4px;}
+.cat-bar-fg{height:4px;background:#e84c0a;border-radius:2px;transition:width .3s;}
+.ci{border-bottom:1px solid #edf0f3;padding:13px 0;}
 .ci:last-child{border-bottom:none;}
 .ci-top{display:flex;align-items:flex-start;gap:10px;}
-.ci-no{min-width:28px;height:28px;background:#1a3c5e;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px;}
-.ci-topic{font-size:13px;flex:1;line-height:1.5;}
-.ci-max{font-size:11px;color:#9ca3af;}
-.ci-crit{font-size:11px;color:#5b6e80;margin:6px 0 8px 38px;line-height:1.6;background:#f8fafc;padding:6px 8px;border-radius:4px;border-left:3px solid #c8d0da;}
-.ci-inputs{display:flex;gap:10px;margin-left:38px;flex-wrap:wrap;}
-.ss{padding:6px 10px;border:1px solid #c8d0da;border-radius:6px;font-size:12px;min-width:100px;}
-.ni{flex:1;min-width:150px;padding:6px 10px;border:1px solid #c8d0da;border-radius:6px;font-size:12px;}
-.ss:focus,.ni:focus{outline:none;border-color:#e84c0a;}
-.ss.empty{border-color:#fca5a5;background:#fff5f5;}
-.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:#1a3c5e;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:16px;z-index:10;}
-.score-big{font-size:24px;font-weight:700;}
-.score-lbl{font-size:11px;opacity:.75;}
-.grade-lbl{font-size:15px;font-weight:700;margin-left:6px;}
-.btn-save{background:#e84c0a;color:#fff;border:none;padding:10px 26px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;}
-.btn-save:hover{background:#c93d07;}
-.btn-save:disabled{opacity:.5;cursor:not-allowed;}
+.ci-no{min-width:26px;height:26px;background:#1a3c5e;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px;}
+.ci-content{flex:1;min-width:0;}
+.ci-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;}
+.ci-topic{font-size:13px;font-weight:600;line-height:1.5;flex:1;}
+.score-chip{padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;flex-shrink:0;}
+.score-chip.full{background:#dcfce7;color:#166534;}
+.score-chip.zero{background:#fce7f3;color:#9d174d;}
+.score-chip.mid{background:#fff3ee;color:#92400e;}
+.opt{display:flex;align-items:flex-start;gap:8px;padding:5px 8px;border-radius:6px;cursor:pointer;margin-bottom:3px;font-size:12px;border:1px solid transparent;transition:background .1s;}
+.opt:hover{background:#fafafa;}
+.opt.selected{background:#fff3ee;border-color:#e84c0a;}
+.opt input[type=radio]{accent-color:#e84c0a;flex-shrink:0;margin-top:2px;}
+.calc-box{background:#f8fafc;border:1px solid #dde3ea;border-radius:8px;padding:10px;margin-top:6px;}
+.calc-formula{font-size:10.5px;color:#6b7c8d;font-family:monospace;margin-bottom:6px;}
+.calc-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.calc-pct-input{padding:6px 10px;border:1px solid #c8d0da;border-radius:6px;font-size:13px;font-family:Sarabun,sans-serif;width:100px;}
+.calc-pct-input:focus{outline:none;border-color:#e84c0a;}
+.calc-hint{font-size:11px;color:#9ca3af;flex:1;}
+.calc-result{font-size:12px;color:#e84c0a;font-weight:700;}
+.note-input{width:100%;padding:5px 10px;border:1px solid #c8d0da;border-radius:5px;font-size:11.5px;font-family:Sarabun,sans-serif;margin-top:6px;}
+.note-input:focus{outline:none;border-color:#1a3c5e;}
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead th{background:#1a3c5e;color:#fff;padding:8px 10px;text-align:left;font-weight:600;}
+tbody tr:nth-child(even){background:#fafafa;}
+tbody td{padding:5px 8px;border-bottom:1px solid #edf0f3;vertical-align:middle;}
+.t-inp{width:100%;padding:4px 8px;border:1px solid #c8d0da;border-radius:4px;font-size:12px;font-family:Sarabun,sans-serif;}
+.t-inp:focus{outline:none;border-color:#1a3c5e;}
+.t-num{text-align:center;color:#9ca3af;font-size:11px;}
+.btn-row{display:flex;justify-content:flex-end;gap:10px;padding:16px;background:#fff;border-top:1px solid #dde3ea;}
+.btn{padding:10px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:Sarabun,sans-serif;}
+.btn-secondary{background:#f0f4f8;color:#1a3c5e;border:1px solid #c8d0da;}
+.btn-primary{background:#e84c0a;color:#fff;}
+.btn-primary:hover{background:#c93d07;}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;}
 .toast{position:fixed;top:20px;right:20px;padding:12px 18px;border-radius:8px;font-size:13px;z-index:999;display:none;max-width:340px;color:#fff;}
 .toast.show{display:block;}
 .t-ok{background:#166534;}.t-err{background:#dc2626;}.t-info{background:#1a3c5e;}
 .loading{text-align:center;padding:60px;color:#6b7c8d;}
+.ro-input{background:#f8fafc;color:#6b7c8d;}
 </style>
 </head>
 <body>
-<div class="topbar">
-  <div class="title">📋 บันทึกการตรวจประเมิน</div>
-  <div class="spacer"></div>
-  <a href="#" onclick="window.top.location.href='?page=index'">← กลับหน้าหลัก</a>
-</div>
-<div class="container"><div id="content" class="loading">⏳ กำลังโหลดข้อมูล...</div></div>
-<div class="bottom-bar" id="bar" style="display:none">
-  <div>
-    <div class="score-lbl">คะแนนรวม</div>
-    <div><span class="score-big" id="sdis">0</span><span style="font-size:13px;opacity:.6"> / 100</span><span class="grade-lbl" id="gdis"></span></div>
-  </div>
-  <div style="flex:1"></div>
-  <button class="btn-save" id="sbtn" onclick="submit()">💾 บันทึกการตรวจ</button>
-</div>
-<div class="toast" id="toast"></div>
-<script>
-let CL=[],ST=[];
-google.script.run.withSuccessHandler(cl=>{CL=cl;google.script.run.withSuccessHandler(st=>{ST=st;build();}).withFailureHandler(e=>err(e.message)).getStations();}).withFailureHandler(e=>err(e.message)).getChecklist();
 
-function build(){
-  const cats={};
-  CL.forEach(item=>{if(!cats[item.category])cats[item.category]=[];cats[item.category].push(item);});
-  const params=new URLSearchParams(window.location.search);
-  const pre=params.get('station')||'';
-  let h='';
-  h+=`<div class="card"><div class="card-hdr">📝 ข้อมูลการตรวจ</div><div class="card-body">
-  <div class="form-row">
-    <div class="fg"><label>หน่วยงานที่รับการตรวจ *</label>
-      <select id="sid"><option value="">-- เลือกหน่วยงาน --</option>
-      ${ST.map(s=>`<option value="${s.station_id}" ${s.station_id===pre?'selected':''}>${s.name} (${s.type})</option>`).join('')}
-      </select></div>
-    <div class="fg"><label>วันที่ตรวจ *</label>
-      <input type="date" id="idate" value="${new Date().toISOString().slice(0,10)}"></div>
+<!-- Topbar -->
+<div class="topbar">
+  <div>
+    <div class="logo">⚡ แบบฟอร์มตรวจประเมินระบบงานแก้ไฟฟ้าขัดข้อง</div>
+    <div class="sub">กฟต.2 ประจำปี 2569 | อัพเดท 7 มกราคม 2569</div>
   </div>
-  <div class="form-row">
-    <div class="fg"><label>ชื่อผู้ตรวจ *</label><input type="text" id="iname" placeholder="ชื่อ-นามสกุล"></div>
-    <div class="fg"><label>Email ผู้ตรวจ</label><input type="email" id="iemail" placeholder="xxx@pea.co.th"></div>
+  <div class="score-box">
+    <div class="score-num" id="totalScore">0</div>
+    <div class="score-lbl">/ 100 คะแนน</div>
+    <div class="score-grade" id="gradeLabel">—</div>
   </div>
-  <div class="fg"><label>หมายเหตุภาพรวม</label><textarea id="gnote" rows="2" placeholder="หมายเหตุ / ข้อสังเกตภาพรวม"></textarea></div>
-  </div></div>`;
-  Object.keys(cats).forEach(cat=>{
-    const items=cats[cat];
-    const catMax=items[0].category_max;
-    h+=`<div class="card"><div class="card-hdr">📌 ${cat}<span class="ms">เต็ม ${catMax} คะแนน</span></div><div class="card-body">`;
-    items.forEach(item=>{
-      h+=`<div class="ci" data-id="${item.item_id}" data-max="${item.max_score}">
-        <div class="ci-top">
-          <div class="ci-no">${item.item_no}</div>
-          <div class="ci-topic">${item.topic} <span class="ci-max">(เต็ม ${item.max_score})</span></div>
+</div>
+
+<!-- Tab bar -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab(0)">📋 แบบฟอร์มหลัก</button>
+  <button class="tab-btn" onclick="switchTab(1)">🚗 รถยนต์-เพิ่ม</button>
+  <button class="tab-btn" onclick="switchTab(2)">🔧 เครื่องมือ</button>
+  <button class="tab-btn" onclick="switchTab(3)">🏢 สถานที่-เพิ่ม</button>
+  <button class="tab-btn" onclick="switchTab(4)">🦺 ชุดปฏิบัติการฯ-เพิ่ม</button>
+</div>
+
+<!-- Tab 0: Main form -->
+<div class="tab-content active" id="tab-0">
+  <div class="container">
+    <!-- Header card -->
+    <div class="card">
+      <div class="card-hdr">
+        <span>📋 ข้อมูลการตรวจ</span>
+        <span class="ms" id="answeredCount">0/33 รายการที่ลงคะแนนแล้ว</span>
+      </div>
+      <div class="card-body">
+        <div class="form-row">
+          <div class="fg">
+            <label>หน่วยงานที่รับการตรวจ *</label>
+            <select id="sid" onchange="updateHeader()">
+              <option value="">⏳ กำลังโหลด...</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>วันที่ตรวจ *</label>
+            <input type="date" id="idate" value="" onchange="updateHeader()">
+          </div>
         </div>
-        <div class="ci-crit">${(item.criteria||'').replace(/\|/g,'<br>')}</div>
-        <div class="ci-inputs">
-          <select class="ss empty" data-id="${item.item_id}" data-max="${item.max_score}" onchange="this.classList.remove('empty');recalc()">
-            <option value="">-- คะแนน --</option>
-            ${opts(item.max_score)}
-          </select>
-          <input class="ni" data-note="${item.item_id}" type="text" placeholder="หมายเหตุรายการนี้">
+        <div class="form-row">
+          <div class="fg">
+            <label>ชื่อผู้ตรวจ *</label>
+            <input type="text" id="iname" placeholder="ชื่อ-นามสกุล">
+          </div>
+          <div class="fg">
+            <label>Email ผู้ตรวจ</label>
+            <input type="email" id="iemail" placeholder="xxx@pea.co.th">
+          </div>
+        </div>
+        <div class="fg">
+          <label>หมายเหตุภาพรวม</label>
+          <textarea id="gnote" rows="2" placeholder="หมายเหตุ / ข้อสังเกตภาพรวม"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category summary -->
+    <div class="cat-grid" id="catGrid"></div>
+
+    <!-- Items container -->
+    <div id="itemsContainer"></div>
+
+    <!-- Save button -->
+    <div class="card">
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="window.top.location.href='?page=index'">← กลับหน้าหลัก</button>
+        <button class="btn btn-primary" id="saveBtn" onclick="submitForm()">💾 บันทึกการตรวจ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabs 1–4: Extra forms (built by JS) -->
+<div class="tab-content" id="tab-1"></div>
+<div class="tab-content" id="tab-2"></div>
+<div class="tab-content" id="tab-3"></div>
+<div class="tab-content" id="tab-4"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// =========================================================
+// DATA
+// =========================================================
+const CATS = [
+  {name:"ความพร้อมอุปกรณ์และการสนับสนุนการแก้ไฟฟ้าขัดข้อง", max:16},
+  {name:"ความพร้อมสถานที่อยู่เวรแก้ไฟฟ้าขัดข้อง", max:12},
+  {name:"ความพร้อมเครื่องมือเครื่องใช้แก้ไฟฟ้าขัดข้อง", max:8},
+  {name:"ความพร้อมพัสดุสำรองคลังแก้ไฟฟ้าขัดข้อง", max:7},
+  {name:"ความพร้อมรถยนต์แก้ไฟฟ้าขัดข้อง", max:10},
+  {name:"ความพร้อมชุดปฏิบัติงานแก้ไฟฟ้าขัดข้อง", max:27},
+  {name:"ความพร้อมระบบบริหารงานแก้ไฟฟ้าขัดข้อง", max:15},
+  {name:"ความสำเร็จการปรับปรุงข้อบกพร่องจากการตรวจปีก่อนหน้า", max:5},
+];
+
+const ITEMS = [
+  {id:1,cat:0,no:"1",max:2,topic:"อนุมัติจัดเวรฯ และจัดเวรแทน ถูกต้องตามหลักเกณฑ์",opts:[{v:"0",l:"0 — ไม่มีการดำเนินการ"},{v:"1",l:"1 — มีอนุมัติจัดเวรฯ หรือจัดเวรแทน อย่างใดอย่างหนึ่ง"},{v:"2",l:"2 — มีอนุมัติจัดเวรฯ และจัดเวรแทน ครบถ้วน"}]},
+  {id:2,cat:0,no:"2",max:2,topic:"การตรวจสอบเวรฯ และรายงานการอยู่เวรให้ผู้บังคับบัญชาทราบ",opts:[{v:"0",l:"0 — ไม่มีการดำเนินการ"},{v:"1",l:"1 — มีการตรวจสอบเวรฯ หรือการรายงาน ผจก. อย่างใดอย่างหนึ่ง"},{v:"2",l:"2 — มีการตรวจสอบเวรฯ และการรายงาน ผจก. ครบถ้วน"}]},
+  {id:3,cat:0,no:"3",max:2,topic:"ผัง Switching Diagram (A3)",opts:[{v:"0",l:"0 — ไม่มีผัง"},{v:"1",l:"1 — มีผัง แต่ไม่เป็นปัจจุบัน (อัพเดทล่าสุด > 1 ปี)"},{v:"2",l:"2 — มีผังถูกต้อง เป็นปัจจุบัน (อัพเดทล่าสุดไม่เกิน 1 ปี)"}]},
+  {id:4,cat:0,no:"4",max:2,topic:"ผัง Single line Diagram (A0)",opts:[{v:"0",l:"0 — ไม่มีผัง"},{v:"1",l:"1 — มีผัง แต่ไม่เป็นปัจจุบัน (อัพเดทล่าสุด > 1 ปี)"},{v:"2",l:"2 — มีผังถูกต้อง เป็นปัจจุบัน (อัพเดทล่าสุดไม่เกิน 1 ปี)"}]},
+  {id:5,cat:0,no:"5",max:2,topic:"วิทยุสื่อสารสำนักงาน",opts:[{v:"0",l:"0 — ชำรุด และไม่ดำเนินการใดๆ"},{v:"1",l:"1 — ชำรุด อยู่ระหว่างดำเนินการซ่อม มีเอกสารอ้างอิง"},{v:"2",l:"2 — ใช้งานได้ปกติ สามารถพูดคุยผ่านวิทยุสื่อสารได้"}]},
+  {id:6,cat:0,no:"6",max:2,topic:"วิทยุสื่อสารติดรถยนต์",opts:[{v:"0",l:"0 — ชำรุด และไม่ดำเนินการใดๆ"},{v:"1",l:"1 — ชำรุด อยู่ระหว่างดำเนินการซ่อม มีเอกสารอ้างอิง"},{v:"2",l:"2 — ใช้งานได้ปกติ สามารถพูดคุยผ่านวิทยุสื่อสารได้"}]},
+  {id:7,cat:0,no:"7",max:2,topic:"โทรศัพท์",opts:[{v:"0",l:"0 — ชำรุด และไม่ดำเนินการใดๆ"},{v:"1",l:"1 — ชำรุด และแจ้งส่วนเกี่ยวข้องแล้ว มีเอกสารอ้างอิง"},{v:"2",l:"2 — สามารถใช้งานได้ปกติ"}]},
+  {id:8,cat:0,no:"8",max:1,topic:"สมุดโทรศัพท์ / รายชื่อโทรศัพท์",opts:[{v:"0",l:"0 — ไม่มีสมุดโทรศัพท์"},{v:"0.5",l:"0.5 — มีสมุดโทรศัพท์ แต่ไม่เป็นปัจจุบัน"},{v:"1",l:"1 — มีสมุดโทรศัพท์ เป็นปัจจุบัน"}]},
+  {id:9,cat:0,no:"9",max:1,topic:"มีการใช้งานแบบฟอร์ม บร.1",opts:[{v:"0",l:"0 — ไม่มีการใช้งาน"},{v:"0.5",l:"0.5 — มีใช้งาน แต่ไม่ครบประจำรถยนต์ทุกคัน"},{v:"1",l:"1 — มีใช้งานประจำรถยนต์ทุกคัน"}]},
+  {id:10,cat:1,no:"10",max:3,topic:"ห้องอยู่เวรฯ",opts:[{v:"0",l:"0 — ไม่สะอาด ไม่เป็นระเบียบ"},{v:"1",l:"1 — ไม่สะอาด"},{v:"2",l:"2 — สะอาด เป็นระเบียบ"},{v:"3",l:"3 — สะอาด เป็นระเบียบ และไม่มีมลพิษ"}]},
+  {id:11,cat:1,no:"11",max:3,topic:"ห้องสุขา สำหรับอยู่เวรฯ",opts:[{v:"0",l:"0 — ไม่สะอาด ไม่เป็นระเบียบ"},{v:"1",l:"1 — ไม่สะอาด"},{v:"2",l:"2 — สะอาด เป็นระเบียบ"},{v:"3",l:"3 — สะอาด เป็นระเบียบ และไม่มีมลพิษ"}]},
+  {id:12,cat:1,no:"12",max:3,topic:"ห้องพักเวรฯ / ห้องนอนเวรฯ",opts:[{v:"0",l:"0 — ไม่สะอาด ไม่เป็นระเบียบ"},{v:"1",l:"1 — ไม่สะอาด"},{v:"2",l:"2 — สะอาด เป็นระเบียบ"},{v:"3",l:"3 — สะอาด เป็นระเบียบ และไม่มีมลพิษ"}]},
+  {id:13,cat:1,no:"13",max:3,topic:"ห้องเก็บพัสดุแก้ไฟ / สถานที่จัดเก็บพัสดุชั่วคราว",opts:[{v:"0",l:"0 — ไม่สะอาด ไม่เป็นระเบียบ ไม่มีระบบ FIFO"},{v:"1",l:"1 — ไม่สะอาด หรือไม่เป็นระเบียบ ไม่มีระบบ FIFO"},{v:"2",l:"2 — สะอาด เป็นระเบียบ ไม่มีระบบ FIFO"},{v:"3",l:"3 — สะอาด เป็นระเบียบ และมีระบบ FIFO"}]},
+  {id:14,cat:2,no:"14",max:4,type:"calc",topic:"เครื่องมือเครื่องใช้ (หมวด 3-5)",formula:"คะแนน = (% ความครบถ้วน × 4) / 91",hint:"กรอก % ความครบถ้วน (0–100) | เต็ม 4 คะแนน เมื่อ % ≥ 91"},
+  {id:15,cat:2,no:"15",max:2,topic:"การดูแลเครื่องมือเครื่องใช้",opts:[{v:"0",l:"0 — ไม่มีเอกสารส่งมอบพัสดุประจำรถยนต์"},{v:"1",l:"1 — มีเอกสารส่งมอบ ไม่สม่ำเสมอ"},{v:"2",l:"2 — มีเอกสารส่งมอบ อย่างสม่ำเสมอ"}]},
+  {id:16,cat:2,no:"16",max:2,topic:"นำเครื่องมือวัดกระแสไฟฟ้ารั่วมาใช้งาน",opts:[{v:"0",l:"0 — ไม่มีการใช้งาน"},{v:"1",l:"1 — มีใช้งาน เก็บไว้ประจำรถยนต์บางคัน"},{v:"2",l:"2 — มีใช้งาน เก็บไว้ประจำรถยนต์ทุกคัน"}]},
+  {id:17,cat:3,no:"17",max:2,topic:"อนุมัติรายการและยอดพัสดุสำรองคลังสำหรับงานแก้ไฟฟ้าขัดข้อง",opts:[{v:"0",l:"0 — ไม่มีอนุมัติ Safety stock"},{v:"0.5",l:"0.5 — มีอนุมัติ Safety stock ของก่อนปี 2567"},{v:"1",l:"1 — มีอนุมัติ Safety stock ของปี 2567"},{v:"2",l:"2 — มีอนุมัติ Safety stock ฉบับปัจจุบัน (ปี 2568)"}]},
+  {id:18,cat:3,no:"18",max:2,type:"calc",topic:"ความครบถ้วนของพัสดุสำรองคลัง (รายการพัสดุ)",formula:"คะแนน = (% ความครบถ้วน × 2) / 91",hint:"กรอก % ความครบถ้วนรายการพัสดุ (0–100)"},
+  {id:19,cat:3,no:"19",max:3,type:"calc",topic:"ความครบถ้วนของพัสดุสำรองคลัง (ปริมาณ ≥ 50% ของยอดอนุมัติ)",formula:"คะแนน = (% ความครบถ้วน × 3) / 91",hint:"กรอก % ความครบถ้วนปริมาณพัสดุ (0–100)"},
+  {id:20,cat:4,no:"20",max:4,topic:"การบำรุงรักษารถยนต์",opts:[{v:"0",l:"0 — ไม่มีแผนงาน หรือสภาพไม่ปลอดภัย"},{v:"2",l:"2 — มีแผนงาน มีการบำรุงรักษา หรือไม่สอดคล้องกับแผน"},{v:"4",l:"4 — มีแผนงาน และมีการบำรุงรักษาสอดคล้องกับแผน"}]},
+  {id:21,cat:4,no:"21",max:2,topic:"การตรวจสภาพรถยนต์ก่อนปฏิบัติงาน ตามแบบฟอร์มความปลอดภัย",opts:[{v:"0",l:"0 — ไม่มีการดำเนินการ"},{v:"1",l:"1 — มีใช้งานแบบฟอร์ม ไม่สม่ำเสมอ"},{v:"2",l:"2 — มีใช้งานแบบฟอร์ม อย่างสม่ำเสมอ"}]},
+  {id:22,cat:4,no:"22",max:4,topic:"ความพร้อมใช้งานรถยนต์ (ตรวจ 19 รายการ ตาม FM1-SOH3-S04-6103)",opts:[{v:"0",l:"0 — ค่าเฉลี่ยผลตรวจ 0.00–1.00"},{v:"1",l:"1 — ค่าเฉลี่ยผลตรวจ 1.01–2.00"},{v:"2",l:"2 — ค่าเฉลี่ยผลตรวจ 2.01–3.00"},{v:"3",l:"3 — ค่าเฉลี่ยผลตรวจ 3.01–4.00"},{v:"4",l:"4 — ค่าเฉลี่ยผลตรวจ 4.01–5.00"}]},
+  {id:23,cat:5,no:"23",max:2,topic:"เครื่องแต่งกาย พนักงาน, ผู้ช่วยช่าง",opts:[{v:"0",l:"0 — ไม่ถูกต้องตามมาตรฐาน / ไม่สุภาพ"},{v:"1",l:"1 — ไม่ถูกต้องตามมาตรฐาน แต่สุภาพ"},{v:"2",l:"2 — ถูกต้องตามมาตรฐาน สุภาพ"}]},
+  {id:24,cat:5,no:"24",max:2,topic:"เครื่องแต่งกาย คนงาน, พขร.(บ)",opts:[{v:"0",l:"0 — ไม่ถูกต้องตามมาตรฐาน / ไม่สุภาพ"},{v:"1",l:"1 — ไม่ถูกต้องตามมาตรฐาน แต่สุภาพ"},{v:"2",l:"2 — ถูกต้องตามมาตรฐาน สุภาพ"}]},
+  {id:25,cat:5,no:"25",max:4,type:"calc",topic:"PPE จำนวน 14 รายการ (หมวด 1)",formula:"คะแนน = (% ความครบถ้วน × 4) / 91",hint:"กรอก % ความครบถ้วน PPE หมวด 1 (0–100)"},
+  {id:26,cat:5,no:"26",max:4,type:"calc",topic:"อุปกรณ์ความปลอดภัย จำนวน 18 รายการ (หมวด 2)",formula:"คะแนน = (% ความครบถ้วน × 4) / 91",hint:"กรอก % ความครบถ้วนอุปกรณ์ความปลอดภัย หมวด 2 (0–100)"},
+  {id:27,cat:5,no:"27",max:5,topic:"WeSafe",opts:[{v:"0",l:"0 — ไม่มีการใช้งานเลย"},{v:"1",l:"1 — 1–20%"},{v:"2",l:"2 — 21–40%"},{v:"3",l:"3 — 41–60%"},{v:"4",l:"4 — 61–80%"},{v:"5",l:"5 — 81–100% หรือไม่มีเหตุการณ์ไฟฟ้าขัดข้องเลย"}]},
+  {id:28,cat:5,no:"28",max:10,topic:"สุ่มตรวจการปฏิบัติงานจริง",opts:[{v:"0",l:"0 — ปฏิบัติงานไม่เป็นไปตามหลักความปลอดภัย"},{v:"2.5",l:"2.5 — ปฏิบัติตามหลักความปลอดภัยไม่ครบ ละเลย 3 จุด"},{v:"5",l:"5 — ปฏิบัติตามหลักความปลอดภัยไม่ครบ ละเลย 2 จุด"},{v:"7.5",l:"7.5 — ปฏิบัติตามหลักความปลอดภัยไม่ครบ ละเลย 1 จุด"},{v:"10",l:"10 — ปฏิบัติตามหลักความปลอดภัยครบถ้วน ไม่พบละเลย"}]},
+  {id:29,cat:6,no:"29",max:5,topic:"บริหารเหตุการณ์และปรับปรุงประมาณการ/เวลาจ่ายไฟคืน (Realtime ภายใน 1 ชั่วโมง)",opts:[{v:"1",l:"1 — ผลดำเนินการน้อยกว่า 94%"},{v:"2",l:"2 — ผลดำเนินการ 94%"},{v:"3",l:"3 — ผลดำเนินการ 95%"},{v:"4",l:"4 — ผลดำเนินการ 96%"},{v:"5",l:"5 — ผลดำเนินการ 97% ขึ้นไป"}]},
+  {id:30,cat:6,no:"30",max:5,topic:"บริหารเหตุการณ์แผนดับไฟหม้อแปลงจำหน่ายแรงต่ำ และแจ้งผู้ใช้ไฟก่อน 3 วันทำการ",opts:[{v:"1",l:"1 — ผลดำเนินการน้อยกว่า 94%"},{v:"2",l:"2 — ผลดำเนินการ 94%"},{v:"3",l:"3 — ผลดำเนินการ 95%"},{v:"4",l:"4 — ผลดำเนินการ 96%"},{v:"5",l:"5 — ผลดำเนินการ 97% ขึ้นไป"}]},
+  {id:31,cat:6,no:"31",max:2,topic:"กระบวนการส่งแผนดับไฟหม้อแปลงจำหน่ายแรงต่ำ ให้แผนกปฏิบัติการทราบภายใน 14 วัน",opts:[{v:"0",l:"0 — ไม่มีการส่งแผน"},{v:"1",l:"1 — มีการส่งแผน ระยะเวลา < 14 วัน"},{v:"2",l:"2 — มีการส่งแผน ระยะเวลา ≥ 14 วัน"}]},
+  {id:32,cat:6,no:"32",max:3,topic:"ความสำเร็จการเปิดเหตุการณ์แผนดับไฟหม้อแปลงจำหน่ายแรงต่ำ",opts:[{v:"0",l:"0 — ผลดำเนินการน้อยกว่า 70%"},{v:"1",l:"1 — ผลดำเนินการ 70%–79%"},{v:"2",l:"2 — ผลดำเนินการ 80%–99%"},{v:"3",l:"3 — ผลดำเนินการ 100%"}]},
+  {id:33,cat:7,no:"33",max:5,topic:"ความสำเร็จการปรับปรุงข้อบกพร่องจากการตรวจปีก่อนหน้า",opts:[{v:"0",l:"0 — ไม่มีการแก้ไขปรับปรุงเลย"},{v:"1",l:"1 — 1–20%"},{v:"2",l:"2 — 21–40%"},{v:"3",l:"3 — 41–60%"},{v:"4",l:"4 — 61–80%"},{v:"5",l:"5 — 81–100% หรือไม่มีข้อบกพร่องจากปีก่อนหน้า"}]},
+];
+
+const EXTRAS = [
+  {title:"ข้อมูลเพิ่มเติม : รถยนต์แก้ไฟฟ้าขัดข้อง (1 คัน / 1 ชุด)",
+   sections:[{name:"รายการที่ชำรุดไม่พร้อมใช้งาน",n:10},{name:"อื่นๆ (ระบุ)",n:10}]},
+  {title:"ข้อมูลเพิ่มเติม : เครื่องมือเครื่องใช้แก้ไฟฟ้าขัดข้อง",
+   sections:[{name:"รายการเครื่องมือเครื่องใช้ที่ชำรุดไม่พร้อมใช้งาน",n:10},{name:"อื่นๆ (ระบุ)",n:10}]},
+  {title:"ข้อมูลเพิ่มเติม : อาคาร/สถานที่",
+   sections:[{name:"ห้องปฏิบัติการแก้ไฟฟ้าขัดข้อง : รายการที่ชำรุด / ต้องปรับปรุง",n:10},{name:"ห้องเก็บพัสดุฉุกเฉิน : รายการที่ชำรุด / ต้องปรับปรุง",n:10},{name:"อื่นๆ (ระบุ)",n:10}]},
+  {title:"ข้อมูลเพิ่มเติม : ชุดปฏิบัติการระบบไฟฟ้า / ชุดปฏิบัติงานแก้ไฟฟ้าขัดข้อง",
+   sections:[{name:"รายการ PPE ที่ขาดแคลน / ชำรุดไม่พร้อมใช้งาน",n:10},{name:"อื่นๆ (ระบุ)",n:10}]},
+];
+
+// =========================================================
+// STATE
+// =========================================================
+let scores = {}, pcts = {}, iNotes = {};
+let stations = [];
+
+// =========================================================
+// SCORE CALCULATION
+// =========================================================
+function getScore(item) {
+  if (item.type === 'calc') {
+    const p = parseFloat(pcts[item.id] || 0);
+    if (!p || p <= 0) return 0;
+    return Math.min(item.max, Math.round(p * item.max / 91 * 100) / 100);
+  }
+  return parseFloat(scores[item.id]) || 0;
+}
+
+function getCatScore(ci) {
+  return Math.round(ITEMS.filter(it => it.cat === ci).reduce((s, it) => s + getScore(it), 0) * 10) / 10;
+}
+
+function getTotal() {
+  return Math.round(ITEMS.reduce((s, it) => s + getScore(it), 0) * 10) / 10;
+}
+
+function getGrade(t) {
+  if (t >= 90) return {g:'A', lbl:'ดีเยี่ยม', color:'#4ade80'};
+  if (t >= 80) return {g:'B', lbl:'ดี', color:'#93c5fd'};
+  if (t >= 70) return {g:'C', lbl:'พอใช้', color:'#fcd34d'};
+  if (t >= 60) return {g:'D', lbl:'ต้องปรับปรุง', color:'#fb923c'};
+  return {g:'F', lbl:'ไม่ผ่าน', color:'#f87171'};
+}
+
+function getChipClass(v, max) {
+  if (v >= max) return 'score-chip full';
+  if (v === 0) return 'score-chip zero';
+  return 'score-chip mid';
+}
+
+// =========================================================
+// BUILD UI
+// =========================================================
+function buildCatGrid() {
+  document.getElementById('catGrid').innerHTML = CATS.map((cat, ci) => `
+    <div class="cat-card">
+      <div class="cat-name">${cat.name}</div>
+      <div class="cat-score" id="catScore-${ci}">0</div>
+      <div class="cat-max">/ ${cat.max} คะแนน</div>
+      <div class="cat-bar-bg"><div class="cat-bar-fg" id="catBar-${ci}" style="width:0%"></div></div>
+    </div>`).join('');
+}
+
+function buildItems() {
+  const grouped = CATS.map((cat, ci) => ({
+    cat, ci, items: ITEMS.filter(it => it.cat === ci)
+  }));
+
+  document.getElementById('itemsContainer').innerHTML = grouped.map(({cat, ci, items}) => `
+    <div class="card">
+      <div class="card-hdr">
+        <span>📌 ${cat.name}</span>
+        <span class="ms">ได้ <span id="catHdrScore-${ci}">0</span> / ${cat.max} คะแนน</span>
+      </div>
+      <div class="card-body">
+        ${items.map((item, ii) => buildItem(item, ii === items.length - 1)).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function buildItem(item, isLast) {
+  const scoreHtml = `<span class="${getChipClass(0, item.max)}" id="chip-${item.id}">0/${item.max}</span>`;
+  let inputHtml = '';
+  if (item.type === 'calc') {
+    inputHtml = `
+      <div class="calc-box">
+        <div class="calc-formula">${item.formula}</div>
+        <div class="calc-row">
+          <div>
+            <label style="font-size:11px;color:#6b7c8d;display:block;margin-bottom:3px">% ความครบถ้วน</label>
+            <input type="number" min="0" max="100" step="0.01" class="calc-pct-input"
+              id="pct-${item.id}" placeholder="0–100"
+              oninput="onPctChange(${item.id})">
+          </div>
+          <div class="calc-hint">${item.hint}</div>
+          <div class="calc-result" id="calcResult-${item.id}" style="display:none"></div>
         </div>
       </div>`;
-    });
-    h+='</div></div>';
-  });
-  document.getElementById('content').innerHTML=h;
-  document.getElementById('bar').style.display='flex';
-  recalc();
-}
-
-function opts(max){
-  max=Number(max)||0;
-  let o='';
-  const step=max<=2?0.5:1;
-  for(let v=0;v<=max;v+=step){
-    const vv=parseFloat(v.toFixed(1));
-    o+=`<option value="${vv}">${vv}</option>`;
-    if(vv>=max)break;
+  } else {
+    inputHtml = item.opts.map(opt => `
+      <div class="opt" id="opt-${item.id}-${opt.v.replace('.','_')}" onclick="selectOpt(${item.id},'${opt.v}')">
+        <input type="radio" name="item-${item.id}" value="${opt.v}" onclick="selectOpt(${item.id},'${opt.v}')">
+        <span>${opt.l}</span>
+      </div>`).join('');
   }
-  return o;
+
+  return `
+    <div class="ci" style="${isLast ? 'border-bottom:none' : ''}">
+      <div class="ci-top">
+        <div class="ci-no">${item.no}</div>
+        <div class="ci-content">
+          <div class="ci-head">
+            <div class="ci-topic">${item.topic}</div>
+            ${scoreHtml}
+          </div>
+          ${inputHtml}
+          <input class="note-input" type="text" id="note-${item.id}" placeholder="หมายเหตุรายการนี้...">
+        </div>
+      </div>
+    </div>`;
 }
 
-function recalc(){
-  let total=0;
-  document.querySelectorAll('.ss').forEach(s=>{total+=parseFloat(s.value)||0;});
-  total=Math.round(total*10)/10;
-  document.getElementById('sdis').textContent=total;
-  const p=Math.round(total);
-  let g='';
-  if(p>=90)g='🏆 A ดีเยี่ยม';
-  else if(p>=80)g='🥈 B ดี';
-  else if(p>=70)g='🥉 C พอใช้';
-  else if(p>=60)g='⚠️ D ต้องปรับปรุง';
-  else g='❌ F ไม่ผ่าน';
-  document.getElementById('gdis').textContent=g;
-}
-
-function submit(){
-  const sid=document.getElementById('sid');
-  if(!sid.value){toast('กรุณาเลือกหน่วยงาน','err');return;}
-  const iname=document.getElementById('iname').value.trim();
-  if(!iname){toast('กรุณาใส่ชื่อผู้ตรวจ','err');return;}
-  const empty=[];
-  document.querySelectorAll('.ss').forEach(s=>{if(!s.value)empty.push(s.dataset.id);});
-  if(empty.length>0&&!confirm(`ยังไม่ได้ลงคะแนน ${empty.length} รายการ ต้องการบันทึกต่อหรือไม่?`))return;
-  const scores=[];
-  document.querySelectorAll('.ss').forEach(s=>{
-    const n=document.querySelector(`[data-note="${s.dataset.id}"]`);
-    scores.push({item_id:s.dataset.id,score:parseFloat(s.value)||0,note:n?n.value:''});
+function buildExtraForms() {
+  EXTRAS.forEach((et, ti) => {
+    const tabEl = document.getElementById(`tab-${ti + 1}`);
+    tabEl.innerHTML = `
+      <div class="container">
+        <div class="card">
+          <div class="card-hdr">${et.title}</div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="fg">
+                <label>หน่วยงานที่รับการตรวจ</label>
+                <input class="ro-input" id="ex-station-${ti}" readonly placeholder="(จากแบบฟอร์มหลัก)">
+              </div>
+              <div class="fg">
+                <label>วันที่ตรวจ</label>
+                <input type="date" class="ro-input" id="ex-date-${ti}" readonly>
+              </div>
+            </div>
+          </div>
+        </div>
+        ${et.sections.map((sec, si) => `
+          <div class="card">
+            <div class="card-hdr">${sec.name}</div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width:36px">ที่</th>
+                    <th>ผลการตรวจประเมิน</th>
+                    <th style="width:80px">จำนวน</th>
+                    <th style="width:140px">หมายเหตุ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${Array(sec.n).fill(0).map((_, ri) => `
+                    <tr>
+                      <td class="t-num">${ri + 1}</td>
+                      <td><input class="t-inp" id="ex-${ti}-${si}-${ri}-item" placeholder="ระบุรายการ..."></td>
+                      <td><input class="t-inp" id="ex-${ti}-${si}-${ri}-qty" placeholder="จำนวน" style="text-align:center"></td>
+                      <td><input class="t-inp" id="ex-${ti}-${si}-${ri}-note" placeholder="หมายเหตุ"></td>
+                    </tr>`).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>`).join('')}
+        <div class="card">
+          <div class="btn-row">
+            <button class="btn btn-secondary" onclick="switchTab(0)">← กลับแบบฟอร์มหลัก</button>
+          </div>
+        </div>
+      </div>`;
   });
-  const sname=sid.options[sid.selectedIndex].text;
-  const payload={
-    station_id:sid.value,station_name:sname,
-    inspect_date:document.getElementById('idate').value,
-    inspector_name:iname,
-    inspector_email:document.getElementById('iemail').value,
-    note:document.getElementById('gnote').value,
-    scores:scores
+}
+
+// =========================================================
+// INTERACTIONS
+// =========================================================
+function switchTab(i) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(`tab-${i}`).classList.add('active');
+  document.querySelectorAll('.tab-btn')[i].classList.add('active');
+  // Sync station/date to extra tabs
+  if (i > 0) syncExtraHeader(i - 1);
+}
+
+function syncExtraHeader(ti) {
+  const sid = document.getElementById('sid');
+  const stationName = sid.options[sid.selectedIndex] ? sid.options[sid.selectedIndex].text : '';
+  const el1 = document.getElementById(`ex-station-${ti}`);
+  const el2 = document.getElementById(`ex-date-${ti}`);
+  if (el1) el1.value = stationName;
+  if (el2) el2.value = document.getElementById('idate').value || '';
+}
+
+function updateHeader() {
+  // called when station/date changes - sync extra tabs
+}
+
+function selectOpt(itemId, val) {
+  scores[itemId] = val;
+  // Update radio visual
+  document.querySelectorAll(`[id^="opt-${itemId}-"]`).forEach(el => el.classList.remove('selected'));
+  const safeVal = val.replace('.', '_');
+  const optEl = document.getElementById(`opt-${itemId}-${safeVal}`);
+  if (optEl) optEl.classList.add('selected');
+  updateScoreDisplay(ITEMS.find(it => it.id === itemId));
+  updateTotals();
+}
+
+function onPctChange(itemId) {
+  const el = document.getElementById(`pct-${itemId}`);
+  pcts[itemId] = el ? el.value : '';
+  const item = ITEMS.find(it => it.id === itemId);
+  const sc = getScore(item);
+  const resEl = document.getElementById(`calcResult-${itemId}`);
+  if (resEl) {
+    if (pcts[itemId] > 0) {
+      resEl.style.display = '';
+      resEl.textContent = `→ คะแนนที่ได้: ${sc}`;
+    } else {
+      resEl.style.display = 'none';
+    }
+  }
+  updateScoreDisplay(item);
+  updateTotals();
+}
+
+function updateScoreDisplay(item) {
+  const sc = getScore(item);
+  const chip = document.getElementById(`chip-${item.id}`);
+  if (chip) {
+    chip.textContent = `${sc}/${item.max}`;
+    chip.className = getChipClass(sc, item.max);
+  }
+}
+
+function updateTotals() {
+  const total = getTotal();
+  const gi = getGrade(total);
+  document.getElementById('totalScore').textContent = total;
+  const gl = document.getElementById('gradeLabel');
+  gl.textContent = `เกรด ${gi.g} — ${gi.lbl}`;
+  gl.style.color = gi.color;
+
+  CATS.forEach((cat, ci) => {
+    const cs = getCatScore(ci);
+    const scEl = document.getElementById(`catScore-${ci}`);
+    const barEl = document.getElementById(`catBar-${ci}`);
+    const hdrEl = document.getElementById(`catHdrScore-${ci}`);
+    if (scEl) scEl.textContent = cs;
+    if (barEl) barEl.style.width = `${Math.min(100, cs / cat.max * 100)}%`;
+    if (hdrEl) hdrEl.textContent = cs;
+  });
+
+  const answered = ITEMS.filter(it => scores[it.id] !== undefined || pcts[it.id]).length;
+  document.getElementById('answeredCount').textContent = `${answered}/33 รายการที่ลงคะแนนแล้ว`;
+}
+
+// =========================================================
+// LOAD STATIONS
+// =========================================================
+function loadStations(stList) {
+  stations = stList || [];
+  const sid = document.getElementById('sid');
+  const params = new URLSearchParams(window.location.search);
+  const pre = params.get('station') || '';
+  sid.innerHTML = '<option value="">-- เลือกหน่วยงาน --</option>' +
+    stations.map(s => `<option value="${s.station_id}" ${s.station_id === pre ? 'selected' : ''}>${s.name} (${s.type})</option>`).join('');
+}
+
+// =========================================================
+// SUBMIT
+// =========================================================
+function submitForm() {
+  const sid = document.getElementById('sid');
+  if (!sid.value) { showToast('กรุณาเลือกหน่วยงาน', 'err'); return; }
+  const iname = document.getElementById('iname').value.trim();
+  if (!iname) { showToast('กรุณาใส่ชื่อผู้ตรวจ', 'err'); return; }
+
+  const empty = ITEMS.filter(it => scores[it.id] === undefined && !pcts[it.id]);
+  if (empty.length > 0 && !confirm(`ยังไม่ได้ลงคะแนน ${empty.length} รายการ ต้องการบันทึกต่อหรือไม่?`)) return;
+
+  const scoreArr = ITEMS.map(item => ({
+    item_id: item.id,
+    item_no: item.no,
+    score: getScore(item),
+    pct: item.type === 'calc' ? (parseFloat(pcts[item.id]) || 0) : null,
+    note: (document.getElementById(`note-${item.id}`) || {}).value || ''
+  }));
+
+  // Collect extra tabs data
+  const extraArr = EXTRAS.map((et, ti) => ({
+    title: et.title,
+    sections: et.sections.map((sec, si) => ({
+      name: sec.name,
+      rows: Array(sec.n).fill(0).map((_, ri) => ({
+        item: (document.getElementById(`ex-${ti}-${si}-${ri}-item`) || {}).value || '',
+        qty: (document.getElementById(`ex-${ti}-${si}-${ri}-qty`) || {}).value || '',
+        note: (document.getElementById(`ex-${ti}-${si}-${ri}-note`) || {}).value || '',
+      })).filter(r => r.item)
+    }))
+  }));
+
+  const payload = {
+    station_id: sid.value,
+    station_name: sid.options[sid.selectedIndex].text,
+    inspect_date: document.getElementById('idate').value,
+    inspector_name: iname,
+    inspector_email: document.getElementById('iemail').value,
+    note: document.getElementById('gnote').value,
+    total_score: getTotal(),
+    scores: scoreArr,
+    extras: extraArr
   };
-  document.getElementById('sbtn').disabled=true;
-  document.getElementById('sbtn').textContent='⏳ กำลังบันทึก...';
+
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ กำลังบันทึก...';
+
   google.script.run
-    .withSuccessHandler(res=>{
-      if(res.success){
-        toast(`✅ บันทึกสำเร็จ! ${res.total_score}/${res.max_score} คะแนน (${res.percent}%) เกรด ${res.grade}`,'ok');
-        setTimeout(()=>{window.top.location.href='?page=index';},2500);
-      }else{toast('บันทึกล้มเหลว: '+res.error,'err');reset();}
+    .withSuccessHandler(res => {
+      if (res.success) {
+        showToast(`✅ บันทึกสำเร็จ! ${res.total_score}/${res.max_score} คะแนน (${res.percent}%) เกรด ${res.grade}`, 'ok');
+        setTimeout(() => { window.top.location.href = '?page=index'; }, 2500);
+      } else {
+        showToast('บันทึกล้มเหลว: ' + res.error, 'err');
+        resetBtn();
+      }
     })
-    .withFailureHandler(e=>{toast('เกิดข้อผิดพลาด: '+e.message,'err');reset();})
+    .withFailureHandler(e => { showToast('เกิดข้อผิดพลาด: ' + e.message, 'err'); resetBtn(); })
     .saveInspection(payload);
 }
 
-function reset(){
-  document.getElementById('sbtn').disabled=false;
-  document.getElementById('sbtn').textContent='💾 บันทึกการตรวจ';
+function resetBtn() {
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = false;
+  btn.textContent = '💾 บันทึกการตรวจ';
 }
 
-function toast(msg,type){
-  const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.className=`toast show t-${type||'info'}`;
-  setTimeout(()=>t.className='toast',5000);
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast show t-${type || 'info'}`;
+  setTimeout(() => t.className = 'toast', 5000);
 }
 
-function err(msg){document.getElementById('content').innerHTML=`<div style="text-align:center;padding:60px;color:#dc2626">❌ ${msg}</div>`;}
+// =========================================================
+// INIT
+// =========================================================
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('idate').value = new Date().toISOString().slice(0, 10);
+  buildCatGrid();
+  buildItems();
+  buildExtraForms();
+  updateTotals();
+
+  google.script.run
+    .withSuccessHandler(loadStations)
+    .withFailureHandler(e => { loadStations([]); console.error(e.message); })
+    .getStations();
+});
 </script>
 </body>
 </html>
