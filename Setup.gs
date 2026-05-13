@@ -1,143 +1,316 @@
 // ============================================================
-//  Setup.gs  –  วิ่งครั้งเดียวเพื่อสร้าง Sheet ทั้งหมด
-//  เรียก: setupAll()  จาก Apps Script Editor
+//  Setup.gs — ตั้งค่าระบบ & นำเข้าหน่วยงาน
+//  pea-repair-tracking | กฟต.2 ปี 2569
 // ============================================================
 
+// ============================================================
+//  setupAll() — รันครั้งแรกเพื่อสร้าง sheet headers ทั้งหมด
+// ============================================================
 function setupAll() {
-  setupConfig();
-  setupStations();
-  setupChecklist();
-  setupInspections();
-  setupScores();
-  setupLog();
-  SpreadsheetApp.getUi().alert('✅ สร้าง Sheet ทั้งหมดเรียบร้อยแล้ว');
+  setupStationsSheet();
+  setupChecklistSheet();
+  setupInspectionsSheet();
+  setupScoresSheet();
+  setupLogSheet();
+  setupConfigSheet();
+  importAllStations();
+  Logger.log('setupAll complete');
 }
 
-function setupConfig() {
-  const ss = SpreadsheetApp.openById(SS_ID);
-  let sh = ss.getSheetByName(SH.CONFIG);
-  if (!sh) sh = ss.insertSheet(SH.CONFIG);
-  sh.clearContents();
-  sh.getRange('A1:B1').setValues([['KEY','VALUE']]);
-  sh.getRange('A2:B7').setValues([
-    ['APP_NAME',   'ระบบตรวจงานแก้ไฟฟ้าขัดข้อง กฟต.2'],
-    ['YEAR',       '2569'],
-    ['AREA',       'กฟต.2'],
-    ['VERSION',    '1.0.0'],
-    ['UPDATED',    nowTH()],
-    ['DRIVE_ID',   DRIVE_FOLDER_ID]
-  ]);
-  formatHeader(sh);
-}
-
-function setupStations() {
-  const ss = SpreadsheetApp.openById(SS_ID);
-  let sh = ss.getSheetByName(SH.STATIONS);
+// ============================================================
+//  setupStationsSheet
+// ============================================================
+function setupStationsSheet() {
+  var ss = SpreadsheetApp.openById(SS_ID);
+  var sh = ss.getSheetByName(SH.STATIONS);
   if (!sh) sh = ss.insertSheet(SH.STATIONS);
-  sh.clearContents();
-  const headers = ['station_id','name','short_name','type','province','active'];
-  sh.getRange(1,1,1,headers.length).setValues([headers]);
-  const stations = [
-    ['ST_001','การไฟฟ้าจังหวัดนครศรีธรรมราช','นศ','L','นครศรีธรรมราช',true],
-    ['ST_002','การไฟฟ้าจังหวัดสุราษฎร์ธานี','สฎ','L','สุราษฎร์ธานี',true],
-    ['ST_003','การไฟฟ้าจังหวัดตรัง','ตง','L','ตรัง',true],
-    ['ST_004','การไฟฟ้าจังหวัดกระบี่','กบ','L','กระบี่',true],
-    ['ST_005','การไฟฟ้าจังหวัดพังงา','พง','M','พังงา',true],
-    ['ST_006','การไฟฟ้าจังหวัดภูเก็ต','ภก','L','ภูเก็ต',true],
-    ['ST_007','การไฟฟ้าสาขาทุ่งสง','ทส','M','นครศรีธรรมราช',true],
-    ['ST_008','การไฟฟ้าสาขาเกาะสมุย','กม','M','สุราษฎร์ธานี',true],
-    ['ST_009','การไฟฟ้าสาขาพุนพิน','พพ','M','สุราษฎร์ธานี',true],
-    ['ST_010','การไฟฟ้าสาขาถลาง','ถล','M','ภูเก็ต',true],
-    ['ST_011','การไฟฟ้าสาขาตะกั่วป่า','ตป','S','พังงา',true],
-    ['ST_012','การไฟฟ้าสาขาปากพนม','ปต','S','นครศรีธรรมราช',true],
-    ['ST_013','การไฟฟ้าสาขากาญจนดิษฐ์','กญ','S','สุราษฎร์ธานี',true],
-    ['ST_014','การไฟฟ้าสาขาวังวิเศษ','วงส','S','ตรัง',true],
-    ['ST_015','การไฟฟ้าสาขาทุ่งศรีเมือง','ทศ','S','นครศรีธรรมราช',true],
-    ['ST_016','การไฟฟ้าสาขาหัวไทร','หย','S','นครศรีธรรมราช',true],
-    ['ST_017','การไฟฟ้าสาขาลานสกา','ลานสกา','XS','นครศรีธรรมราช',true],
-    ['ST_018','การไฟฟ้าสาขาเกาะยาว','เกาะยาว','XS','พังงา',true],
-    ['ST_019','การไฟฟ้าสาขาเกาะพีพี','เกาะพีพี','XS','กระบี่',true],
-    ['ST_020','การไฟฟ้าสาขาอ่าวนาง','อ่าวนาง','XS','กระบี่',true],
-  ];
-  sh.getRange(2,1,stations.length,headers.length).setValues(stations);
-  formatHeader(sh);
+  if (sh.getLastRow() === 0) {
+    sh.appendRow(['station_id','name','short_name','type','province','active']);
+    sh.getRange(1,1,1,6).setFontWeight('bold').setBackground('#1a3c5e').setFontColor('#ffffff');
+  }
 }
 
-function setupChecklist() {
-  const ss = SpreadsheetApp.openById(SS_ID);
-  let sh = ss.getSheetByName(SH.CHECKLIST);
-  if (!sh) sh = ss.insertSheet(SH.CHECKLIST);
-  sh.clearContents();
-  const headers = ['item_id','category','category_max','item_no','topic','max_score','criteria','inspect_type'];
-  sh.getRange(1,1,1,headers.length).setValues([headers]);
-  const items = [
-    ['CK001','ความพร้อมอุปกรณ์และการสนับสนุน',16,1,'อนุมัติจัดเวรฯ และจัดเวรแทน ถูกต้องตามหลักเกณฑ์',2,'0 = ไม่มีการดำเนินการ | 1 = มีอย่างใดอย่างหนึ่ง | 2 = มีครบถ้วน','ตรวจหน้างาน'],
-    ['CK002','ความพร้อมอุปกรณ์และการสนับสนุน',16,2,'การตรวจสอบเวรฯ และรายงานการอยู่เวรให้ผู้บังคับบัญชาทราบ',2,'0 = ไม่มีการดำเนินการ | 1 = มีอย่างใดอย่างหนึ่ง | 2 = มีครบถ้วน','ตรวจหน้างาน'],
-    ['CK003','ความพร้อมอุปกรณ์และการสนับสนุน',16,3,'ผัง Switching Diagram (A3)',2,'0 = ไม่มีผัง | 1 = มีแต่ไม่เป็นปัจจุบัน | 2 = มีถูกต้องเป็นปัจจุบัน','ตรวจหน้างาน'],
-    ['CK004','ความพร้อมอุปกรณ์และการสนับสนุน',16,4,'ผัง Single line Diagram (A0)',2,'0 = ไม่มีผัง | 1 = มีแต่ไม่เป็นปัจจุบัน | 2 = มีถูกต้องเป็นปัจจุบัน','ตรวจหน้างาน'],
-    ['CK005','ความพร้อมอุปกรณ์และการสนับสนุน',16,5,'วิทยุสื่อสารสำนักงาน',2,'0 = ชำรุดไม่ดำเนินการ | 1 = ชำรุดอยู่ระหว่างซ่อม | 2 = ใช้งานได้ปกติ','ตรวจหน้างาน'],
-    ['CK006','ความพร้อมอุปกรณ์และการสนับสนุน',16,6,'วิทยุสื่อสารติดรถยนต์',2,'0 = ชำรุดไม่ดำเนินการ | 1 = ชำรุดอยู่ระหว่างซ่อม | 2 = ใช้งานได้ปกติ','ตรวจหน้างาน'],
-    ['CK007','ความพร้อมอุปกรณ์และการสนับสนุน',16,7,'โทรศัพท์ (ภายใน/ภายนอกสำนักงาน)',2,'0 = ชำรุดไม่ดำเนินการ | 1 = ชำรุดแจ้งส่วนเกี่ยวข้องแล้ว | 2 = ใช้งานได้ปกติ','ตรวจหน้างาน'],
-    ['CK008','ความพร้อมอุปกรณ์และการสนับสนุน',16,8,'สมุดโทรศัพท์ / รายชื่อโทรศัพท์',1,'0 = ไม่มี | 0.5 = มีแต่ไม่เป็นปัจจุบัน | 1 = มีเป็นปัจจุบัน','ตรวจหน้างาน'],
-    ['CK009','ความพร้อมอุปกรณ์และการสนับสนุน',16,9,'มีการใช้งานแบบฟอร์ม บร.1 ประจำรถยนต์แก้ไฟทุกคัน',1,'0 = ไม่มี | 0.5 = มีแต่ไม่ครบ | 1 = มีครบทุกคัน','ตรวจหน้างาน'],
-    ['CK010','ความพร้อมสถานที่อยู่เวร',12,10,'ห้องอยู่เวรฯ (สภาพ การจัดวาง ความสะอาด)',3,'0 = ไม่สะอาดไม่เป็นระเบียบ | 1 = ไม่สะอาด | 2 = สะอาดเป็นระเบียบ | 3 = สะอาดไม่มีมลพิษ','ตรวจหน้างาน'],
-    ['CK011','ความพร้อมสถานที่อยู่เวร',12,11,'ห้องสุขา สำหรับอยู่เวรฯ',3,'0 = ไม่สะอาดไม่เป็นระเบียบ | 1 = ไม่สะอาด | 2 = สะอาดเป็นระเบียบ | 3 = สะอาดไม่มีมลพิษ','ตรวจหน้างาน'],
-    ['CK012','ความพร้อมสถานที่อยู่เวร',12,12,'ห้องพักเวรฯ / ห้องนอนเวรฯ',3,'0 = ไม่สะอาดไม่เป็นระเบียบ | 1 = ไม่สะอาด | 2 = สะอาดเป็นระเบียบ | 3 = สะอาดไม่มีมลพิษ','ตรวจหน้างาน'],
-    ['CK013','ความพร้อมสถานที่อยู่เวร',12,13,'ห้องเก็บพัสดุแก้ไฟ / สถานที่จัดเก็บพัสดุชั่วคราว',3,'0 = ไม่สะอาดไม่เป็นระเบียบ | 1 = ไม่สะอาด | 2 = สะอาดเป็นระเบียบ | 3 = สะอาดไม่มีมลพิษ','ตรวจหน้างาน'],
-    ['CK014','ความพร้อมเครื่องมือเครื่องใช้',8,14,'เครื่องมือเครื่องใช้ (หมวด 3-5) ครบถ้วนและพร้อมใช้งาน',4,'0 = ไม่ผ่าน | 2 = ผ่านบางส่วน | 4 = ผ่านครบถ้วน','ตรวจหน้างาน'],
-    ['CK015','ความพร้อมเครื่องมือเครื่องใช้',8,15,'การดูแลรักษาเครื่องมือเครื่องใช้',2,'0 = ไม่มีการดูแล | 1 = มีบางส่วน | 2 = มีครบถ้วน','ตรวจหน้างาน'],
-    ['CK016','ความพร้อมเครื่องมือเครื่องใช้',8,16,'นำเครื่องมือวัดกระแสไฟฟ้ารั่ว (เช่น ลูกเป็ดลอยน้ำ) มาใช้งาน',2,'0 = ไม่มี | 1 = มีแต่ไม่พร้อม | 2 = มีพร้อมใช้งาน','ตรวจหน้างาน'],
-    ['CK017','ความพร้อมพัสดุสำรองคลัง',7,17,'อนุมัติรายการและยอดพัสดุสำรองคลัง',2,'0 = ไม่มี | 1 = มีแต่ไม่เป็นปัจจุบัน | 2 = มีเป็นปัจจุบัน','ตรวจเอกสาร'],
-    ['CK018','ความพร้อมพัสดุสำรองคลัง',7,18,'ความครบถ้วนพัสดุสำรอง (รายการพัสดุ)',2,'0 = ไม่ครบ | 1 = ครบบางส่วน | 2 = ครบถ้วนทุกรายการ','ตรวจหน้างาน'],
-    ['CK019','ความพร้อมพัสดุสำรองคลัง',7,19,'ปริมาณพัสดุสำรอง (ต้องไม่ต่ำกว่า 50% ของยอดอนุมัติ)',3,'0 = ต่ำกว่า 30% | 1 = 30-49% | 2 = 50-79% | 3 = 80% ขึ้นไป','ตรวจหน้างาน'],
-    ['CK020','ความพร้อมรถยนต์แก้ไฟ',10,20,'การบำรุงรักษารถยนต์ตามแผน PM',4,'0 = ไม่มีแผน | 2 = มีแต่บางส่วน | 4 = มีครบและเป็นปัจจุบัน','ตรวจเอกสาร'],
-    ['CK021','ความพร้อมรถยนต์แก้ไฟ',10,21,'การตรวจสภาพรถก่อนปฏิบัติงาน (FM1-SOH3-S04-6103)',2,'0 = ไม่มี | 1 = มีไม่ครบ | 2 = มีครบทุกคัน','ตรวจเอกสาร'],
-    ['CK022','ความพร้อมรถยนต์แก้ไฟ',10,22,'ความพร้อมใช้งานรถยนต์ (เครื่องมืออุปกรณ์ครบตามมาตรฐาน)',4,'0 = ไม่ผ่าน | 2 = ผ่านบางส่วน | 4 = ผ่านครบถ้วน','ตรวจหน้างาน'],
-    ['CK023','ความพร้อมชุดปฏิบัติงาน',27,23,'PPE ส่วนบุคคล (หมวก ถุงมือ เข็มขัด รองเท้า) ครบถ้วน',5,'0 = ไม่ครบ | 3 = ครบบางส่วน | 5 = ครบทุกคน','ตรวจหน้างาน'],
-    ['CK024','ความพร้อมชุดปฏิบัติงาน',27,24,'เครื่องแบบพนักงาน ถูกต้องตามมาตรฐาน กฟภ.',4,'0 = ไม่ถูกต้อง | 2 = ถูกต้องบางส่วน | 4 = ถูกต้องครบถ้วน','ตรวจหน้างาน'],
-    ['CK025','ความพร้อมชุดปฏิบัติงาน',27,25,'เครื่องแบบลูกจ้าง ถูกต้องตามมาตรฐาน กฟภ.',4,'0 = ไม่ถูกต้อง | 2 = ถูกต้องบางส่วน | 4 = ถูกต้องครบถ้วน','ตรวจหน้างาน'],
-    ['CK026','ความพร้อมชุดปฏิบัติงาน',27,26,'จำนวนพนักงานอยู่เวรฯ เพียงพอตามที่อนุมัติ',6,'0 = ไม่เพียงพอ | 3 = เพียงพอบางช่วง | 6 = เพียงพอครบถ้วน','ตรวจหน้างาน'],
-    ['CK027','ความพร้อมชุดปฏิบัติงาน',27,27,'ระดับความสามารถพนักงานอยู่เวร (TRL ≥ 3)',8,'0 = ไม่ผ่าน | 4 = ผ่านบางคน | 8 = ผ่านทุกคน','ตรวจเอกสาร'],
-    ['CK028','ความพร้อมระบบบริหาร',15,28,'การบันทึกข้อมูลใน MWF / ระบบ OMS ครบถ้วนและทันเวลา',5,'0 = ไม่มี | 2 = บันทึกไม่ครบ | 5 = ครบถ้วนทันเวลา','ตรวจเอกสาร'],
-    ['CK029','ความพร้อมระบบบริหาร',15,29,'การรายงาน SAIDI/SAIFI และวิเคราะห์สาเหตุ',5,'0 = ไม่มี | 2 = มีบางส่วน | 5 = ครบถ้วนมีการวิเคราะห์','ตรวจเอกสาร'],
-    ['CK030','ความพร้อมระบบบริหาร',15,30,'แผนปรับปรุงและการติดตามผล',5,'0 = ไม่มี | 2 = มีแต่ไม่ติดตาม | 5 = มีครบและติดตามต่อเนื่อง','ตรวจเอกสาร'],
-    ['CK031','ความสำเร็จการปรับปรุงข้อบกพร่อง',5,31,'ปรับปรุงข้อบกพร่องจากการตรวจปีก่อน ครบถ้วน',5,'0 = ไม่ได้ปรับปรุง | 2 = ปรับปรุงบางส่วน | 5 = ปรับปรุงครบถ้วน','ตรวจเอกสาร'],
-  ];
-  sh.getRange(2,1,items.length,headers.length).setValues(items);
-  formatHeader(sh);
-}
-
-function setupInspections() {
-  const ss = SpreadsheetApp.openById(SS_ID);
-  let sh = ss.getSheetByName(SH.INSPECTIONS);
+// ============================================================
+//  setupInspectionsSheet
+// ============================================================
+function setupInspectionsSheet() {
+  var ss = SpreadsheetApp.openById(SS_ID);
+  var sh = ss.getSheetByName(SH.INSPECTIONS);
   if (!sh) sh = ss.insertSheet(SH.INSPECTIONS);
-  sh.clearContents();
-  const headers = ['inspection_id','station_id','station_name','inspect_date','inspector_name','inspector_email','status','total_score','max_score','percent','grade','note','created_at'];
-  sh.getRange(1,1,1,headers.length).setValues([headers]);
-  formatHeader(sh);
+  if (sh.getLastRow() === 0) {
+    sh.appendRow(['inspect_id','station_id','station_name','inspect_date','inspector_name','inspector_email','total_score','note','created_at']);
+    sh.getRange(1,1,1,9).setFontWeight('bold').setBackground('#1a3c5e').setFontColor('#ffffff');
+  }
 }
 
-function setupScores() {
-  const ss = SpreadsheetApp.openById(SS_ID);
-  let sh = ss.getSheetByName(SH.SCORES);
+// ============================================================
+//  setupScoresSheet
+// ============================================================
+function setupScoresSheet() {
+  var ss = SpreadsheetApp.openById(SS_ID);
+  var sh = ss.getSheetByName(SH.SCORES);
   if (!sh) sh = ss.insertSheet(SH.SCORES);
-  sh.clearContents();
-  const headers = ['score_id','inspection_id','item_id','category','item_no','topic','max_score','score','note'];
-  sh.getRange(1,1,1,headers.length).setValues([headers]);
-  formatHeader(sh);
+  if (sh.getLastRow() === 0) {
+    sh.appendRow(['score_id','inspect_id','station_id','item_id','item_no','score','pct','note']);
+    sh.getRange(1,1,1,8).setFontWeight('bold').setBackground('#1a3c5e').setFontColor('#ffffff');
+  }
 }
 
-function setupLog() {
-  const ss = SpreadsheetApp.openById(SS_ID);
-  let sh = ss.getSheetByName(SH.LOG);
+// ============================================================
+//  setupLogSheet
+// ============================================================
+function setupLogSheet() {
+  var ss = SpreadsheetApp.openById(SS_ID);
+  var sh = ss.getSheetByName(SH.LOG);
   if (!sh) sh = ss.insertSheet(SH.LOG);
-  sh.clearContents();
-  sh.getRange(1,1,1,4).setValues([['timestamp','user','action','detail']]);
-  formatHeader(sh);
+  if (sh.getLastRow() === 0) {
+    sh.appendRow(['timestamp','user','action','detail']);
+    sh.getRange(1,1,1,4).setFontWeight('bold').setBackground('#1a3c5e').setFontColor('#ffffff');
+  }
 }
 
-function formatHeader(sh) {
-  const hdr = sh.getRange(1,1,1,sh.getLastColumn());
-  hdr.setBackground('#1a3c5e').setFontColor('#ffffff').setFontWeight('bold');
-  sh.setFrozenRows(1);
+// ============================================================
+//  setupConfigSheet
+// ============================================================
+function setupConfigSheet() {
+  var ss = SpreadsheetApp.openById(SS_ID);
+  var sh = ss.getSheetByName(SH.CONFIG);
+  if (!sh) sh = ss.insertSheet(SH.CONFIG);
+  if (sh.getLastRow() === 0) {
+    sh.appendRow(['key','value']);
+    sh.appendRow(['system_name','ระบบตรวจงานแก้ไฟฟ้าขัดข้อง กฟต.2']);
+    sh.appendRow(['year','2569']);
+    sh.getRange(1,1,1,2).setFontWeight('bold').setBackground('#1a3c5e').setFontColor('#ffffff');
+  }
+}
+
+// ============================================================
+//  setupChecklistSheet — หัวข้อ checklist
+// ============================================================
+function setupChecklistSheet() {
+  var ss = SpreadsheetApp.openById(SS_ID);
+  var sh = ss.getSheetByName(SH.CHECKLIST);
+  if (!sh) sh = ss.insertSheet(SH.CHECKLIST);
+  if (sh.getLastRow() === 0) {
+    sh.appendRow(['item_id','item_no','category','category_max','topic','max_score','criteria']);
+    sh.getRange(1,1,1,7).setFontWeight('bold').setBackground('#1a3c5e').setFontColor('#ffffff');
+  }
+}
+
+// ============================================================
+//  importAllStations() — นำเข้าหน่วยงานทั้ง 79 แห่ง
+//  รันครั้งเดียว หรือรันซ้ำได้ (ไม่ duplicate)
+// ============================================================
+function importAllStations() {
+  var STATION_LIST = [
+    // ===== กฟส.L (กฟจ./กฟส.L-M) =====
+    {station_id:'ST_LM_นศ',   name:'กฟฟ.นครศรีธรรมราช', short_name:'นศ',  type:'L', province:'นครศรีธรรมราช'},
+    {station_id:'ST_LM_สฎ',   name:'กฟฟ.สุราษฎร์ธานี',  short_name:'สฎ',  type:'L', province:'สุราษฎร์ธานี'},
+    {station_id:'ST_LM_ตง',   name:'กฟฟ.ตรัง',           short_name:'ตง',  type:'L', province:'ตรัง'},
+    {station_id:'ST_LM_กบ',   name:'กฟฟ.กระบี่',         short_name:'กบ',  type:'L', province:'กระบี่'},
+    {station_id:'ST_LM_พง',   name:'กฟฟ.พังงา',          short_name:'พง',  type:'L', province:'พังงา'},
+    {station_id:'ST_LM_ภก',   name:'กฟฟ.ภูเก็ต',         short_name:'ภก',  type:'L', province:'ภูเก็ต'},
+    {station_id:'ST_LM_ทส',   name:'กฟฟ.ท่าศาลา',        short_name:'ทส',  type:'M', province:'นครศรีธรรมราช'},
+    {station_id:'ST_LM_กม',   name:'กฟฟ.กาญจนดิษฐ์',    short_name:'กม',  type:'M', province:'สุราษฎร์ธานี'},
+    {station_id:'ST_LM_พพ',   name:'กฟฟ.พระแสง',         short_name:'พพ',  type:'M', province:'สุราษฎร์ธานี'},
+    {station_id:'ST_LM_ปพน',  name:'กฟฟ.ปากพนัง',        short_name:'ปพน', type:'M', province:'นครศรีธรรมราช'},
+    {station_id:'ST_LM_ถล',   name:'กฟฟ.ถลาง',           short_name:'ถล',  type:'M', province:'ภูเก็ต'},
+    {station_id:'ST_LM_ตป',   name:'กฟฟ.ตะกั่วป่า',      short_name:'ตป',  type:'M', province:'พังงา'},
+    {station_id:'ST_LM_ปต',   name:'กฟฟ.ปลายพระยา',      short_name:'ปต',  type:'M', province:'กระบี่'},
+    {station_id:'ST_LM_กญ',   name:'กฟฟ.กาญจนบุรี',      short_name:'กญ',  type:'M', province:'กระบี่'},
+    {station_id:'ST_LM_วงส',  name:'กฟฟ.วังวิเศษ',       short_name:'วงส', type:'M', province:'ตรัง'},
+    {station_id:'ST_LM_ทศ',   name:'กฟฟ.ทุ่งสง',         short_name:'ทศ',  type:'M', province:'นครศรีธรรมราช'},
+    {station_id:'ST_LM_หย',   name:'กฟฟ.หัวยาว',         short_name:'หย',  type:'M', province:'นครศรีธรรมราช'},
+    // ===== กฟส.S =====
+    {station_id:'ST_S_รพ',    name:'กฟฟ.ร่อนพิบูลย์',   short_name:'รพ',   type:'S', province:'นครศรีธรรมราช'},
+    {station_id:'ST_S_ชอด',   name:'กฟฟ.ชะอวด',          short_name:'ชอด',  type:'S', province:'นครศรีธรรมราช'},
+    {station_id:'ST_S_บนส',   name:'กฟฟ.บางนาค',         short_name:'บนส',  type:'S', province:'นครศรีธรรมราช'},
+    {station_id:'ST_S_กต',    name:'กฟฟ.กระแสสินธุ์',   short_name:'กต',   type:'S', province:'สงขลา'},
+    {station_id:'ST_S_ยข',    name:'กฟฟ.ยะขอ',           short_name:'ยข',   type:'S', province:'นครศรีธรรมราช'},
+    {station_id:'ST_S_ปล',    name:'กฟฟ.ปากพะยูน',       short_name:'ปล',   type:'S', province:'พัทลุง'},
+    {station_id:'ST_S_อล',    name:'กฟฟ.อ่าวลึก',        short_name:'อล',   type:'S', province:'กระบี่'},
+    {station_id:'ST_S_คท',    name:'กฟฟ.คลองท่อม',       short_name:'คท',   type:'S', province:'กระบี่'},
+    {station_id:'ST_S_กลต',   name:'กฟฟ.กลันตัน',        short_name:'กลต',  type:'S', province:'กระบี่'},
+    {station_id:'ST_S_หคง',   name:'กฟฟ.หัวคง',          short_name:'หคง',  type:'S', province:'สุราษฎร์ธานี'},
+    {station_id:'ST_S_ขพ',    name:'กฟฟ.ขนอม',           short_name:'ขพ',   type:'S', province:'นครศรีธรรมราช'},
+    {station_id:'ST_S_ทหม',   name:'กฟฟ.ทุ่งหมื่น',     short_name:'ทหม',  type:'S', province:'นครศรีธรรมราช'},
+    {station_id:'ST_S_ตม',    name:'กฟฟ.ตะโหมด',         short_name:'ตม',   type:'S', province:'พัทลุง'},
+    {station_id:'ST_S_ฉล',    name:'กฟฟ.ฉลอง',           short_name:'ฉล',   type:'S', province:'ภูเก็ต'},
+    {station_id:'ST_S_ฉว',    name:'กฟฟ.ฉวาง',           short_name:'ฉว',   type:'S', province:'นครศรีธรรมราช'},
+    {station_id:'ST_S_ชก',    name:'กฟฟ.ชะกาง',          short_name:'ชก',   type:'S', province:'ตรัง'},
+    {station_id:'ST_S_ทญ',    name:'กฟฟ.ท่าญวน',         short_name:'ทญ',   type:'S', province:'สุราษฎร์ธานี'},
+    {station_id:'ST_S_กพง',   name:'กฟฟ.กะปง',           short_name:'กพง',  type:'S', province:'พังงา'},
+    {station_id:'ST_S_ชย',    name:'กฟฟ.ชัยบุรี',        short_name:'ชย',   type:'S', province:'สุราษฎร์ธานี'},
+    {station_id:'ST_S_บตข',   name:'กฟฟ.บ้านตาขุน',     short_name:'บตข',  type:'S', province:'สุราษฎร์ธานี'},
+    {station_id:'ST_S_ทน',    name:'กฟฟ.ท่าแนะ',         short_name:'ทน',   type:'S', province:'กระบี่'},
+    {station_id:'ST_S_คร',    name:'กฟฟ.คลองหอยโข่ง',  short_name:'คร',   type:'S', province:'สงขลา'},
+    {station_id:'ST_S_หท',    name:'กฟฟ.หนองทะเล',       short_name:'หท',   type:'S', province:'กระบี่'},
+    {station_id:'ST_S_พสง',   name:'กฟฟ.พระสิงห์',      short_name:'พสง',  type:'S', province:'นครศรีธรรมราช'},
+    {station_id:'ST_S_สช',    name:'กฟฟ.สิชล',           short_name:'สช',   type:'S', province:'นครศรีธรรมราช'},
+    {station_id:'ST_S_ขอ',    name:'กฟฟ.ขนอน',           short_name:'ขอ',   type:'S', province:'สุราษฎร์ธานี'},
+    // ===== กฟส.XS =====
+    {station_id:'ST_XS_ลานสกา',          name:'กฟฟ.ลานสกา',          short_name:'ลานสกา',          type:'XS', province:'นครศรีธรรมราช'},
+    {station_id:'ST_XS_พรหมคีรี',        name:'กฟฟ.พรหมคีรี',        short_name:'พรหมคีรี',        type:'XS', province:'นครศรีธรรมราช'},
+    {station_id:'ST_XS_พระพรหม',         name:'กฟฟ.พระพรหม',         short_name:'พระพรหม',         type:'XS', province:'นครศรีธรรมราช'},
+    {station_id:'ST_XS_เฉลิมพระเกียรติ', name:'กฟฟ.เฉลิมพระเกียรติ', short_name:'เฉลิมพระเกียรติ', type:'XS', province:'นครศรีธรรมราช'},
+    {station_id:'ST_XS_จุฬาภรณ์',        name:'กฟฟ.จุฬาภรณ์',        short_name:'จุฬาภรณ์',        type:'XS', province:'นครศรีธรรมราช'},
+    {station_id:'ST_XS_บ้านนาเดิม',      name:'กฟฟ.บ้านนาเดิม',      short_name:'บ้านนาเดิม',      type:'XS', province:'สุราษฎร์ธานี'},
+    {station_id:'ST_XS_สิเกา',           name:'กฟฟ.สิเกา',           short_name:'สิเกา',           type:'XS', province:'ตรัง'},
+    {station_id:'ST_XS_นาโยง',           name:'กฟฟ.นาโยง',           short_name:'นาโยง',           type:'XS', province:'ตรัง'},
+    {station_id:'ST_XS_เกาะลิบง',        name:'กฟฟ.เกาะลิบง',        short_name:'เกาะลิบง',        type:'XS', province:'ตรัง'},
+    {station_id:'ST_XS_เกาะมุกต์',       name:'กฟฟ.เกาะมุกต์',       short_name:'เกาะมุกต์',       type:'XS', province:'ตรัง'},
+    {station_id:'ST_XS_เกาะสุกร',        name:'กฟฟ.เกาะสุกร',        short_name:'เกาะสุกร',        type:'XS', province:'ตรัง'},
+    {station_id:'ST_XS_หาดสำราญ',        name:'กฟฟ.หาดสำราญ',        short_name:'หาดสำราญ',        type:'XS', province:'ตรัง'},
+    {station_id:'ST_XS_บ้านเกาะพีพี',   name:'กฟฟ.บ้านเกาะพีพี',   short_name:'บ้านเกาะพีพี',   type:'XS', province:'กระบี่'},
+    {station_id:'ST_XS_อ่าวนาง',         name:'กฟฟ.อ่าวนาง',         short_name:'อ่าวนาง',         type:'XS', province:'กระบี่'},
+    {station_id:'ST_XS_ปลายพระยา',       name:'กฟฟ.ปลายพระยา',       short_name:'ปลายพระยา',       type:'XS', province:'กระบี่'},
+    {station_id:'ST_XS_ลำทับ',           name:'กฟฟ.ลำทับ',           short_name:'ลำทับ',           type:'XS', province:'กระบี่'},
+    {station_id:'ST_XS_ทับปุด',          name:'กฟฟ.ทับปุด',          short_name:'ทับปุด',          type:'XS', province:'พังงา'},
+    {station_id:'ST_XS_นาบอน',           name:'กฟฟ.นาบอน',           short_name:'นาบอน',           type:'XS', province:'นครศรีธรรมราช'},
+    {station_id:'ST_XS_บางขัน',          name:'กฟฟ.บางขัน',          short_name:'บางขัน',          type:'XS', province:'นครศรีธรรมราช'},
+    {station_id:'ST_XS_พิปูน',           name:'กฟฟ.พิปูน',           short_name:'พิปูน',           type:'XS', province:'นครศรีธรรมราช'},
+    {station_id:'ST_XS_ถ้ำพรรณรา',       name:'กฟฟ.ถ้ำพรรณรา',       short_name:'ถ้ำพรรณรา',       type:'XS', province:'นครศรีธรรมราช'},
+    {station_id:'ST_XS_เกาะเต่า',        name:'กฟฟ.เกาะเต่า',        short_name:'เกาะเต่า',        type:'XS', province:'สุราษฎร์ธานี'},
+    {station_id:'ST_XS_เคียนชา',         name:'กฟฟ.เคียนชา',         short_name:'เคียนชา',         type:'XS', province:'สุราษฎร์ธานี'},
+    {station_id:'ST_XS_ท่าฉาง',          name:'กฟฟ.ท่าฉาง',          short_name:'ท่าฉาง',          type:'XS', province:'สุราษฎร์ธานี'},
+    {station_id:'ST_XS_พนม',             name:'กฟฟ.พนม',             short_name:'พนม',             type:'XS', province:'สุราษฎร์ธานี'},
+    {station_id:'ST_XS_วิภาวดี',         name:'กฟฟ.วิภาวดี',         short_name:'วิภาวดี',         type:'XS', province:'สุราษฎร์ธานี'},
+    {station_id:'ST_XS_เชียรใหญ่',       name:'กฟฟ.เชียรใหญ่',       short_name:'เชียรใหญ่',       type:'XS', province:'นครศรีธรรมราช'},
+    {station_id:'ST_XS_เกาะยาว',         name:'กฟฟ.เกาะยาว',         short_name:'เกาะยาว',         type:'XS', province:'พังงา'},
+    {station_id:'ST_XS_กะปง',            name:'กฟฟ.กะปง',            short_name:'กะปง',            type:'XS', province:'พังงา'},
+    {station_id:'ST_XS_คุระบุรี',        name:'กฟฟ.คุระบุรี',        short_name:'คุระบุรี',        type:'XS', province:'พังงา'},
+    {station_id:'ST_XS_บ้านเขาหลัก',    name:'กฟฟ.บ้านเขาหลัก',    short_name:'บ้านเขาหลัก',    type:'XS', province:'พังงา'},
+    {station_id:'ST_XS_ดอนสัก',          name:'กฟฟ.ดอนสัก',          short_name:'ดอนสัก',          type:'XS', province:'สุราษฎร์ธานี'},
+    {station_id:'ST_XS_ชัยบุรี',         name:'กฟฟ.ชัยบุรี',         short_name:'ชัยบุรี',         type:'XS', province:'สุราษฎร์ธานี'},
+    {station_id:'ST_XS_นบพิตำ',          name:'กฟฟ.นบพิตำ',          short_name:'นบพิตำ',          type:'XS', province:'นครศรีธรรมราช'},
+    {station_id:'ST_XS_วังวิเศษ',        name:'กฟฟ.วังวิเศษ',        short_name:'วังวิเศษ',        type:'XS', province:'ตรัง'},
+    {station_id:'ST_XS_รัษฎา',           name:'กฟฟ.รัษฎา',           short_name:'รัษฎา',           type:'XS', province:'ตรัง'}
+  ];
+
+  try {
+    // อ่านหน่วยงานที่มีอยู่แล้ว
+    var existing = getSheetData(SH.STATIONS);
+    var existingIds = existing.map(function(s){ return s.station_id; });
+
+    var added = 0;
+    STATION_LIST.forEach(function(s) {
+      if (existingIds.indexOf(s.station_id) === -1) {
+        appendRow(SH.STATIONS, {
+          station_id : s.station_id,
+          name       : s.name,
+          short_name : s.short_name,
+          type       : s.type,
+          province   : s.province,
+          active     : 'Y'
+        });
+        added++;
+      }
+    });
+
+    var msg = 'นำเข้าหน่วยงานสำเร็จ: เพิ่มใหม่ ' + added + ' รายการ (ทั้งหมด 79 หน่วยงาน)';
+    Logger.log(msg);
+    return msg;
+
+  } catch(e) {
+    Logger.log('importAllStations error: ' + e.message);
+    return 'Error: ' + e.message;
+  }
+}
+
+// ============================================================
+//  clearAndReimportStations() — ล้างและนำเข้าใหม่ทั้งหมด
+//  ⚠️ ใช้เมื่อต้องการ reset stations เท่านั้น
+// ============================================================
+function clearAndReimportStations() {
+  var ss = SpreadsheetApp.openById(SS_ID);
+  var sh = ss.getSheetByName(SH.STATIONS);
+  if (!sh) { setupStationsSheet(); sh = ss.getSheetByName(SH.STATIONS); }
+
+  // เก็บ header row ไว้
+  var header = sh.getRange(1,1,1,sh.getLastColumn()).getValues()[0];
+
+  // ลบข้อมูลทั้งหมดยกเว้น header
+  if (sh.getLastRow() > 1) {
+    sh.deleteRows(2, sh.getLastRow() - 1);
+  }
+
+  return importAllStations();
+}
+
+// ============================================================
+//  getDashboardData — ข้อมูลหน้าหลัก
+// ============================================================
+function getDashboardData() {
+  try {
+    var stations  = getSheetData(SH.STATIONS);
+    var inspections = getSheetData(SH.INSPECTIONS);
+
+    // สถิติรวม
+    var totalStations = stations.length;
+    var totalInspect  = inspections.length;
+
+    // สถานะล่าสุดของแต่ละหน่วยงาน
+    var latestMap = {};
+    inspections.forEach(function(ins) {
+      var sid = ins.station_id;
+      var existing = latestMap[sid];
+      if (!existing || String(ins.inspect_date) > String(existing.inspect_date)) {
+        latestMap[sid] = ins;
+      }
+    });
+
+    var inspectedCount = Object.keys(latestMap).length;
+
+    // รายละเอียดแต่ละหน่วยงาน
+    var stationList = stations.map(function(s) {
+      var latest = latestMap[s.station_id];
+      var pct = latest ? Math.round((parseFloat(latest.total_score)||0) / 100 * 100) : 0;
+      var grade = '';
+      if (latest) {
+        var sc = parseFloat(latest.total_score)||0;
+        grade = sc>=90?'A ดีเยี่ยม': sc>=80?'B ดี': sc>=70?'C พอใช้': sc>=60?'D ต้องปรับปรุง':'F ไม่ผ่าน';
+      }
+      return {
+        station_id   : s.station_id,
+        name         : s.name,
+        short_name   : s.short_name,
+        type         : s.type,
+        province     : s.province||'',
+        last_inspect : latest ? latest.inspect_date : null,
+        last_score   : latest ? latest.total_score : null,
+        last_percent : pct,
+        last_grade   : grade
+      };
+    });
+
+    // สรุปหมวด (จาก checklist)
+    var checklist = getSheetData(SH.CHECKLIST);
+    var catMap = {};
+    checklist.forEach(function(item) {
+      var cat = item.category;
+      if (!catMap[cat]) catMap[cat] = { category: cat, category_max: item.category_max, item_count: 0 };
+      catMap[cat].item_count++;
+    });
+    var catSummary = Object.values(catMap);
+
+    return {
+      totalStations  : totalStations,
+      inspectedCount : inspectedCount,
+      totalInspect   : totalInspect,
+      stations       : stationList,
+      catSummary     : catSummary
+    };
+
+  } catch(e) {
+    return { error: e.message };
+  }
+}
+
+// ============================================================
+//  getStations — สำหรับ form.html
+// ============================================================
+function getStations() {
+  return getSheetData(SH.STATIONS).filter(function(s){
+    return s.active !== 'N';
+  });
 }

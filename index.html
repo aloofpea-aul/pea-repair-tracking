@@ -30,8 +30,8 @@ body{background:#f0f4f8;color:#1a2b3c;}
 .cat-score{font-size:22px;font-weight:700;color:#1a3c5e;}
 .cat-sub{font-size:11px;color:#9ca3af;}
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
-.filters input,.filters select{padding:7px 12px;border:1px solid #c8d0da;border-radius:6px;font-size:13px;background:#fff;}
-.filters input{flex:1;min-width:200px;}
+.filters input,.filters select{padding:7px 12px;border:1px solid #c8d0da;border-radius:6px;font-size:13px;background:#fff;font-family:Sarabun,sans-serif;}
+.filters input{flex:1;min-width:180px;}
 .tbl-wrap{background:#fff;border-radius:10px;overflow:hidden;border:1px solid #dde3ea;}
 table{width:100%;border-collapse:collapse;font-size:13px;}
 thead th{background:#1a3c5e;color:#fff;padding:10px 12px;text-align:left;font-weight:600;}
@@ -46,81 +46,137 @@ tbody td{padding:10px 12px;}
 .gF{color:#dc2626;font-weight:700;}.gNone{color:#9ca3af;}
 .bar-bg{background:#e5e7eb;border-radius:4px;height:6px;width:90px;display:inline-block;vertical-align:middle;}
 .bar-fg{background:#e84c0a;border-radius:4px;height:6px;}
-.btn{display:inline-block;padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer;border:none;text-decoration:none;}
+.btn{display:inline-block;padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer;border:none;text-decoration:none;font-family:Sarabun,sans-serif;}
 .btn-p{background:#e84c0a;color:#fff;}.btn-p:hover{background:#c93d07;}
 .empty,.loading{text-align:center;padding:50px;color:#9ca3af;}
 </style>
 </head>
 <body>
 <div class="topbar">
-  <div><div class="logo">⚡ ระบบตรวจงานแก้ไฟฟ้าขัดข้อง</div><div class="sub">กฟต.2 ประจำปี 2569</div></div>
+  <div><div class="logo">&#9889; ระบบตรวจงานแก้ไฟฟ้าขัดข้อง</div><div class="sub">กฟต.2 ประจำปี 2569</div></div>
   <div class="spacer"></div>
-  <a onclick="goTo('report')" style="margin-right:6px">📊 รายงาน</a>
+  <a onclick="goTo('report')" style="margin-right:6px">&#128202; รายงาน</a>
   <a onclick="goTo('form')" class="accent">+ บันทึกการตรวจ</a>
 </div>
 <div class="container">
-  <div id="content" class="loading">⏳ กำลังโหลดข้อมูล...</div>
+  <div id="content" class="loading">&#9203; กำลังโหลดข้อมูล...</div>
 </div>
-<script>
-let EXEC_URL = '';
-google.script.run.withSuccessHandler(function(u){ EXEC_URL = u; }).getScriptUrl();
 
-function goTo(page, station) {
-  const url = EXEC_URL + '?page=' + page + (station ? '&station=' + station : '');
-  window.top.location.href = url;
+<!-- Scroll buttons -->
+<div style="position:fixed;right:16px;bottom:24px;display:flex;flex-direction:column;gap:8px;z-index:999;">
+  <button onclick="window.scrollTo({top:0,behavior:'smooth'})"
+    style="width:40px;height:40px;border-radius:50%;background:#1a3c5e;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);display:none;"
+    id="btnTop" title="ขึ้นบน">&#8679;</button>
+  <button onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})"
+    style="width:40px;height:40px;border-radius:50%;background:#e84c0a;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);"
+    id="btnBot" title="ลงล่าง">&#8681;</button>
+</div>
+
+<script>
+var EXEC_URL='';
+google.script.run.withSuccessHandler(function(u){EXEC_URL=u;}).getScriptUrl();
+
+function goTo(page,station){
+  var url=EXEC_URL+'?page='+page+(station?'&station='+station:'');
+  window.top.location.href=url;
 }
+
+window.addEventListener('scroll',function(){
+  var atTop=window.scrollY<200;
+  var atBot=window.scrollY+window.innerHeight>=document.body.scrollHeight-50;
+  document.getElementById('btnTop').style.display=atTop?'none':'block';
+  document.getElementById('btnBot').style.display=atBot?'none':'block';
+});
 
 google.script.run
   .withSuccessHandler(render)
-  .withFailureHandler(function(e){ document.getElementById('content').innerHTML='<div class="empty">❌ '+e.message+'</div>'; })
+  .withFailureHandler(function(e){
+    document.getElementById('content').innerHTML='<div class="empty">&#10060; '+e.message+'</div>';
+  })
   .getDashboardData();
 
 function render(d){
-  const notInspected=d.totalStations-d.inspectedCount;
-  let h='';
-  h+='<div class="stats">';
+  var notInspected=d.totalStations-d.inspectedCount;
+
+  // Stats
+  var h='<div class="stats">';
   h+=sc(d.totalStations,'หน่วยงานทั้งหมด','');
   h+=sc(d.inspectedCount,'ตรวจแล้ว','ok');
   h+=sc(notInspected,'ยังไม่ได้ตรวจ',notInspected>0?'warn':'ok');
   h+=sc(d.totalInspect,'ครั้งที่ตรวจรวม','');
   h+='</div>';
+
+  // Category summary
   h+='<div class="sec-title">สัดส่วนคะแนนแต่ละหมวด</div><div class="cat-grid">';
-  d.catSummary.forEach(function(c){
+  (d.catSummary||[]).forEach(function(c){
     h+='<div class="cat"><div class="cat-name">'+c.category+'</div>'
       +'<div class="cat-score">'+c.category_max+' <span style="font-size:13px;font-weight:400;color:#9ca3af">คะแนน</span></div>'
       +'<div class="cat-sub">'+c.item_count+' รายการ</div></div>';
   });
   h+='</div>';
+
+  // Province list (unique, sorted)
+  var provinces=[];
+  d.stations.forEach(function(s){
+    if(s.province&&provinces.indexOf(s.province)===-1) provinces.push(s.province);
+  });
+  provinces.sort();
+
+  // Filters
   h+='<div class="sec-title">สถานะการตรวจแต่ละหน่วยงาน</div>';
-  h+='<div class="filters"><input id="sq" placeholder="ค้นหาหน่วยงาน..." oninput="ft()">';
+  h+='<div class="filters">';
+  h+='<input id="sq" placeholder="&#128269; ค้นหาหน่วยงาน..." oninput="ft()">';
   h+='<select id="tf" onchange="ft()"><option value="">ทุกประเภท</option><option>L</option><option>M</option><option>S</option><option>XS</option></select>';
-  h+='<select id="sf" onchange="ft()"><option value="">ทุกสถานะ</option><option value="done">ตรวจแล้ว</option><option value="pending">ยังไม่ตรวจ</option></select></div>';
-  h+='<div class="tbl-wrap"><table id="t"><thead><tr><th>#</th><th>หน่วยงาน</th><th>ประเภท</th><th>ตรวจล่าสุด</th><th>คะแนน</th><th>%</th><th>เกรด</th><th></th></tr></thead><tbody>';
+  h+='<select id="pf" onchange="ft()"><option value="">ทุกจังหวัด</option>'
+     +provinces.map(function(p){return'<option>'+p+'</option>';}).join('')+'</select>';
+  h+='<select id="sf" onchange="ft()"><option value="">ทุกสถานะ</option><option value="done">ตรวจแล้ว</option><option value="pending">ยังไม่ตรวจ</option></select>';
+  h+='</div>';
+
+  // Table
+  h+='<div class="tbl-wrap"><table id="t">'
+    +'<thead><tr><th>#</th><th>หน่วยงาน</th><th>จังหวัด</th><th>ประเภท</th>'
+    +'<th>ตรวจล่าสุด</th><th>คะแนน</th><th>%</th><th>เกรด</th><th></th></tr></thead><tbody>';
+
   d.stations.forEach(function(s,i){
-    const done=!!s.last_inspect;
-    const pct=s.last_percent||0;
-    h+='<tr data-n="'+s.name.toLowerCase()+'" data-t="'+s.type+'" data-s="'+(done?'done':'pending')+'">'
+    var done=!!s.last_inspect;
+    var pct=s.last_percent||0;
+    h+='<tr data-n="'+(s.name||'').toLowerCase()+'" data-t="'+(s.type||'')+'" data-p="'+(s.province||'')+'" data-s="'+(done?'done':'pending')+'">'
       +'<td style="color:#9ca3af">'+(i+1)+'</td>'
-      +'<td><strong>'+s.name+'</strong><br><span style="font-size:11px;color:#9ca3af">'+s.short_name+' · '+(s.province||'')+'</span></td>'
-      +'<td><span class="badge b'+s.type+'">'+s.type+'</span></td>'
+      +'<td><strong>'+(s.name||'')+'</strong><br><span style="font-size:11px;color:#9ca3af">'+(s.short_name||'')+'</span></td>'
+      +'<td style="font-size:12px;color:#6b7c8d">'+(s.province||'—')+'</td>'
+      +'<td><span class="badge b'+(s.type||'')+'">'+(s.type||'')+'</span></td>'
       +'<td>'+(done?String(s.last_inspect).slice(0,10):'<span class="gNone">-</span>')+'</td>'
       +'<td>'+(done?(s.last_score||0)+'/100':'<span class="gNone">-</span>')+'</td>'
       +'<td>'+(done?'<span class="bar-bg"><span class="bar-fg" style="width:'+pct+'%"></span></span> '+pct+'%':'<span class="gNone">-</span>')+'</td>'
-      +'<td class="'+gc(s.last_grade)+'">'+(s.last_grade||'<span class="gNone">ยังไม่ตรวจ</span>')+'</td>'
+      +'<td class="'+gc(s.last_grade||'')+'">'+(s.last_grade||'<span class="gNone">ยังไม่ตรวจ</span>')+'</td>'
       +'<td><button class="btn btn-p" onclick="goTo(\'form\',\''+s.station_id+'\')">+ ตรวจ</button></td>'
       +'</tr>';
   });
+
   h+='</tbody></table></div>';
   document.getElementById('content').innerHTML=h;
 }
-function sc(n,l,cls){return'<div class="stat '+cls+'"><div class="num">'+n+'</div><div class="lbl">'+l+'</div></div>';}
-function gc(g){if(!g)return'';if(g[0]==='A')return'gA';if(g[0]==='B')return'gB';if(g[0]==='C')return'gC';if(g[0]==='D')return'gD';if(g[0]==='F')return'gF';return'';}
+
+function sc(n,l,cls){
+  return'<div class="stat '+cls+'"><div class="num">'+n+'</div><div class="lbl">'+l+'</div></div>';
+}
+function gc(g){
+  if(!g)return'';
+  if(g[0]==='A')return'gA';if(g[0]==='B')return'gB';
+  if(g[0]==='C')return'gC';if(g[0]==='D')return'gD';
+  if(g[0]==='F')return'gF';return'';
+}
 function ft(){
-  const q=document.getElementById('sq').value.toLowerCase();
-  const t=document.getElementById('tf').value;
-  const s=document.getElementById('sf').value;
+  var q=document.getElementById('sq').value.toLowerCase();
+  var t=document.getElementById('tf').value;
+  var p=document.getElementById('pf').value;
+  var s=document.getElementById('sf').value;
   document.querySelectorAll('#t tbody tr').forEach(function(r){
-    r.style.display=((!q||r.dataset.n.includes(q))&&(!t||r.dataset.t===t)&&(!s||r.dataset.s===s))?'':'none';
+    var show=(!q||r.dataset.n.includes(q))
+           &&(!t||r.dataset.t===t)
+           &&(!p||r.dataset.p===p)
+           &&(!s||r.dataset.s===s);
+    r.style.display=show?'':'none';
   });
 }
 </script>

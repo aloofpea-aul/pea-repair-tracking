@@ -440,5 +440,24 @@ document.addEventListener('DOMContentLoaded',function(){
     .getStations();
 });
 </script>
+
+<!-- Scroll buttons -->
+<div id="scrollBtns" style="position:fixed;right:16px;bottom:24px;display:flex;flex-direction:column;gap:8px;z-index:999;">
+  <button onclick="window.scrollTo({top:0,behavior:'smooth'})"
+    style="width:40px;height:40px;border-radius:50%;background:#1a3c5e;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);display:none;"
+    id="btnTop" title="ขึ้นบน">&#8679;</button>
+  <button onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})"
+    style="width:40px;height:40px;border-radius:50%;background:#e84c0a;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);"
+    id="btnBot" title="ลงล่าง">&#8681;</button>
+</div>
+<script>
+window.addEventListener('scroll',function(){
+  var atTop=window.scrollY<200;
+  var atBot=window.scrollY+window.innerHeight>=document.body.scrollHeight-50;
+  document.getElementById('btnTop').style.display=atTop?'none':'block';
+  document.getElementById('btnBot').style.display=atBot?'none':'block';
+});
+</script>
+
 </body>
 </html>
