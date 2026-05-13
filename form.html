@@ -41,10 +41,17 @@ body{background:#f0f4f8;color:#1a2b3c;}
 .ci-content{flex:1;min-width:0;}
 .ci-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;}
 .ci-topic{font-size:13px;font-weight:600;line-height:1.5;flex:1;}
-.score-chip{padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;flex-shrink:0;}
+.ci-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.score-chip{padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;}
 .score-chip.full{background:#dcfce7;color:#166534;}
 .score-chip.zero{background:#fce7f3;color:#9d174d;}
 .score-chip.mid{background:#fff3ee;color:#92400e;}
+.btn-q{width:22px;height:22px;border-radius:50%;border:1px solid #c8d0da;background:#f8fafc;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#6b7c8d;font-weight:700;flex-shrink:0;padding:0;line-height:1;}
+.btn-q:hover{background:#e8f4ff;border-color:#1a3c5e;color:#1a3c5e;}
+.btn-q.active{background:#1a3c5e;border-color:#1a3c5e;color:#fff;}
+.criteria-box{display:none;background:#eef6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#1e40af;line-height:1.7;}
+.criteria-box.show{display:block;}
+.criteria-title{font-size:11px;font-weight:700;color:#1e3a8a;margin-bottom:4px;}
 .opt{display:flex;align-items:flex-start;gap:8px;padding:5px 8px;border-radius:6px;cursor:pointer;margin-bottom:3px;font-size:12px;border:1px solid transparent;}
 .opt.selected{background:#fff3ee;border-color:#e84c0a;}
 .opt input[type=radio]{accent-color:#e84c0a;flex-shrink:0;margin-top:2px;}
@@ -128,6 +135,42 @@ var EXEC_URL='';
 google.script.run.withSuccessHandler(function(u){EXEC_URL=u;}).getScriptUrl();
 function goHome(){google.script.run.withSuccessHandler(function(u){window.top.location.href=u+'?page=index';}).getScriptUrl();}
 
+var CRITERIA={
+  1:'- ตรวจสอบอนุมัติจัดเวรฯ กับป้ายชื่อผู้อยู่เวร ในวันที่ตรวจ - ตรวจสอบการจัดเวรแทน ย้อนหลังไม่เกิน 1 เดือน * อยู่เวร Standby (แบบเฝ้าระวัง)',
+  2:'ตรวจสอบอนุมัติตรวจสอบเวรฯ และรายงานการอยู่เวร (หรือใบเซ็นชื่อปฏิบัติงาน) ย้อนหลัง 1 เดือน',
+  3:'- ตรวจสอบสถานะผังอัพเดทล่าสุดไม่เกิน 1 ปี - มีใช้งาน สถานะถูกต้องเป็นปัจจุบัน ในรูปแบบ ไฟล์ PDF หรือ กระดาษ A3 - ตรวจที่ห้องเวรฯ และ รถยนต์แก้ไฟ',
+  4:'- ตรวจสอบสถานะผังอัพเดทล่าสุดไม่เกิน 1 ปี - มีใช้งาน สถานะถูกต้อง เป็นปัจจุบัน ในรูปแบบ ไฟล์ PDF หรือ กระดาษ A0 - ตรวจที่ห้องเวรฯ และ รถยนต์แก้ไฟ',
+  5:'- ให้พนักงานประจำห้องเวรแก้ไฟฟ้าขัดข้อง ใช้วิทยุสื่อสารพูดคุยกับวิทยุสื่อสารประจำรถยนต์ สื่อสารกันได้หรือไม่ โดยให้รถยนต์จอดภายในพื้นที่ สนง. แล้วใช้ช่องความถี่แบบเรียกตรง',
+  6:'- ให้พนักงานประจำห้องเวรแก้ไฟฟ้าขัดข้อง ใช้วิทยุสื่อสารพูดคุยกับวิทยุสื่อสารประจำรถยนต์ สื่อสารกันได้หรือไม่ โดยให้รถยนต์จอดภายในพื้นที่ สนง. แล้วใช้ช่องความถี่แบบเรียกตรง',
+  7:'- โทรศัพท์ (ภายในสำนักงาน, ภายนอกสำนักงาน) มีความพร้อมใช้งาน ตลอดเวลา หรือไม่',
+  8:'- มีสมุดโทรศัพท์ / รายชื่อโทรศัพท์ และเป็นปัจจุบัน หรือไม่ (เบอร์ฉุกเฉิน, ผู้บริหารในพื้นที่, ศจฟ.ต.2, กฟฟ.ในสังกัด)',
+  9:'ตรวจสอบสมุดแบบฟอร์ม บร.1 ประจำรถยนต์แก้ไฟทุกคัน',
+  10:'- ตรวจสอบสภาพห้อง, การจัดวางสิ่งของ, ความสะอาด',
+  11:'- ตรวจสอบสภาพห้อง, การจัดวางสิ่งของ, ความสะอาด',
+  12:'- ตรวจสอบสภาพห้อง, การจัดวางสิ่งของ, ความสะอาด',
+  13:'- ความสะอาด เป็นระเบียบ เรียบร้อย: ตรวจสอบพื้นที่ในการจัดเก็บ ทั้งในด้านความปลอดภัย ความสะอาด เป็นระเบียบ เรียบร้อย - การจัดวาง First In First Out: ความง่ายในการตรวจสอบและความสะดวกในการนำไปใช้งาน',
+  14:'- ตรวจนับจำนวนและความพร้อมใช้งาน ตามหนังสือเลขที่ ก.2 กบษ. 2586/2565 กฟภ. (ขั้นมาตรฐาน) ประจำกายและประจำรถยนต์แก้ไฟฟ้าขัดข้องทุกคันที่ กฟฟ. มีใช้งาน - คำนวณตามสูตร: % ความครบถ้วน = (จำนวนที่นับได้ x 100) / จำนวนตามมาตรฐาน | คะแนน = (% ความครบถ้วน x 4) / 91%',
+  15:'ตรวจสอบเอกสารการส่งมอบ/การดูแลเครื่องมือเครื่องใช้ ประจำรถยนต์ ในวันที่ตรวจประเมิน และย้อนหลังไม่เกิน 1 เดือน',
+  16:'ตรวจสอบว่ามีการนำนวัตกรรมด้านความปลอดภัย / เครื่องมือวัดกระแสไฟฟ้ารั่ว (นอกเหนือจาก Voltage detector) มาใช้ในงานแก้ไฟฟ้าขัดข้องหรือไม่',
+  17:'ตรวจสอบว่ามีอนุมัติใช้งานเป็นฉบับปัจจุบันหรือไม่ หนังสือเลขที่ ต.2กบษ.(บร.)1792/2568 ลว. 2 ก.ย.2568 อนุมัติรายการและยอดพัสดุสำรองคลังสำหรับงานแก้ไฟฟ้าขัดข้อง พื้นที่ กฟต.2',
+  18:'- ตรวจสอบอุปกรณ์สำรองแก้ไฟพัสดุฉุกเฉิน จากระบบ SAP T-Code MB52 เปรียบเทียบตามอนุมัติเลขที่ ต.2กบษ.(บร.)1792/2568 ลว. 2 ก.ย.2568 และตรวจสอบบัญชีทรัพย์สิน - คะแนน = (% ความครบถ้วน x 2) / 91%',
+  19:'- สอบถาม กฟฟ. ว่าสำรองพัสดุที่คลังย่อยเป็นรอบ 7 วัน หรือ 14 วัน - ตรวจสอบอุปกรณ์สำรองแก้ไฟพัสดุฉุกเฉิน จากระบบ SAP T-Code MB52 - คะแนน = (% ความครบถ้วน x 3) / 91%',
+  20:'รถยนต์ กฟภ.: ตรวจสอบแผนงาน-ผล บำรุงรักษาประจำปี, ยาง, น้ำมันเครื่อง ของรถยนต์แก้ไฟฟ้าขัดข้องทุกคัน | รถยนต์เช่า: ตรวจสอบเอกสารมอบหมายผู้รับผิดชอบ-ผล บำรุงรักษา (ประจำรถ), ยาง, น้ำมันเครื่อง',
+  21:'ตรวจสอบการใช้งานแบบฟอร์ม FM1-SOH3-S04-6103 ย้อนหลัง 1 เดือน',
+  22:'- ตรวจสอบสภาพรถยนต์แก้ไฟฟ้าขัดข้องที่ กฟฟ.ใช้งานทุกคัน ตามแบบฟอร์ม FM1-SOH3-S04-6103 ทั้ง 19 รายการ (รายการที่ปกติ = 1 คะแนน) - คะแนน = (จำนวนรายการที่ปกติ x 4) / 19 รายการ',
+  23:'ตรวจสอบการสวมใส่เครื่องแต่งกาย/เครื่องแบบ ตามมาตรฐาน กฟภ.',
+  24:'ตรวจสอบการสวมใส่เครื่องแต่งกาย/เครื่องแบบ ตามมาตรฐาน กฟภ.',
+  25:'- ตรวจนับจำนวนตามหนังสือเลขที่ ก.2 กบษ. 2586/2565 กฟภ. (ขั้นมาตรฐาน) ประจำกายและประจำรถยนต์แก้ไฟฟ้าขัดข้องทุกคัน - คะแนน = (% ความครบถ้วน x 4) / 91%',
+  26:'- ตรวจนับจำนวนและความพร้อมใช้งาน ตามหนังสือเลขที่ ก.2 กบษ. 2586/2565 กฟภ. (ขั้นมาตรฐาน) ประจำกายและประจำรถยนต์แก้ไฟฟ้าขัดข้องทุกคัน - คะแนน = (% ความครบถ้วน x 4) / 91%',
+  27:'- ตรวจสอบการใช้งาน WeSafe เทียบกับข้อมูลไฟฟ้าขัดข้องจาก OMS ย้อนหลัง 1 เดือน - % ใช้งาน = (จำนวนรายการ WeSafe กรณีไฟฟ้าขัดข้อง x 100) / จำนวนไฟฟ้าขัดข้องจากระบบ OMS ทั้งหมด',
+  28:'- สุ่มตรวจการปฏิบัติงานแก้ไฟฟ้าขัดข้อง/ดับไฟปฏิบัติงาน ดูกระบวนการปฏิบัติงานด้านความปลอดภัย ประกอบด้วย 1) ความพร้อมสถานที่ก่อนปฏิบัติงาน 2) ความพร้อมชุดทีมงาน (PPE) 3) ความพร้อมรถยนต์ 4) ขั้นตอนความปลอดภัย (WeSafe, KYT, การทำกราวด์) 5) ความเข้าใจขั้นตอนปฏิบัติงาน - หากไม่มีเหตุการณ์ ให้จำลองเหตุการณ์เปลี่ยน Drop ต้นหม้อแปลง',
+  29:'ตรวจผลดำเนินงาน การบริหารเหตุการณ์และปรับปรุงประมาณการ/เวลาจ่ายไฟกลับคืน หลังจากได้รับแจ้งเหตุการณ์ไฟฟ้าขัดข้องในเชิง Realtime ภายใน 1 ชั่วโมง (สะสมตั้งแต่วันที่ 1 ม.ค.69 - ปัจจุบัน)',
+  30:'ตรวจผลดำเนินงาน บริหารเหตุการณ์แผนดับไฟหม้อแปลงจำหน่ายแรงต่ำ ในวันที่ปฏิบัติงาน และแจ้งข้อมูลวันเวลาขอดับไฟฟ้าให้แก่ผู้ใช้ไฟทราบก่อนวันเริ่มปฏิบัติงานภายใน 3 วันทำการ',
+  31:'- กฟจ., กฟส.L/M, S: ตรวจสอบบันทึกแจ้งแผนดับไฟหม้อแปลงจำหน่ายแรงต่ำ (วันที่มีการอนุมัติแผน เทียบกับ วันปฏิบัติงาน ต้องมากกว่าเกณฑ์ 14 วัน) - กฟส.XS: ให้คะแนนเต็ม 2 เนื่องจากดำเนินการโดย กฟฟ.ต้นสังกัด',
+  32:'- กฟจ., กฟส.L/M, S: ตรวจสอบการเปิดเหตุการณ์แผนดับไฟหม้อแปลงจำหน่ายแรงต่ำ เทียบกับแผนดับไฟที่ได้รับมา - กฟส.XS: ให้คะแนนเต็ม 3 เนื่องจากดำเนินการโดย กฟฟ.ต้นสังกัด',
+  33:'ตรวจสอบผลการแก้ไขข้อบกพร่อง จากการตรวจจากปีก่อนหน้า'
+};
+
 var CATS=[
   {name:"ความพร้อมอุปกรณ์และการสนับสนุนการแก้ไฟฟ้าขัดข้อง",max:16},
   {name:"ความพร้อมสถานที่อยู่เวรแก้ไฟฟ้าขัดข้อง",max:12},
@@ -197,6 +240,19 @@ function getGrade(t){
 }
 function chipCls(v,max){return v>=max?'score-chip full':v===0?'score-chip zero':'score-chip mid';}
 
+function toggleCriteria(id){
+  var box=document.getElementById('crit-'+id);
+  var btn=document.getElementById('qbtn-'+id);
+  if(!box)return;
+  if(box.classList.contains('show')){
+    box.classList.remove('show');
+    btn.classList.remove('active');
+  }else{
+    box.classList.add('show');
+    btn.classList.add('active');
+  }
+}
+
 function buildCatGrid(){
   document.getElementById('catGrid').innerHTML=CATS.map(function(c,ci){
     return '<div class="cat-card"><div class="cat-name">'+c.name+'</div>'
@@ -216,6 +272,9 @@ function buildItems(){
 }
 
 function buildItem(item,isLast){
+  var hasCrit=CRITERIA[item.id];
+  var critBtn=hasCrit?'<button class="btn-q" id="qbtn-'+item.id+'" onclick="toggleCriteria('+item.id+')" title="ดูวิธีการตรวจ">?</button>':'';
+  var critBox=hasCrit?'<div class="criteria-box" id="crit-'+item.id+'"><div class="criteria-title">วิธีการตรวจ</div>'+CRITERIA[item.id]+'</div>':'';
   var inp='';
   if(item.type==='calc'){
     inp='<div class="calc-box"><div class="calc-formula">'+item.formula+'</div>'
@@ -233,8 +292,9 @@ function buildItem(item,isLast){
   return '<div class="ci" style="'+(isLast?'border-bottom:none':'')+'">'
     +'<div class="ci-top"><div class="ci-no">'+item.no+'</div>'
     +'<div class="ci-content"><div class="ci-head"><div class="ci-topic">'+item.topic+'</div>'
-    +'<span class="'+chipCls(0,item.max)+'" id="chip-'+item.id+'">0/'+item.max+'</span></div>'
-    +inp+'<input class="note-input" type="text" id="note-'+item.id+'" placeholder="หมายเหตุรายการนี้...">'
+    +'<div class="ci-actions"><span class="'+chipCls(0,item.max)+'" id="chip-'+item.id+'">0/'+item.max+'</span>'+critBtn+'</div></div>'
+    +critBox+inp
+    +'<input class="note-input" type="text" id="note-'+item.id+'" placeholder="หมายเหตุรายการนี้...">'
     +'</div></div></div>';
 }
 
