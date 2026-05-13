@@ -170,3 +170,221 @@ function deleteRowsByField(sh, keyCol, val) {
     if (String(data[i][hIdx]) === String(val)) sh.deleteRow(i + 1);
   }
 }
+
+// ============================================================
+//  เพิ่มเติมใน DataService.gs
+//  วางต่อท้ายไฟล์ DataService.gs เดิม
+// ============================================================
+
+// mapping item_id -> row number ในชีตสรุป
+var ITEM_ROW_MAP = {
+  1:4,2:5,3:6,4:7,5:8,6:9,7:10,8:11,9:12,
+  10:14,11:15,12:16,13:17,
+  14:19,15:20,16:21,
+  17:23,18:24,19:25,
+  20:27,21:28,22:29,
+  23:31,24:32,25:33,26:34,27:35,28:36,
+  29:38,30:39,31:40,32:41,
+  33:43
+};
+
+// ดึงชื่อชีตสรุปตามประเภทหน่วยงาน
+function getSummarySheetName_(type) {
+  if (type === 'L' || type === 'M') return 'รวมคะแนน กฟจ.กฟส.L-M';
+  if (type === 'S')  return 'รวมคะแนน กฟส.S';
+  if (type === 'XS') return 'รวมคะแนน กฟส.XS';
+  return null;
+}
+
+// อัพเดทคะแนนลงชีตสรุป
+function updateSummarySheet_(stationShortName, stationType, scores) {
+  try {
+    var shName = getSummarySheetName_(stationType);
+    if (!shName) return;
+    var ss = SpreadsheetApp.openById(SS_ID);
+    var sh = ss.getSheetByName(shName);
+    if (!sh) return;
+
+    // หาคอลัมน์ของหน่วยงาน (row 2 = index 2, col D+ = col 4+)
+    var headerRow = sh.getRange(2, 1, 1, sh.getLastColumn()).getValues()[0];
+    var col = -1;
+    for (var i = 3; i < headerRow.length; i++) {
+      if (String(headerRow[i]).trim() === String(stationShortName).trim()) {
+        col = i + 1; // 1-indexed
+        break;
+      }
+    }
+    if (col === -1) return; // ไม่พบหน่วยงาน
+
+    // เขียนคะแนนแต่ละข้อ
+    scores.forEach(function(s) {
+      var row = ITEM_ROW_MAP[parseInt(s.item_id)];
+      if (row) {
+        sh.getRange(row, col).setValue(s.score);
+      }
+    });
+
+    // คำนวณรวมคะแนน (row 44)
+    var total = scores.reduce(function(sum, s) { return sum + (parseFloat(s.score) || 0); }, 0);
+    sh.getRange(44, col).setValue(Math.round(total * 10) / 10);
+
+  } catch(e) {
+    Logger.log('updateSummarySheet error: ' + e.message);
+  }
+}
+
+// ====================================================
+// saveInspection — บันทึกการตรวจ + อัพเดทชีตสรุป
+// ====================================================
+function saveInspection(payload) {
+  try {
+    var ss = SpreadsheetApp.openById(SS_ID);
+
+    // หาข้อมูลสถานี
+    var stations = getSheetData(SH.STATIONS);
+    var station = stations.find(function(s) {
+      return s.station_id === payload.station_id;
+    });
+
+    var inspectId = genId('INS');
+    var now = nowTH();
+    var user = payload.inspector_email || Session.getActiveUser().getEmail() || 'unknown';
+
+    // บันทึก INSPECTIONS
+    appendRow(SH.INSPECTIONS, {
+      inspect_id    : inspectId,
+      station_id    : payload.station_id,
+      station_name  : payload.station_name,
+      inspect_date  : payload.inspect_date,
+      inspector_name: payload.inspector_name,
+      inspector_email: payload.inspector_email || '',
+      total_score   : payload.total_score,
+      note          : payload.note || '',
+      created_at    : now
+    });
+
+    // บันทึก SCORES
+    var scoreSheet = ss.getSheetByName(SH.SCORES);
+    (payload.scores || []).forEach(function(s) {
+      appendRow(SH.SCORES, {
+        score_id   : genId('SCR'),
+        inspect_id : inspectId,
+        station_id : payload.station_id,
+        item_id    : s.item_id,
+        item_no    : s.item_no,
+        score      : s.score,
+        pct        : s.pct || '',
+        note       : s.note || ''
+      });
+    });
+
+    // อัพเดทชีตสรุป
+    if (station) {
+      updateSummarySheet_(station.short_name, station.type, payload.scores || []);
+    }
+
+    // LOG
+    writeLog('saveInspection', 'station=' + payload.station_id + ' score=' + payload.total_score, user);
+
+    // คำนวณ percent / grade
+    var maxScore = 100;
+    var pct = Math.round(payload.total_score / maxScore * 100);
+    var grade = payload.total_score >= 90 ? 'A' :
+                payload.total_score >= 80 ? 'B' :
+                payload.total_score >= 70 ? 'C' :
+                payload.total_score >= 60 ? 'D' : 'F';
+
+    return {
+      success     : true,
+      inspect_id  : inspectId,
+      total_score : payload.total_score,
+      max_score   : maxScore,
+      percent     : pct,
+      grade       : grade
+    };
+
+  } catch(e) {
+    return { success: false, error: e.message };
+  }
+}
+
+// ====================================================
+// getReportData — ดึงข้อมูลรายงานแยกกลุ่ม
+// ====================================================
+function getReportData() {
+  try {
+    var ss = SpreadsheetApp.openById(SS_ID);
+    var result = {};
+
+    var groups = [
+      { key: 'lm', sheetName: 'รวมคะแนน กฟจ.กฟส.L-M', title: 'กฟจ. / กฟส.L-M' },
+      { key: 's',  sheetName: 'รวมคะแนน กฟส.S',        title: 'กฟส.S' },
+      { key: 'xs', sheetName: 'รวมคะแนน กฟส.XS',       title: 'กฟส.XS' }
+    ];
+
+    groups.forEach(function(g) {
+      var sh = ss.getSheetByName(g.sheetName);
+      if (!sh) { result[g.key] = null; return; }
+
+      var data = sh.getDataRange().getValues();
+      var headerRow = data[1]; // row 2 (index 1)
+
+      // ดึงชื่อหน่วยงาน col D+
+      var stations = [];
+      for (var c = 3; c < headerRow.length; c++) {
+        if (headerRow[c] !== null && headerRow[c] !== '') {
+          stations.push({ name: String(headerRow[c]), col: c });
+        }
+      }
+
+      // ดึงรายการข้อ (rows ที่มีเลขในคอลัมน์ A)
+      var items = [];
+      var currentCat = '';
+      for (var r = 2; r < data.length; r++) {
+        var rowA = data[r][0];
+        var rowB = data[r][1];
+        var rowC = data[r][2];
+
+        if (rowA === null && rowB !== null && rowB !== '') {
+          // แถวหมวด
+          currentCat = String(rowB);
+        } else if (rowA !== null && rowB !== null) {
+          var no = String(rowA).trim();
+          if (no === 'รวมคะแนน') {
+            // แถวรวม
+            var totals = {};
+            stations.forEach(function(st) {
+              totals[st.name] = parseFloat(data[r][st.col]) || 0;
+            });
+            result[g.key + '_totals'] = totals;
+          } else {
+            var scores = {};
+            stations.forEach(function(st) {
+              scores[st.name] = data[r][st.col] !== null && data[r][st.col] !== '' 
+                ? parseFloat(data[r][st.col]) : null;
+            });
+            items.push({
+              no    : no,
+              topic : String(rowB || '').replace(/\n/g, ' ').trim(),
+              max   : parseFloat(rowC) || 0,
+              cat   : currentCat,
+              scores: scores
+            });
+          }
+        }
+      }
+
+      result[g.key] = {
+        key      : g.key,
+        title    : g.title,
+        stations : stations.map(function(s){ return s.name; }),
+        items    : items
+      };
+    });
+
+    return result;
+
+  } catch(e) {
+    return { error: e.message };
+  }
+}
