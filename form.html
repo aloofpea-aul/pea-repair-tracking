@@ -274,7 +274,8 @@ function buildItems(){
 function buildItem(item,isLast){
   var hasCrit=CRITERIA[item.id];
   var critBtn=hasCrit?'<button class="btn-q" id="qbtn-'+item.id+'" onclick="toggleCriteria('+item.id+')" title="ดูวิธีการตรวจ">?</button>':'';
-  var critBox=hasCrit?'<div class="criteria-box" id="crit-'+item.id+'"><div class="criteria-title">วิธีการตรวจ</div>'+CRITERIA[item.id]+'</div>':'';
+  var critText=hasCrit?CRITERIA[item.id].replace(/ - /g,'<br>- ').replace(/ \| /g,'<br>'):'';
+var critBox=hasCrit?'<div class="criteria-box" id="crit-'+item.id+'"><div class="criteria-title">วิธีการตรวจ</div>'+critText+'</div>':''; 
   var inp='';
   if(item.type==='calc'){
     inp='<div class="calc-box"><div class="calc-formula">'+item.formula+'</div>'
