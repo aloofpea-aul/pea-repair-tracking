@@ -34,7 +34,7 @@ function getGrade(percent) {
 }
 
 // ============================================================
-//  getDashboardData — ข้อมูลหน้าหลัก
+//  getDashboardData — แปลงทุกค่าเป็น String ก่อน return
 // ============================================================
 function getDashboardData() {
   try {
@@ -42,43 +42,47 @@ function getDashboardData() {
     var inspections = getSheetData(SH.INSPECTIONS);
     var checklist   = getSheetData(SH.CHECKLIST);
 
+    // หาการตรวจล่าสุดของแต่ละหน่วยงาน
     var latestMap = {};
     inspections.forEach(function(ins) {
-      var sid = ins.station_id;
-      if (!latestMap[sid] || String(ins.inspect_date) > String(latestMap[sid].inspect_date)) {
-        latestMap[sid] = ins;
+      var sid = String(ins.station_id || '');
+      var dt  = ins.inspect_date ? String(ins.inspect_date) : '';
+      if (!latestMap[sid] || dt > String((latestMap[sid] && latestMap[sid]._dt) || '')) {
+        latestMap[sid] = {
+          _dt        : dt,
+          total_score: ins.total_score,
+          percent    : ins.percent,
+          grade      : ins.grade
+        };
       }
     });
 
+    // สร้าง stationList — แปลงทุกค่าเป็น String/Number ก่อน
     var stationList = stations.map(function(s) {
-      var latest = latestMap[s.station_id];
-      var pct = latest ? Math.round(parseFloat(latest.total_score)||0) : 0;
-      var grade = '';
-      if (latest) {
-        var sc = parseFloat(latest.total_score)||0;
-        grade = sc>=90?'A ดีเยี่ยม':sc>=80?'B ดี':sc>=70?'C พอใช้':sc>=60?'D ต้องปรับปรุง':'F ไม่ผ่าน';
-      }
+      var latest = latestMap[String(s.station_id || '')];
+      var pct    = latest ? Math.round(parseFloat(latest.percent) || 0) : 0;
       return {
-        station_id  : s.station_id,
-        name        : s.name,
-        short_name  : s.short_name,
-        type        : s.type,
-        province    : s.province || '',
-        last_inspect: latest ? latest.inspect_date : null,
-        last_score  : latest ? latest.total_score  : null,
+        station_id  : String(s.station_id  || ''),
+        name        : String(s.name        || ''),
+        short_name  : String(s.short_name  || ''),
+        type        : String(s.type        || ''),
+        province    : String(s.province    || ''),
+        last_inspect: latest ? String(latest._dt || '') : null,
+        last_score  : latest ? parseFloat(latest.total_score) || 0 : null,
         last_percent: pct,
-        last_grade  : grade
+        last_grade  : latest ? String(latest.grade || '') : ''
       };
     });
 
+    // สรุปหมวด checklist
     var catMap = {};
     checklist.forEach(function(item) {
-      var cat = item.category;
-      if (!catMap[cat]) catMap[cat] = { category: cat, category_max: item.category_max, item_count: 0 };
+      var cat = String(item.category || '');
+      if (!cat) return;
+      if (!catMap[cat]) catMap[cat] = { category: cat, category_max: parseFloat(item.category_max) || 0, item_count: 0 };
       catMap[cat].item_count++;
     });
-    var catSummary = [];
-    Object.keys(catMap).forEach(function(k){ catSummary.push(catMap[k]); });
+    var catSummary = Object.keys(catMap).map(function(k){ return catMap[k]; });
 
     return {
       totalStations : stations.length,
