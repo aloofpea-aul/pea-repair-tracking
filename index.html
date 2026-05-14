@@ -86,9 +86,13 @@ window.addEventListener('scroll',function(){
 });
 
 google.script.run
-  .withSuccessHandler(render)
+  .withSuccessHandler(function(d){
+    console.log('result:', JSON.stringify(d));
+    render(d);
+  })
   .withFailureHandler(function(e){
     document.getElementById('content').innerHTML='<div class="empty">&#10060; '+e.message+'</div>';
+    console.log('error:', e.message);
   })
   .getDashboardData();
 

@@ -10,9 +10,6 @@ function getConfig() {
   return cfg;
 }
 
-// ============================================================
-//  getStations — active !== 'N'
-// ============================================================
 function getStations() {
   return getSheetData(SH.STATIONS).filter(function(s) {
     return s.active !== 'N';
@@ -36,6 +33,68 @@ function getGrade(percent) {
   return 'F (ไม่ผ่าน)';
 }
 
+// ============================================================
+//  getDashboardData — ข้อมูลหน้าหลัก
+// ============================================================
+function getDashboardData() {
+  try {
+    var stations    = getSheetData(SH.STATIONS);
+    var inspections = getSheetData(SH.INSPECTIONS);
+    var checklist   = getSheetData(SH.CHECKLIST);
+
+    var latestMap = {};
+    inspections.forEach(function(ins) {
+      var sid = ins.station_id;
+      if (!latestMap[sid] || String(ins.inspect_date) > String(latestMap[sid].inspect_date)) {
+        latestMap[sid] = ins;
+      }
+    });
+
+    var stationList = stations.map(function(s) {
+      var latest = latestMap[s.station_id];
+      var pct = latest ? Math.round(parseFloat(latest.total_score)||0) : 0;
+      var grade = '';
+      if (latest) {
+        var sc = parseFloat(latest.total_score)||0;
+        grade = sc>=90?'A ดีเยี่ยม':sc>=80?'B ดี':sc>=70?'C พอใช้':sc>=60?'D ต้องปรับปรุง':'F ไม่ผ่าน';
+      }
+      return {
+        station_id  : s.station_id,
+        name        : s.name,
+        short_name  : s.short_name,
+        type        : s.type,
+        province    : s.province || '',
+        last_inspect: latest ? latest.inspect_date : null,
+        last_score  : latest ? latest.total_score  : null,
+        last_percent: pct,
+        last_grade  : grade
+      };
+    });
+
+    var catMap = {};
+    checklist.forEach(function(item) {
+      var cat = item.category;
+      if (!catMap[cat]) catMap[cat] = { category: cat, category_max: item.category_max, item_count: 0 };
+      catMap[cat].item_count++;
+    });
+    var catSummary = [];
+    Object.keys(catMap).forEach(function(k){ catSummary.push(catMap[k]); });
+
+    return {
+      totalStations : stations.length,
+      inspectedCount: Object.keys(latestMap).length,
+      totalInspect  : inspections.length,
+      stations      : stationList,
+      catSummary    : catSummary
+    };
+  } catch(e) {
+    return { error: e.message };
+  }
+}
+
+// ============================================================
+//  deleteInspection
+// ============================================================
 function deleteInspection(inspId) {
   try {
     var ss = SpreadsheetApp.openById(SS_ID);
@@ -106,7 +165,7 @@ function updateSummarySheet_(stationShortName, stationType, scores) {
 }
 
 // ============================================================
-//  saveInspection — บันทึกการตรวจ + อัพเดทชีตสรุป
+//  saveInspection
 // ============================================================
 function saveInspection(payload) {
   try {
@@ -156,7 +215,6 @@ function saveInspection(payload) {
     });
 
     if (station) updateSummarySheet_(station.short_name, station.type, payload.scores || []);
-
     writeLog('saveInspection', inspectId + ' | ' + payload.station_name + ' | ' + totalScore, user);
 
     return { success: true, inspect_id: inspectId, total_score: totalScore, max_score: maxScore, percent: pct, grade: grade };
@@ -164,7 +222,7 @@ function saveInspection(payload) {
 }
 
 // ============================================================
-//  getReportData — ดึงข้อมูลรายงานแยกกลุ่ม
+//  getReportData
 // ============================================================
 function getReportData() {
   try {
