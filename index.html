@@ -93,6 +93,14 @@ google.script.run
   .getDashboardData();
 
 function render(d){
+
+  if(!d || d.error){
+    document.getElementById('content').innerHTML='<div class="empty">&#10060; '+(d&&d.error?d.error:'ไม่ได้รับข้อมูล')+'</div>';
+    return;
+  }
+  
+  var notInspected=d.totalStations-d.inspectedCount;
+
   var notInspected=d.totalStations-d.inspectedCount;
   var h='<div class="stats">';
   h+=sc(d.totalStations,'หน่วยงานทั้งหมด','');
