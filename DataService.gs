@@ -388,3 +388,87 @@ function getReportData() {
     return { error: e.message };
   }
 }
+
+// ============================================================
+//  Committee functions — เพิ่มต่อท้าย DataService.gs
+// ============================================================
+
+// ดึงคณะกรรมการทั้งหมด
+function getCommittees() {
+  return getSheetData('COMMITTEES').filter(function(c){
+    return c.active !== 'N';
+  });
+}
+
+// ดึงคณะกรรมการตาม ID
+function getCommitteeById(id) {
+  var list = getSheetData('COMMITTEES');
+  return list.find(function(c){ return c.committee_id === id; }) || null;
+}
+
+// ดึงคณะกรรมการที่รับผิดชอบสถานีนั้น
+function getCommitteesByStation(stationId) {
+  return getSheetData('COMMITTEES').filter(function(c){
+    if (c.active === 'N') return false;
+    var ids = (c.station_ids || '').split('|');
+    return ids.indexOf(stationId) > -1;
+  });
+}
+
+// บันทึก/แก้ไขคณะกรรมการ
+function saveCommittee(payload) {
+  try {
+    var ss = SpreadsheetApp.openById(SS_ID);
+    var sh = ss.getSheetByName('COMMITTEES');
+    if (!sh) {
+      sh = ss.insertSheet('COMMITTEES');
+      sh.appendRow(['committee_id','name','members','station_ids','active']);
+      sh.getRange(1,1,1,5).setFontWeight('bold').setBackground('#1a3c5e').setFontColor('#ffffff');
+    }
+
+    if (payload.committee_id) {
+      // แก้ไข
+      var data = sh.getDataRange().getValues();
+      var headers = data[0];
+      var idIdx = headers.indexOf('committee_id');
+      for (var i = 1; i < data.length; i++) {
+        if (String(data[i][idIdx]) === String(payload.committee_id)) {
+          headers.forEach(function(h, j) {
+            if (payload[h] !== undefined) sh.getRange(i+1, j+1).setValue(payload[h]);
+          });
+          break;
+        }
+      }
+    } else {
+      // เพิ่มใหม่
+      payload.committee_id = genId('COM');
+      appendRow('COMMITTEES', payload);
+    }
+    writeLog('saveCommittee', payload.name, '');
+    return { success: true };
+  } catch(e) {
+    return { success: false, error: e.message };
+  }
+}
+
+// ลบคณะกรรมการ (soft delete)
+function deleteCommittee(id) {
+  try {
+    var ss = SpreadsheetApp.openById(SS_ID);
+    var sh = ss.getSheetByName('COMMITTEES');
+    if (!sh) return { success: false, error: 'ไม่พบ sheet' };
+    var data = sh.getDataRange().getValues();
+    var headers = data[0];
+    var idIdx = headers.indexOf('committee_id');
+    var activeIdx = headers.indexOf('active');
+    for (var i = 1; i < data.length; i++) {
+      if (String(data[i][idIdx]) === String(id)) {
+        sh.getRange(i+1, activeIdx+1).setValue('N');
+        break;
+      }
+    }
+    return { success: true };
+  } catch(e) {
+    return { success: false, error: e.message };
+  }
+}

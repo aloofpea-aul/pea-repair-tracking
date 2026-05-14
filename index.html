@@ -55,6 +55,7 @@ tbody td{padding:10px 12px;}
 <div class="topbar">
   <div><div class="logo">&#9889; ระบบตรวจงานแก้ไฟฟ้าขัดข้อง</div><div class="sub">กฟต.2 ประจำปี 2569</div></div>
   <div class="spacer"></div>
+  <a onclick="goTo('settings')" style="margin-right:6px">&#9881; ตั้งค่า</a>
   <a onclick="goTo('report')" style="margin-right:6px">&#128202; รายงาน</a>
   <a onclick="goTo('form')" class="accent">+ บันทึกการตรวจ</a>
 </div>
@@ -64,12 +65,8 @@ tbody td{padding:10px 12px;}
 
 <!-- Scroll buttons -->
 <div style="position:fixed;right:16px;bottom:24px;display:flex;flex-direction:column;gap:8px;z-index:999;">
-  <button onclick="window.scrollTo({top:0,behavior:'smooth'})"
-    style="width:40px;height:40px;border-radius:50%;background:#1a3c5e;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);display:none;"
-    id="btnTop" title="ขึ้นบน">&#8679;</button>
-  <button onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})"
-    style="width:40px;height:40px;border-radius:50%;background:#e84c0a;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);"
-    id="btnBot" title="ลงล่าง">&#8681;</button>
+  <button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="width:40px;height:40px;border-radius:50%;background:#1a3c5e;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);display:none;" id="btnTop">&#8679;</button>
+  <button onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})" style="width:40px;height:40px;border-radius:50%;background:#e84c0a;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);" id="btnBot">&#8681;</button>
 </div>
 
 <script>
@@ -97,8 +94,6 @@ google.script.run
 
 function render(d){
   var notInspected=d.totalStations-d.inspectedCount;
-
-  // Stats
   var h='<div class="stats">';
   h+=sc(d.totalStations,'หน่วยงานทั้งหมด','');
   h+=sc(d.inspectedCount,'ตรวจแล้ว','ok');
@@ -106,7 +101,6 @@ function render(d){
   h+=sc(d.totalInspect,'ครั้งที่ตรวจรวม','');
   h+='</div>';
 
-  // Category summary
   h+='<div class="sec-title">สัดส่วนคะแนนแต่ละหมวด</div><div class="cat-grid">';
   (d.catSummary||[]).forEach(function(c){
     h+='<div class="cat"><div class="cat-name">'+c.category+'</div>'
@@ -115,27 +109,21 @@ function render(d){
   });
   h+='</div>';
 
-  // Province list (unique, sorted)
   var provinces=[];
   d.stations.forEach(function(s){
     if(s.province&&provinces.indexOf(s.province)===-1) provinces.push(s.province);
   });
   provinces.sort();
 
-  // Filters
   h+='<div class="sec-title">สถานะการตรวจแต่ละหน่วยงาน</div>';
   h+='<div class="filters">';
   h+='<input id="sq" placeholder="&#128269; ค้นหาหน่วยงาน..." oninput="ft()">';
   h+='<select id="tf" onchange="ft()"><option value="">ทุกประเภท</option><option>L</option><option>M</option><option>S</option><option>XS</option></select>';
-  h+='<select id="pf" onchange="ft()"><option value="">ทุกจังหวัด</option>'
-     +provinces.map(function(p){return'<option>'+p+'</option>';}).join('')+'</select>';
+  h+='<select id="pf" onchange="ft()"><option value="">ทุกจังหวัด</option>'+provinces.map(function(p){return'<option>'+p+'</option>';}).join('')+'</select>';
   h+='<select id="sf" onchange="ft()"><option value="">ทุกสถานะ</option><option value="done">ตรวจแล้ว</option><option value="pending">ยังไม่ตรวจ</option></select>';
   h+='</div>';
 
-  // Table
-  h+='<div class="tbl-wrap"><table id="t">'
-    +'<thead><tr><th>#</th><th>หน่วยงาน</th><th>จังหวัด</th><th>ประเภท</th>'
-    +'<th>ตรวจล่าสุด</th><th>คะแนน</th><th>%</th><th>เกรด</th><th></th></tr></thead><tbody>';
+  h+='<div class="tbl-wrap"><table id="t"><thead><tr><th>#</th><th>หน่วยงาน</th><th>จังหวัด</th><th>ประเภท</th><th>ตรวจล่าสุด</th><th>คะแนน</th><th>%</th><th>เกรด</th><th></th></tr></thead><tbody>';
 
   d.stations.forEach(function(s,i){
     var done=!!s.last_inspect;
@@ -152,31 +140,19 @@ function render(d){
       +'<td><button class="btn btn-p" onclick="goTo(\'form\',\''+s.station_id+'\')">+ ตรวจ</button></td>'
       +'</tr>';
   });
-
   h+='</tbody></table></div>';
   document.getElementById('content').innerHTML=h;
 }
 
-function sc(n,l,cls){
-  return'<div class="stat '+cls+'"><div class="num">'+n+'</div><div class="lbl">'+l+'</div></div>';
-}
-function gc(g){
-  if(!g)return'';
-  if(g[0]==='A')return'gA';if(g[0]==='B')return'gB';
-  if(g[0]==='C')return'gC';if(g[0]==='D')return'gD';
-  if(g[0]==='F')return'gF';return'';
-}
+function sc(n,l,cls){return'<div class="stat '+cls+'"><div class="num">'+n+'</div><div class="lbl">'+l+'</div></div>';}
+function gc(g){if(!g)return'';if(g[0]==='A')return'gA';if(g[0]==='B')return'gB';if(g[0]==='C')return'gC';if(g[0]==='D')return'gD';if(g[0]==='F')return'gF';return'';}
 function ft(){
   var q=document.getElementById('sq').value.toLowerCase();
   var t=document.getElementById('tf').value;
   var p=document.getElementById('pf').value;
   var s=document.getElementById('sf').value;
   document.querySelectorAll('#t tbody tr').forEach(function(r){
-    var show=(!q||r.dataset.n.includes(q))
-           &&(!t||r.dataset.t===t)
-           &&(!p||r.dataset.p===p)
-           &&(!s||r.dataset.s===s);
-    r.style.display=show?'':'none';
+    r.style.display=((!q||r.dataset.n.includes(q))&&(!t||r.dataset.t===t)&&(!p||r.dataset.p===p)&&(!s||r.dataset.s===s))?'':'none';
   });
 }
 </script>

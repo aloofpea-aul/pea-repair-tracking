@@ -12,12 +12,35 @@ const SH = {
   CHECKLIST   : 'CHECKLIST',
   INSPECTIONS : 'INSPECTIONS',
   SCORES      : 'SCORES',
-  LOG         : 'LOG'
+  LOG         : 'LOG',
+  COMMITTEES  : 'COMMITTEES'
 };
 
 function doGet(e) {
-  const page = (e && e.parameter && e.parameter.page) ? e.parameter.page : 'index';
-  const allowed = ['index','form','report'];
+  const page    = (e && e.parameter && e.parameter.page) ? e.parameter.page : 'index';
+  const station = (e && e.parameter && e.parameter.station) ? e.parameter.station : '';
+  const allowed = ['index','form','report','settings'];
+
+  // form.html — serve ตรงๆ แล้ว inject station_id
+  if (page === 'form') {
+    var content = HtmlService.createHtmlOutputFromFile('form').getContent();
+    content = content.replace(
+      "var PRE_STATION_ID = '';",
+      "var PRE_STATION_ID = '" + station + "';"
+    );
+    return HtmlService.createHtmlOutput(content)
+      .setTitle('ระบบตรวจงานแก้ไฟฟ้าขัดข้อง กฟต.2')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  // settings.html — serve ตรงๆ
+  if (page === 'settings') {
+    return HtmlService.createHtmlOutputFromFile('settings')
+      .setTitle('ตั้งค่าคณะกรรมการตรวจ')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  // index / report — ใช้ template
   const tpl = HtmlService.createTemplateFromFile(allowed.includes(page) ? page : 'index');
   tpl.page = page;
   return tpl.evaluate()

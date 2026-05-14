@@ -105,12 +105,24 @@ tbody td{padding:5px 8px;border-bottom:1px solid #edf0f3;vertical-align:middle;}
       <div class="card-hdr"><span>ข้อมูลการตรวจ</span><span class="ms" id="answeredCount">0/33 รายการที่ลงคะแนนแล้ว</span></div>
       <div class="card-body">
         <div class="form-row">
-          <div class="fg"><label>หน่วยงานที่รับการตรวจ *</label><select id="sid" onchange="updateHeader()"><option value="">กำลังโหลด...</option></select></div>
-          <div class="fg"><label>วันที่ตรวจ *</label><input type="date" id="idate" onchange="updateHeader()"></div>
+          <div class="fg"><label>หน่วยงานที่รับการตรวจ *</label>
+            <select id="sid" onchange="onStationChange()"><option value="">กำลังโหลด...</option></select>
+          </div>
+          <div class="fg"><label>วันที่ตรวจ *</label><input type="date" id="idate"></div>
         </div>
         <div class="form-row">
-          <div class="fg"><label>ชื่อผู้ตรวจ *</label><input type="text" id="iname" placeholder="ชื่อ-นามสกุล"></div>
-          <div class="fg"><label>Email ผู้ตรวจ</label><input type="email" id="iemail" placeholder="xxx@pea.co.th"></div>
+          <div class="fg"><label>คณะกรรมการตรวจ</label>
+            <select id="icommittee" onchange="fillCommittee()">
+              <option value="">-- เลือกคณะ (ถ้ามี) --</option>
+            </select>
+          </div>
+          <div class="fg"><label>Email ผู้ตรวจ</label>
+            <input type="email" id="iemail" placeholder="xxx@pea.co.th">
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:12px;">
+          <label>ชื่อผู้ตรวจ / กรรมการ *</label>
+          <textarea id="iname" rows="2" placeholder="ชื่อ-นามสกุล (จะถูกเติมอัตโนมัติเมื่อเลือกคณะกรรมการ)"></textarea>
         </div>
         <div class="fg"><label>หมายเหตุภาพรวม</label><textarea id="gnote" rows="2" placeholder="หมายเหตุ"></textarea></div>
       </div>
@@ -130,10 +142,26 @@ tbody td{padding:5px 8px;border-bottom:1px solid #edf0f3;vertical-align:middle;}
 <div class="tab-content" id="tab-3"></div>
 <div class="tab-content" id="tab-4"></div>
 <div class="toast" id="toast"></div>
+
+<!-- Scroll buttons -->
+<div style="position:fixed;right:16px;bottom:24px;display:flex;flex-direction:column;gap:8px;z-index:999;">
+  <button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="width:40px;height:40px;border-radius:50%;background:#1a3c5e;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);display:none;" id="btnTop">&#8679;</button>
+  <button onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})" style="width:40px;height:40px;border-radius:50%;background:#e84c0a;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);" id="btnBot">&#8681;</button>
+</div>
+
 <script>
+// ค่า station_id ที่ส่งมาจาก server (inject โดย Code.gs)
+var PRE_STATION_ID = '';
+
 var EXEC_URL='';
 google.script.run.withSuccessHandler(function(u){EXEC_URL=u;}).getScriptUrl();
 function goHome(){google.script.run.withSuccessHandler(function(u){window.top.location.href=u+'?page=index';}).getScriptUrl();}
+
+window.addEventListener('scroll',function(){
+  var atTop=window.scrollY<200;
+  document.getElementById('btnTop').style.display=atTop?'none':'block';
+  document.getElementById('btnBot').style.display=(window.scrollY+window.innerHeight>=document.body.scrollHeight-50)?'none':'block';
+});
 
 var CRITERIA={
   1:'- ตรวจสอบอนุมัติจัดเวรฯ กับป้ายชื่อผู้อยู่เวร ในวันที่ตรวจ - ตรวจสอบการจัดเวรแทน ย้อนหลังไม่เกิน 1 เดือน * อยู่เวร Standby (แบบเฝ้าระวัง)',
@@ -244,13 +272,8 @@ function toggleCriteria(id){
   var box=document.getElementById('crit-'+id);
   var btn=document.getElementById('qbtn-'+id);
   if(!box)return;
-  if(box.classList.contains('show')){
-    box.classList.remove('show');
-    btn.classList.remove('active');
-  }else{
-    box.classList.add('show');
-    btn.classList.add('active');
-  }
+  if(box.classList.contains('show')){box.classList.remove('show');btn.classList.remove('active');}
+  else{box.classList.add('show');btn.classList.add('active');}
 }
 
 function buildCatGrid(){
@@ -275,7 +298,7 @@ function buildItem(item,isLast){
   var hasCrit=CRITERIA[item.id];
   var critBtn=hasCrit?'<button class="btn-q" id="qbtn-'+item.id+'" onclick="toggleCriteria('+item.id+')" title="ดูวิธีการตรวจ">?</button>':'';
   var critText=hasCrit?CRITERIA[item.id].replace(/ - /g,'<br>- ').replace(/ \| /g,'<br>'):'';
-var critBox=hasCrit?'<div class="criteria-box" id="crit-'+item.id+'"><div class="criteria-title">วิธีการตรวจ</div>'+critText+'</div>':''; 
+  var critBox=hasCrit?'<div class="criteria-box" id="crit-'+item.id+'"><div class="criteria-title">วิธีการตรวจ</div>'+critText+'</div>':'';
   var inp='';
   if(item.type==='calc'){
     inp='<div class="calc-box"><div class="calc-formula">'+item.formula+'</div>'
@@ -338,7 +361,45 @@ function syncExtra(ti){
   if(e1)e1.value=name;
   if(e2)e2.value=document.getElementById('idate').value||'';
 }
-function updateHeader(){}
+
+// เมื่อเลือกหน่วยงาน → โหลดคณะกรรมการที่รับผิดชอบ
+function onStationChange(){
+  var sid=document.getElementById('sid').value;
+  if(sid) loadCommittees(sid);
+  else{
+    var sel=document.getElementById('icommittee');
+    sel.innerHTML='<option value="">-- เลือกคณะ (ถ้ามี) --</option>';
+  }
+}
+
+// โหลดคณะกรรมการตามหน่วยงาน
+function loadCommittees(stationId){
+  var sel=document.getElementById('icommittee');
+  sel.innerHTML='<option value="">-- เลือกคณะ (ถ้ามี) --</option>';
+  google.script.run.withSuccessHandler(function(list){
+    (list||[]).forEach(function(c){
+      var opt=document.createElement('option');
+      opt.value=c.committee_id;
+      opt.textContent=c.name;
+      opt.dataset.members=c.members||'';
+      sel.appendChild(opt);
+    });
+    // ถ้ามีคณะเดียว เลือกให้อัตโนมัติ
+    if(sel.options.length===2){
+      sel.selectedIndex=1;
+      fillCommittee();
+    }
+  }).getCommitteesByStation(stationId||'');
+}
+
+// เติมชื่อกรรมการอัตโนมัติเมื่อเลือกคณะ
+function fillCommittee(){
+  var sel=document.getElementById('icommittee');
+  var opt=sel.options[sel.selectedIndex];
+  if(!opt||!opt.dataset||!opt.dataset.members)return;
+  var members=opt.dataset.members.split('|').map(function(m){return m.trim();}).filter(function(m){return m;}).join('\n');
+  if(members) document.getElementById('iname').value=members;
+}
 
 function selOpt(itemId,val){
   scores[itemId]=val;
@@ -379,9 +440,15 @@ function updateTotals(){
 function loadStations(stList){
   stations=stList||[];
   var sid=document.getElementById('sid');
-  var pre=new URLSearchParams(window.location.search).get('station')||'';
+  var pre=PRE_STATION_ID||'';
   sid.innerHTML='<option value="">-- เลือกหน่วยงาน --</option>'
-    +stations.map(function(s){return '<option value="'+s.station_id+'"'+(s.station_id===pre?' selected':'')+'>'+s.name+' ('+s.type+')</option>';}).join('');
+    +stations.map(function(s){
+      return '<option value="'+s.station_id+'"'+(s.station_id===pre?' selected':'')+'>'+s.name+' ('+s.type+')</option>';
+    }).join('');
+  // ถ้ามีการ pre-select → โหลดคณะกรรมการ
+  if(pre){
+    loadCommittees(pre);
+  }
 }
 
 function submitForm(){
@@ -409,6 +476,7 @@ function submitForm(){
     station_id:sid.value,station_name:sid.options[sid.selectedIndex].text,
     inspect_date:document.getElementById('idate').value,
     inspector_name:iname,inspector_email:document.getElementById('iemail').value,
+    committee_id:document.getElementById('icommittee').value||'',
     note:document.getElementById('gnote').value,
     total_score:getTotal(),scores:scoreArr,extras:extraArr
   };
@@ -440,24 +508,5 @@ document.addEventListener('DOMContentLoaded',function(){
     .getStations();
 });
 </script>
-
-<!-- Scroll buttons -->
-<div id="scrollBtns" style="position:fixed;right:16px;bottom:24px;display:flex;flex-direction:column;gap:8px;z-index:999;">
-  <button onclick="window.scrollTo({top:0,behavior:'smooth'})"
-    style="width:40px;height:40px;border-radius:50%;background:#1a3c5e;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);display:none;"
-    id="btnTop" title="ขึ้นบน">&#8679;</button>
-  <button onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})"
-    style="width:40px;height:40px;border-radius:50%;background:#e84c0a;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);"
-    id="btnBot" title="ลงล่าง">&#8681;</button>
-</div>
-<script>
-window.addEventListener('scroll',function(){
-  var atTop=window.scrollY<200;
-  var atBot=window.scrollY+window.innerHeight>=document.body.scrollHeight-50;
-  document.getElementById('btnTop').style.display=atTop?'none':'block';
-  document.getElementById('btnBot').style.display=atBot?'none':'block';
-});
-</script>
-
 </body>
 </html>
