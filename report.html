@@ -3,163 +3,274 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>รายงานการตรวจ</title>
+<title>รายงานผลการตรวจประเมิน</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Sarabun',sans-serif;}
 body{background:#f0f4f8;color:#1a2b3c;}
-.topbar{background:#1a3c5e;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:10px;}
-.topbar .title{font-size:18px;font-weight:700;}
-.topbar .spacer{flex:1;}
-.topbar a{color:#fff;font-size:13px;opacity:.85;text-decoration:none;}
-.container{max-width:1100px;margin:0 auto;padding:20px;}
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
-.filters input,.filters select{padding:7px 12px;border:1px solid #c8d0da;border-radius:6px;font-size:13px;background:#fff;}
-.filters input{flex:1;min-width:200px;}
-.btn{padding:7px 16px;border:none;border-radius:6px;font-size:13px;cursor:pointer;color:#fff;}
-.btn-s{background:#1a3c5e;}.btn-s:hover{background:#152e47;}
-.btn-d{background:#dc2626;}.btn-d:hover{background:#b91c1c;}
-.btn-sm{padding:4px 10px;font-size:12px;}
-.tbl-wrap{background:#fff;border-radius:10px;overflow:auto;border:1px solid #dde3ea;}
-table{width:100%;border-collapse:collapse;font-size:13px;min-width:680px;}
-thead th{background:#1a3c5e;color:#fff;padding:10px 12px;text-align:left;font-weight:600;}
-tbody tr{border-bottom:1px solid #edf0f3;}
+.topbar{background:#1a3c5e;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:12px;}
+.topbar .logo{font-size:15px;font-weight:700;}
+.topbar .sub{font-size:11px;opacity:.75;margin-top:2px;}
+.tab-bar{background:#fff;border-bottom:2px solid #1a3c5e;display:flex;}
+.tab-btn{padding:10px 18px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:400;color:#1a3c5e;border-bottom:3px solid transparent;font-family:Sarabun,sans-serif;}
+.tab-btn.active{font-weight:700;color:#e84c0a;border-bottom-color:#e84c0a;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.container{max-width:1400px;margin:0 auto;padding:20px;}
+.card{background:#fff;border-radius:10px;border:1px solid #dde3ea;margin-bottom:20px;overflow:hidden;}
+.card-hdr{background:#1a3c5e;color:#fff;padding:10px 16px;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:11.5px;}
+thead th{background:#1a3c5e;color:#fff;padding:7px 8px;text-align:center;font-weight:600;white-space:nowrap;position:sticky;top:0;z-index:1;}
+thead th.th-left{text-align:left;}
 tbody tr:hover{background:#f5f8fb;}
-tbody td{padding:10px 12px;}
-.gA{color:#166534;font-weight:700;}.gB{color:#1e40af;font-weight:700;}
-.gC{color:#92400e;font-weight:700;}.gD{color:#b45309;font-weight:700;}
-.gF{color:#dc2626;font-weight:700;}
-.bar-bg{background:#e5e7eb;border-radius:4px;height:6px;width:80px;display:inline-block;vertical-align:middle;}
-.bar-fg{background:#e84c0a;border-radius:4px;height:6px;}
-.empty,.loading{text-align:center;padding:50px;color:#9ca3af;}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:center;justify-content:center;}
-.overlay.show{display:flex;}
-.modal{background:#fff;border-radius:12px;padding:24px;max-width:700px;width:92%;max-height:88vh;overflow-y:auto;}
-.modal-title{font-size:16px;font-weight:700;color:#1a3c5e;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
-.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:#6b7c8d;line-height:1;}
-.sc-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f0f4f8;}
-.sc-row:last-child{border-bottom:none;}
-.sc-topic{flex:1;font-size:13px;}
-.sc-note{font-size:11px;color:#9ca3af;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.sc-val{min-width:60px;text-align:center;font-weight:700;font-size:14px;}
-.cat-hdr{background:#eef3f9;padding:6px 8px;font-size:12px;font-weight:700;color:#1a3c5e;margin:10px 0 4px;border-radius:4px;}
+tbody td{padding:5px 8px;border-bottom:1px solid #edf0f3;white-space:nowrap;}
+.td-no{text-align:center;color:#9ca3af;width:36px;}
+.td-topic{white-space:normal;min-width:160px;max-width:280px;line-height:1.4;}
+.td-max{text-align:center;width:52px;color:#6b7c8d;}
+.td-score{text-align:center;width:52px;}
+.tr-cat{background:#eef3f8;}
+.tr-cat td{font-weight:700;color:#1a3c5e;font-size:12px;padding:6px 8px;}
+.tr-total{background:#1a3c5e;}
+.tr-total td{color:#fff;font-weight:700;font-size:12px;padding:7px 8px;}
+.score-null{color:#d1d5db;}
+.score-full{color:#166534;font-weight:700;}
+.score-hi{color:#1e40af;font-weight:600;}
+.score-mid{color:#92400e;}
+.score-lo{color:#dc2626;}
+.badge-A{background:#dcfce7;color:#166534;border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700;}
+.badge-B{background:#dbeafe;color:#1e40af;border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700;}
+.badge-C{background:#fef9c3;color:#713f12;border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700;}
+.badge-D{background:#ffedd5;color:#9a3412;border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700;}
+.badge-F{background:#fee2e2;color:#991b1b;border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700;}
+.btn-print{background:#e84c0a;color:#fff;border:none;padding:5px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:Sarabun,sans-serif;white-space:nowrap;}
+.btn-print:hover{background:#c93d07;}
+.btn-back{color:#fff;text-decoration:none;font-size:13px;opacity:.85;cursor:pointer;background:rgba(255,255,255,.15);padding:6px 12px;border-radius:6px;border:none;}
+.loading{text-align:center;padding:60px;color:#6b7c8d;font-size:14px;}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px;}
+.stat-card{background:#fff;border-radius:8px;padding:10px 12px;border:1px solid #dde3ea;text-align:center;}
+.stat-num{font-size:22px;font-weight:700;color:#1a3c5e;}
+.stat-lbl{font-size:10px;color:#6b7c8d;margin-top:2px;}
+.print-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#fff;z-index:9999;overflow:auto;padding:20px;}
+.print-close{position:fixed;top:16px;right:20px;background:#e84c0a;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-size:13px;cursor:pointer;z-index:10000;}
+
+@media print {
+  body > *{display:none !important;}
+  .print-overlay{display:block !important;position:static !important;padding:0 !important;}
+  .print-close{display:none !important;}
+  @page{size:A4 landscape;margin:10mm;}
+}
+.print-title{font-size:14px;font-weight:700;color:#1a3c5e;margin-bottom:12px;text-align:center;}
+.print-table{width:100%;border-collapse:collapse;font-size:10px;}
+.print-table th,.print-table td{border:0.5px solid #c8d0da;padding:3px 5px;}
+.print-table th{background:#1a3c5e;color:#fff;text-align:center;}
+.print-table .pt-cat td{background:#eef3f8;font-weight:700;color:#1a3c5e;}
+.print-table .pt-total td{background:#1a3c5e;color:#fff;font-weight:700;}
 </style>
 </head>
 <body>
 <div class="topbar">
-  <div class="title">📊 รายงานการตรวจประเมิน</div>
-  <div class="spacer"></div>
-  <a href="?page=index">← หน้าหลัก</a>
-</div>
-<div class="container">
-  <div class="filters">
-    <input type="text" id="sq" placeholder="ค้นหาหน่วยงาน / ผู้ตรวจ..." oninput="ft()">
-    <select id="gf" onchange="ft()">
-      <option value="">ทุกเกรด</option>
-      <option>A (ดีเยี่ยม)</option><option>B (ดี)</option>
-      <option>C (พอใช้)</option><option>D (ต้องปรับปรุง)</option><option>F (ไม่ผ่าน)</option>
-    </select>
-    <button class="btn btn-s" onclick="exportCSV()">📥 Export CSV</button>
+  <div>
+    <div class="logo">&#9889; รายงานผลการตรวจประเมินระบบงานแก้ไฟฟ้าขัดข้อง</div>
+    <div class="sub">กฟต.2 ประจำปี 2569</div>
   </div>
-  <div id="content" class="loading">⏳ กำลังโหลดข้อมูล...</div>
+  <button class="btn-back" onclick="goHome()">← กลับหน้าหลัก</button>
 </div>
-<div class="overlay" id="ov" onclick="closeModal(event)">
-  <div class="modal">
-    <div class="modal-title"><span id="mt">รายละเอียด</span><button class="modal-close" onclick="closeModal()">×</button></div>
-    <div id="mb"></div>
-  </div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('lm')">กฟจ. / กฟส.L-M</button>
+  <button class="tab-btn" onclick="switchTab('s')">กฟส.S</button>
+  <button class="tab-btn" onclick="switchTab('xs')">กฟส.XS</button>
+</div>
+
+<div class="tab-content active" id="tab-lm"><div class="container"><div class="loading" id="load-lm">&#8987; กำลังโหลดข้อมูล...</div></div></div>
+<div class="tab-content" id="tab-s"><div class="container"><div class="loading" id="load-s">&#8987; กำลังโหลดข้อมูล...</div></div></div>
+<div class="tab-content" id="tab-xs"><div class="container"><div class="loading" id="load-xs">&#8987; กำลังโหลดข้อมูล...</div></div></div>
+
+<div class="print-overlay" id="printOverlay">
+  <button class="print-close" onclick="closePrint()">ปิด</button>
+  <div id="printContent"></div>
+</div>
+
+<script>
+var EXEC_URL='';
+var REPORT_DATA=null;
+google.script.run.withSuccessHandler(function(u){EXEC_URL=u;}).getScriptUrl();
+
+function goHome(){google.script.run.withSuccessHandler(function(u){window.top.location.href=u+'?page=index';}).getScriptUrl();}
+
+function switchTab(key){
+  document.querySelectorAll('.tab-btn').forEach(function(b,i){
+    b.classList.toggle('active',['lm','s','xs'][i]===key);
+  });
+  document.querySelectorAll('.tab-content').forEach(function(t,i){
+    t.classList.toggle('active',['tab-lm','tab-s','tab-xs'][i]==='tab-'+key);
+  });
+}
+
+function grade(s){
+  if(s===null||s===undefined||s==='')return'—';
+  if(s>=90)return'A';if(s>=80)return'B';if(s>=70)return'C';if(s>=60)return'D';return'F';
+}
+function gradeClass(g){return'badge-'+g;}
+function scoreClass(s,max){
+  if(s===null||s==='')return'score-null';
+  if(s>=max)return'score-full';
+  if(s>=max*0.75)return'score-hi';
+  if(s>=max*0.5)return'score-mid';
+  return'score-lo';
+}
+function fmt(v){return(v===null||v===undefined||v==='')? '<span class="score-null">—</span>': String(v);}
+
+function buildGroupHtml(g,totals){
+  if(!g)return'<div class="loading">ไม่พบข้อมูล</div>';
+  var stations=g.stations;
+  var inspected=stations.filter(function(st){return totals&&totals[st]>0;});
+
+  // Summary cards
+  var cards='<div class="summary-grid">';
+  cards+='<div class="stat-card"><div class="stat-num">'+stations.length+'</div><div class="stat-lbl">หน่วยงานทั้งหมด</div></div>';
+  cards+='<div class="stat-card"><div class="stat-num">'+inspected.length+'</div><div class="stat-lbl">ตรวจแล้ว</div></div>';
+  cards+='<div class="stat-card"><div class="stat-num">'+(stations.length-inspected.length)+'</div><div class="stat-lbl">ยังไม่ได้ตรวจ</div></div>';
+  if(inspected.length>0){
+    var avg=Math.round(inspected.reduce(function(s,st){return s+(totals[st]||0);},0)/inspected.length*10)/10;
+    cards+='<div class="stat-card"><div class="stat-num">'+avg+'</div><div class="stat-lbl">คะแนนเฉลี่ย</div></div>';
+  }
+  cards+='</div>';
+
+  // Buttons row
+  var btns='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">';
+  stations.forEach(function(st){
+    btns+='<button class="btn-print" onclick="printStation(\''+st+'\',\''+g.key+'\')">&#128438; '+st+'</button>';
+  });
+  btns+='</div>';
+
+  // Table
+  var h='<div class="tbl-wrap"><table><thead><tr>';
+  h+='<th class="th-left" style="min-width:36px">ที่</th>';
+  h+='<th class="th-left" style="min-width:180px">หัวข้อ</th>';
+  h+='<th>เต็ม</th>';
+  stations.forEach(function(st){
+    var tot=totals&&totals[st]?totals[st]:'—';
+    var g2=totals&&totals[st]?grade(totals[st]):'—';
+    h+='<th style="min-width:52px">'+st+'<br><span style="font-size:9px;opacity:.8">('+tot+')</span></th>';
+  });
+  h+='</tr></thead><tbody>';
+
+  var currentCat='';
+  g.items.forEach(function(item){
+    if(item.cat!==currentCat){
+      currentCat=item.cat;
+      h+='<tr class="tr-cat"><td colspan="'+(3+stations.length)+'">'+currentCat+'</td></tr>';
+    }
+    h+='<tr><td class="td-no">'+item.no+'</td>';
+    h+='<td class="td-topic">'+item.topic+'</td>';
+    h+='<td class="td-max">'+item.max+'</td>';
+    stations.forEach(function(st){
+      var sc=item.scores[st];
+      var cls=sc!==null&&sc!==undefined&&sc!==''?scoreClass(sc,item.max):'score-null';
+      h+='<td class="td-score '+cls+'">'+fmt(sc)+'</td>';
+    });
+    h+='</tr>';
+  });
+
+  // Total row
+  if(totals){
+    h+='<tr class="tr-total"><td></td><td>รวมคะแนน</td><td>100</td>';
+    stations.forEach(function(st){
+      var t=totals[st];
+      var g2=t?grade(t):'—';
+      h+='<td style="text-align:center">'+(t||'—')+(t?'<br><span style="font-size:9px">['+g2+']</span>':'')+'</td>';
+    });
+    h+='</tr>';
+  }
+
+  h+='</tbody></table></div>';
+  return cards+btns+'<div class="card"><div class="card-hdr">ตารางคะแนนรายข้อ — '+g.title+'</div>'+h+'</div>';
+}
+
+function renderAll(data){
+  REPORT_DATA=data;
+  ['lm','s','xs'].forEach(function(key){
+    var g=data[key];
+    var totals=data[key+'_totals']||{};
+    var container=document.getElementById('tab-'+key).querySelector('.container');
+    container.innerHTML=buildGroupHtml(g,totals);
+  });
+}
+
+function printStation(stName, groupKey){
+  if(!REPORT_DATA)return;
+  var g=REPORT_DATA[groupKey];
+  var totals=REPORT_DATA[groupKey+'_totals']||{};
+  if(!g)return;
+
+  var total=totals[stName]||'—';
+  var g2=totals[stName]?grade(totals[stName]):'—';
+
+  var h='<div class="print-title">รายงานผลการตรวจประเมินระบบงานแก้ไฟฟ้าขัดข้อง ประจำปี 2569<br>';
+  h+='หน่วยงาน: '+stName+' | กลุ่ม: '+g.title+'</div>';
+  h+='<table class="print-table"><thead><tr>';
+  h+='<th style="width:32px">ที่</th><th style="min-width:200px;text-align:left">หัวข้อ</th>';
+  h+='<th style="width:50px">เต็ม</th><th style="width:60px">คะแนน</th><th style="width:60px">%</th></tr></thead><tbody>';
+
+  var currentCat='';
+  g.items.forEach(function(item){
+    if(item.cat!==currentCat){
+      currentCat=item.cat;
+      h+='<tr class="pt-cat"><td colspan="5">'+currentCat+'</td></tr>';
+    }
+    var sc=item.scores[stName];
+    var pct=sc!==null&&sc!==undefined&&sc!==''&&item.max>0?Math.round(sc/item.max*100)+'%':'—';
+    h+='<tr><td style="text-align:center">'+item.no+'</td><td>'+item.topic+'</td>';
+    h+='<td style="text-align:center">'+item.max+'</td>';
+    h+='<td style="text-align:center">'+(sc!==null&&sc!==undefined&&sc!==''?sc:'—')+'</td>';
+    h+='<td style="text-align:center">'+pct+'</td></tr>';
+  });
+
+  h+='<tr class="pt-total"><td colspan="2">รวมคะแนน</td><td style="text-align:center">100</td>';
+  h+='<td style="text-align:center">'+total+'</td>';
+  h+='<td style="text-align:center">'+(totals[stName]?Math.round(totals[stName])+'%':'—')+'</td></tr>';
+  h+='</tbody></table>';
+  h+='<div style="margin-top:12px;font-size:11px;color:#6b7c8d;text-align:right">พิมพ์เมื่อ: '+new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'})+'</div>';
+
+  document.getElementById('printContent').innerHTML=h;
+  document.getElementById('printOverlay').style.display='block';
+  setTimeout(function(){window.print();},300);
+}
+
+function closePrint(){
+  document.getElementById('printOverlay').style.display='none';
+}
+
+// Load data
+google.script.run
+  .withSuccessHandler(renderAll)
+  .withFailureHandler(function(e){
+    ['lm','s','xs'].forEach(function(k){
+      var c=document.getElementById('tab-'+k).querySelector('.container');
+      c.innerHTML='<div class="loading">&#10060; '+e.message+'</div>';
+    });
+  })
+  .getReportData();
+</script>
+
+<!-- Scroll buttons -->
+<div id="scrollBtns" style="position:fixed;right:16px;bottom:24px;display:flex;flex-direction:column;gap:8px;z-index:999;">
+  <button onclick="window.scrollTo({top:0,behavior:'smooth'})"
+    style="width:40px;height:40px;border-radius:50%;background:#1a3c5e;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);display:none;"
+    id="btnTop" title="ขึ้นบน">&#8679;</button>
+  <button onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})"
+    style="width:40px;height:40px;border-radius:50%;background:#e84c0a;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);"
+    id="btnBot" title="ลงล่าง">&#8681;</button>
 </div>
 <script>
-let allData=[];
-google.script.run
-  .withSuccessHandler(d=>{allData=d;render(d);})
-  .withFailureHandler(e=>{document.getElementById('content').innerHTML=`<div class="empty">❌ ${e.message}</div>`;})
-  .getInspections();
-
-function render(data){
-  if(!data||data.length===0){document.getElementById('content').innerHTML='<div class="tbl-wrap"><div class="empty">ยังไม่มีข้อมูลการตรวจ</div></div>';return;}
-  data.sort((a,b)=>String(b.inspect_date).localeCompare(String(a.inspect_date)));
-  let h='<div class="tbl-wrap"><table id="rt"><thead><tr><th>#</th><th>หน่วยงาน</th><th>วันที่ตรวจ</th><th>ผู้ตรวจ</th><th>คะแนน</th><th>%</th><th>เกรด</th><th></th></tr></thead><tbody>';
-  data.forEach((r,i)=>{
-    const pct=r.percent||0;
-    h+=`<tr data-q="${((r.station_name||'')+' '+(r.inspector_name||'')).toLowerCase()}" data-g="${r.grade||''}">
-      <td style="color:#9ca3af">${i+1}</td>
-      <td><strong>${r.station_name||''}</strong></td>
-      <td>${r.inspect_date||''}</td>
-      <td>${r.inspector_name||''}</td>
-      <td>${r.total_score||0}/${r.max_score||100}</td>
-      <td><span class="bar-bg"><span class="bar-fg" style="width:${pct}%"></span></span> ${pct}%</td>
-      <td class="${gc(r.grade)}">${r.grade||'-'}</td>
-      <td>
-        <button class="btn btn-s btn-sm" onclick="view('${r.inspection_id}','${esc(r.station_name)}')">ดู</button>
-        <button class="btn btn-d btn-sm" onclick="del('${r.inspection_id}','${esc(r.station_name)}')" style="margin-left:4px">ลบ</button>
-      </td></tr>`;
-  });
-  h+='</tbody></table></div>';
-  document.getElementById('content').innerHTML=h;
-}
-
-function gc(g){if(!g)return'';if(g[0]==='A')return'gA';if(g[0]==='B')return'gB';if(g[0]==='C')return'gC';if(g[0]==='D')return'gD';if(g[0]==='F')return'gF';return'';}
-function esc(s){return(s||'').replace(/'/g,"\\'");}
-
-function ft(){
-  const q=document.getElementById('sq').value.toLowerCase();
-  const g=document.getElementById('gf').value;
-  document.querySelectorAll('#rt tbody tr').forEach(r=>{
-    r.style.display=((!q||r.dataset.q.includes(q))&&(!g||r.dataset.g===g))?'':'none';
-  });
-}
-
-function view(id,name){
-  document.getElementById('mt').textContent='รายละเอียด: '+name;
-  document.getElementById('mb').innerHTML='<div style="text-align:center;padding:20px;color:#9ca3af">⏳ กำลังโหลด...</div>';
-  document.getElementById('ov').classList.add('show');
-  google.script.run
-    .withSuccessHandler(res=>{
-      if(!res||!res.inspection){document.getElementById('mb').innerHTML='<div style="color:#dc2626">ไม่พบข้อมูล</div>';return;}
-      const ins=res.inspection;const scores=res.scores||[];
-      let h=`<p style="font-size:13px;color:#6b7c8d;margin-bottom:10px">วันที่: <strong>${ins.inspect_date}</strong> · ผู้ตรวจ: <strong>${ins.inspector_name}</strong></p>
-        <p style="font-size:13px;margin-bottom:12px">คะแนน: <strong>${ins.total_score}/${ins.max_score}</strong> (${ins.percent}%) เกรด: <strong class="${gc(ins.grade)}">${ins.grade}</strong></p>`;
-      if(ins.note)h+=`<p style="font-size:12px;color:#6b7c8d;margin-bottom:12px">📝 ${ins.note}</p>`;
-      const catMap={};
-      scores.forEach(s=>{if(!catMap[s.category])catMap[s.category]=[];catMap[s.category].push(s);});
-      Object.keys(catMap).forEach(cat=>{
-        h+=`<div class="cat-hdr">${cat}</div>`;
-        catMap[cat].forEach(s=>{
-          const color=s.score>=s.max_score?'#166534':s.score>0?'#92400e':'#dc2626';
-          h+=`<div class="sc-row">
-            <span style="min-width:22px;font-size:11px;color:#9ca3af">${s.item_no}</span>
-            <span class="sc-topic">${s.topic}</span>
-            <span class="sc-note">${s.note||''}</span>
-            <span class="sc-val" style="color:${color}">${s.score}/${s.max_score}</span>
-          </div>`;
-        });
-      });
-      document.getElementById('mb').innerHTML=h;
-    })
-    .withFailureHandler(e=>{document.getElementById('mb').innerHTML=`<div style="color:#dc2626">${e.message}</div>`;})
-    .getInspectionById(id);
-}
-
-function closeModal(e){
-  if(!e||e.target===document.getElementById('ov'))
-    document.getElementById('ov').classList.remove('show');
-}
-
-function del(id,name){
-  if(!confirm(`ต้องการลบการตรวจ "${name}" ใช่ไหม?`))return;
-  google.script.run
-    .withSuccessHandler(res=>{if(res.success)location.reload();else alert('ลบไม่สำเร็จ: '+res.error);})
-    .deleteInspection(id);
-}
-
-function exportCSV(){
-  let csv='\ufeffหน่วยงาน,วันที่ตรวจ,ผู้ตรวจ,คะแนน,เปอร์เซ็นต์,เกรด\n';
-  allData.forEach(r=>{csv+=`"${r.station_name||''}","${r.inspect_date||''}","${r.inspector_name||''}","${r.total_score||0}/${r.max_score||100}","${r.percent||0}%","${r.grade||''}"\n`;});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
-  a.download='รายงานตรวจงานแก้ไฟ_2569.csv';
-  a.click();
-}
+window.addEventListener('scroll',function(){
+  var atTop=window.scrollY<200;
+  var atBot=window.scrollY+window.innerHeight>=document.body.scrollHeight-50;
+  document.getElementById('btnTop').style.display=atTop?'none':'block';
+  document.getElementById('btnBot').style.display=atBot?'none':'block';
+});
 </script>
+
 </body>
 </html>

@@ -3,193 +3,510 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>บันทึกการตรวจ</title>
+<title>แบบฟอร์มตรวจประเมิน</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Sarabun',sans-serif;}
-body{background:#f0f4f8;color:#1a2b3c;padding-bottom:80px;}
-.topbar{background:#1a3c5e;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:10px;}
-.topbar .title{font-size:18px;font-weight:700;}
-.topbar .spacer{flex:1;}
-.topbar a{color:#fff;font-size:13px;opacity:.85;text-decoration:none;}
-.container{max-width:860px;margin:0 auto;padding:20px;}
+body{background:#f0f4f8;color:#1a2b3c;}
+.topbar{background:#1a3c5e;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:12px;}
+.topbar .logo{font-size:15px;font-weight:700;}
+.topbar .sub{font-size:11px;opacity:.75;margin-top:2px;}
+.score-box{background:rgba(255,255,255,.12);border-radius:8px;padding:8px 16px;margin-left:auto;text-align:center;border:1px solid rgba(255,255,255,.2);}
+.score-num{font-size:26px;font-weight:700;line-height:1;}
+.score-lbl{font-size:10px;opacity:.8;}
+.score-grade{font-size:12px;font-weight:700;}
+.tab-bar{background:#fff;border-bottom:2px solid #1a3c5e;display:flex;overflow-x:auto;}
+.tab-btn{padding:9px 15px;border:none;background:none;cursor:pointer;font-size:12.5px;font-weight:400;color:#1a3c5e;border-bottom:3px solid transparent;white-space:nowrap;font-family:Sarabun,sans-serif;}
+.tab-btn.active{font-weight:700;color:#e84c0a;border-bottom-color:#e84c0a;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.container{max-width:900px;margin:0 auto;padding:20px;}
 .card{background:#fff;border-radius:10px;border:1px solid #dde3ea;margin-bottom:16px;overflow:hidden;}
-.card-hdr{background:#1a3c5e;color:#fff;padding:11px 16px;font-size:14px;font-weight:600;display:flex;align-items:center;}
-.card-hdr .ms{margin-left:auto;opacity:.75;font-size:12px;}
+.card-hdr{background:#1a3c5e;color:#fff;padding:10px 16px;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;}
+.card-hdr .ms{font-size:11px;opacity:.85;}
 .card-body{padding:16px;}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
-@media(max-width:580px){.form-row{grid-template-columns:1fr;}}
 .fg{display:flex;flex-direction:column;gap:4px;}
-.fg label{font-size:12px;font-weight:600;color:#4b5563;}
-.fg input,.fg select,.fg textarea{padding:8px 10px;border:1px solid #c8d0da;border-radius:6px;font-size:13px;font-family:inherit;}
-.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:#1a3c5e;}
-.ci{border-bottom:1px solid #edf0f3;padding:12px 0;}
-.ci:last-child{border-bottom:none;}
+.fg label{font-size:12px;font-weight:700;color:#4b5563;}
+.fg input,.fg select,.fg textarea{padding:8px 10px;border:1px solid #c8d0da;border-radius:6px;font-size:13px;font-family:Sarabun,sans-serif;width:100%;}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:18px;}
+.cat-card{background:#fff;border-radius:8px;padding:10px 12px;border:1px solid #dde3ea;}
+.cat-card .cat-name{font-size:10px;color:#6b7c8d;line-height:1.3;margin-bottom:4px;}
+.cat-card .cat-score{font-size:20px;font-weight:700;color:#1a3c5e;}
+.cat-card .cat-max{font-size:11px;color:#9ca3af;}
+.cat-bar-bg{height:4px;background:#e5e7eb;border-radius:2px;margin-top:4px;}
+.cat-bar-fg{height:4px;background:#e84c0a;border-radius:2px;}
+.ci{border-bottom:1px solid #edf0f3;padding:13px 0;}
 .ci-top{display:flex;align-items:flex-start;gap:10px;}
-.ci-no{min-width:28px;height:28px;background:#1a3c5e;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px;}
-.ci-topic{font-size:13px;flex:1;line-height:1.5;}
-.ci-max{font-size:11px;color:#9ca3af;}
-.ci-crit{font-size:11px;color:#5b6e80;margin:6px 0 8px 38px;line-height:1.6;background:#f8fafc;padding:6px 8px;border-radius:4px;border-left:3px solid #c8d0da;}
-.ci-inputs{display:flex;gap:10px;margin-left:38px;flex-wrap:wrap;}
-.ss{padding:6px 10px;border:1px solid #c8d0da;border-radius:6px;font-size:12px;min-width:100px;}
-.ni{flex:1;min-width:150px;padding:6px 10px;border:1px solid #c8d0da;border-radius:6px;font-size:12px;}
-.ss:focus,.ni:focus{outline:none;border-color:#e84c0a;}
-.ss.empty{border-color:#fca5a5;background:#fff5f5;}
-.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:#1a3c5e;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:16px;z-index:10;}
-.score-big{font-size:24px;font-weight:700;}
-.score-lbl{font-size:11px;opacity:.75;}
-.grade-lbl{font-size:15px;font-weight:700;margin-left:6px;}
-.btn-save{background:#e84c0a;color:#fff;border:none;padding:10px 26px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;}
-.btn-save:hover{background:#c93d07;}
-.btn-save:disabled{opacity:.5;cursor:not-allowed;}
+.ci-no{min-width:26px;height:26px;background:#1a3c5e;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px;}
+.ci-content{flex:1;min-width:0;}
+.ci-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;}
+.ci-topic{font-size:13px;font-weight:600;line-height:1.5;flex:1;}
+.ci-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.score-chip{padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.score-chip.full{background:#dcfce7;color:#166534;}
+.score-chip.zero{background:#fce7f3;color:#9d174d;}
+.score-chip.mid{background:#fff3ee;color:#92400e;}
+.btn-q{width:22px;height:22px;border-radius:50%;border:1px solid #c8d0da;background:#f8fafc;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#6b7c8d;font-weight:700;flex-shrink:0;padding:0;line-height:1;}
+.btn-q:hover{background:#e8f4ff;border-color:#1a3c5e;color:#1a3c5e;}
+.btn-q.active{background:#1a3c5e;border-color:#1a3c5e;color:#fff;}
+.criteria-box{display:none;background:#eef6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#1e40af;line-height:1.7;}
+.criteria-box.show{display:block;}
+.criteria-title{font-size:11px;font-weight:700;color:#1e3a8a;margin-bottom:4px;}
+.opt{display:flex;align-items:flex-start;gap:8px;padding:5px 8px;border-radius:6px;cursor:pointer;margin-bottom:3px;font-size:12px;border:1px solid transparent;}
+.opt.selected{background:#fff3ee;border-color:#e84c0a;}
+.opt input[type=radio]{accent-color:#e84c0a;flex-shrink:0;margin-top:2px;}
+.calc-box{background:#f8fafc;border:1px solid #dde3ea;border-radius:8px;padding:10px;margin-top:6px;}
+.calc-formula{font-size:10.5px;color:#6b7c8d;font-family:monospace;margin-bottom:6px;}
+.calc-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.calc-pct-input{padding:6px 10px;border:1px solid #c8d0da;border-radius:6px;font-size:13px;font-family:Sarabun,sans-serif;width:100px;}
+.calc-hint{font-size:11px;color:#9ca3af;flex:1;}
+.calc-result{font-size:12px;color:#e84c0a;font-weight:700;}
+.note-input{width:100%;padding:5px 10px;border:1px solid #c8d0da;border-radius:5px;font-size:11.5px;font-family:Sarabun,sans-serif;margin-top:6px;}
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead th{background:#1a3c5e;color:#fff;padding:8px 10px;text-align:left;font-weight:600;}
+tbody tr:nth-child(even){background:#fafafa;}
+tbody td{padding:5px 8px;border-bottom:1px solid #edf0f3;vertical-align:middle;}
+.t-inp{width:100%;padding:4px 8px;border:1px solid #c8d0da;border-radius:4px;font-size:12px;font-family:Sarabun,sans-serif;}
+.t-num{text-align:center;color:#9ca3af;font-size:11px;}
+.btn-row{display:flex;justify-content:flex-end;gap:10px;padding:16px;background:#fff;border-top:1px solid #dde3ea;}
+.btn{padding:10px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:Sarabun,sans-serif;}
+.btn-secondary{background:#f0f4f8;color:#1a3c5e;border:1px solid #c8d0da;}
+.btn-primary{background:#e84c0a;color:#fff;}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;}
 .toast{position:fixed;top:20px;right:20px;padding:12px 18px;border-radius:8px;font-size:13px;z-index:999;display:none;max-width:340px;color:#fff;}
 .toast.show{display:block;}
 .t-ok{background:#166534;}.t-err{background:#dc2626;}.t-info{background:#1a3c5e;}
-.loading{text-align:center;padding:60px;color:#6b7c8d;}
+.ro-input{background:#f8fafc;color:#6b7c8d;}
 </style>
 </head>
 <body>
 <div class="topbar">
-  <div class="title">📋 บันทึกการตรวจประเมิน</div>
-  <div class="spacer"></div>
-  <a href="#" onclick="window.top.location.href='?page=index'">← กลับหน้าหลัก</a>
-</div>
-<div class="container"><div id="content" class="loading">⏳ กำลังโหลดข้อมูล...</div></div>
-<div class="bottom-bar" id="bar" style="display:none">
   <div>
-    <div class="score-lbl">คะแนนรวม</div>
-    <div><span class="score-big" id="sdis">0</span><span style="font-size:13px;opacity:.6"> / 100</span><span class="grade-lbl" id="gdis"></span></div>
+    <div class="logo">&#9889; แบบฟอร์มตรวจประเมินระบบงานแก้ไฟฟ้าขัดข้อง</div>
+    <div class="sub">กฟต.2 ประจำปี 2569 | อัพเดท 7 มกราคม 2569</div>
   </div>
-  <div style="flex:1"></div>
-  <button class="btn-save" id="sbtn" onclick="submit()">💾 บันทึกการตรวจ</button>
+  <div class="score-box">
+    <div class="score-num" id="totalScore">0</div>
+    <div class="score-lbl">/ 100 คะแนน</div>
+    <div class="score-grade" id="gradeLabel">—</div>
+  </div>
 </div>
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab(0)">แบบฟอร์มหลัก</button>
+  <button class="tab-btn" onclick="switchTab(1)">รถยนต์-เพิ่ม</button>
+  <button class="tab-btn" onclick="switchTab(2)">เครื่องมือ</button>
+  <button class="tab-btn" onclick="switchTab(3)">สถานที่-เพิ่ม</button>
+  <button class="tab-btn" onclick="switchTab(4)">ชุดปฏิบัติการฯ-เพิ่ม</button>
+</div>
+<div class="tab-content active" id="tab-0">
+  <div class="container">
+    <div class="card">
+      <div class="card-hdr"><span>ข้อมูลการตรวจ</span><span class="ms" id="answeredCount">0/33 รายการที่ลงคะแนนแล้ว</span></div>
+      <div class="card-body">
+        <div class="form-row">
+          <div class="fg"><label>หน่วยงานที่รับการตรวจ *</label>
+            <select id="sid" onchange="onStationChange()"><option value="">กำลังโหลด...</option></select>
+          </div>
+          <div class="fg"><label>วันที่ตรวจ *</label><input type="date" id="idate"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>คณะกรรมการตรวจ</label>
+            <select id="icommittee" onchange="fillCommittee()">
+              <option value="">-- เลือกคณะ (ถ้ามี) --</option>
+            </select>
+          </div>
+          <div class="fg"><label>Email ผู้ตรวจ</label>
+            <input type="email" id="iemail" placeholder="xxx@pea.co.th">
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:12px;">
+          <label>ชื่อผู้ตรวจ / กรรมการ *</label>
+          <textarea id="iname" rows="2" placeholder="ชื่อ-นามสกุล (จะถูกเติมอัตโนมัติเมื่อเลือกคณะกรรมการ)"></textarea>
+        </div>
+        <div class="fg"><label>หมายเหตุภาพรวม</label><textarea id="gnote" rows="2" placeholder="หมายเหตุ"></textarea></div>
+      </div>
+    </div>
+    <div class="cat-grid" id="catGrid"></div>
+    <div id="itemsContainer"></div>
+    <div class="card">
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="goHome()">กลับหน้าหลัก</button>
+        <button class="btn btn-primary" id="saveBtn" onclick="submitForm()">บันทึกการตรวจ</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="tab-content" id="tab-1"></div>
+<div class="tab-content" id="tab-2"></div>
+<div class="tab-content" id="tab-3"></div>
+<div class="tab-content" id="tab-4"></div>
 <div class="toast" id="toast"></div>
+
+<!-- Scroll buttons -->
+<div style="position:fixed;right:16px;bottom:24px;display:flex;flex-direction:column;gap:8px;z-index:999;">
+  <button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="width:40px;height:40px;border-radius:50%;background:#1a3c5e;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);display:none;" id="btnTop">&#8679;</button>
+  <button onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})" style="width:40px;height:40px;border-radius:50%;background:#e84c0a;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);" id="btnBot">&#8681;</button>
+</div>
+
 <script>
-let CL=[],ST=[];
-google.script.run.withSuccessHandler(cl=>{CL=cl;google.script.run.withSuccessHandler(st=>{ST=st;build();}).withFailureHandler(e=>err(e.message)).getStations();}).withFailureHandler(e=>err(e.message)).getChecklist();
+// ค่า station_id ที่ส่งมาจาก server (inject โดย Code.gs)
+var PRE_STATION_ID = '';
 
-function build(){
-  const cats={};
-  CL.forEach(item=>{if(!cats[item.category])cats[item.category]=[];cats[item.category].push(item);});
-  const params=new URLSearchParams(window.location.search);
-  const pre=params.get('station')||'';
-  let h='';
-  h+=`<div class="card"><div class="card-hdr">📝 ข้อมูลการตรวจ</div><div class="card-body">
-  <div class="form-row">
-    <div class="fg"><label>หน่วยงานที่รับการตรวจ *</label>
-      <select id="sid"><option value="">-- เลือกหน่วยงาน --</option>
-      ${ST.map(s=>`<option value="${s.station_id}" ${s.station_id===pre?'selected':''}>${s.name} (${s.type})</option>`).join('')}
-      </select></div>
-    <div class="fg"><label>วันที่ตรวจ *</label>
-      <input type="date" id="idate" value="${new Date().toISOString().slice(0,10)}"></div>
-  </div>
-  <div class="form-row">
-    <div class="fg"><label>ชื่อผู้ตรวจ *</label><input type="text" id="iname" placeholder="ชื่อ-นามสกุล"></div>
-    <div class="fg"><label>Email ผู้ตรวจ</label><input type="email" id="iemail" placeholder="xxx@pea.co.th"></div>
-  </div>
-  <div class="fg"><label>หมายเหตุภาพรวม</label><textarea id="gnote" rows="2" placeholder="หมายเหตุ / ข้อสังเกตภาพรวม"></textarea></div>
-  </div></div>`;
-  Object.keys(cats).forEach(cat=>{
-    const items=cats[cat];
-    const catMax=items[0].category_max;
-    h+=`<div class="card"><div class="card-hdr">📌 ${cat}<span class="ms">เต็ม ${catMax} คะแนน</span></div><div class="card-body">`;
-    items.forEach(item=>{
-      h+=`<div class="ci" data-id="${item.item_id}" data-max="${item.max_score}">
-        <div class="ci-top">
-          <div class="ci-no">${item.item_no}</div>
-          <div class="ci-topic">${item.topic} <span class="ci-max">(เต็ม ${item.max_score})</span></div>
-        </div>
-        <div class="ci-crit">${(item.criteria||'').replace(/\|/g,'<br>')}</div>
-        <div class="ci-inputs">
-          <select class="ss empty" data-id="${item.item_id}" data-max="${item.max_score}" onchange="this.classList.remove('empty');recalc()">
-            <option value="">-- คะแนน --</option>
-            ${opts(item.max_score)}
-          </select>
-          <input class="ni" data-note="${item.item_id}" type="text" placeholder="หมายเหตุรายการนี้">
-        </div>
-      </div>`;
-    });
-    h+='</div></div>';
-  });
-  document.getElementById('content').innerHTML=h;
-  document.getElementById('bar').style.display='flex';
-  recalc();
+var EXEC_URL='';
+google.script.run.withSuccessHandler(function(u){EXEC_URL=u;}).getScriptUrl();
+function goHome(){google.script.run.withSuccessHandler(function(u){window.top.location.href=u+'?page=index';}).getScriptUrl();}
+
+window.addEventListener('scroll',function(){
+  var atTop=window.scrollY<200;
+  document.getElementById('btnTop').style.display=atTop?'none':'block';
+  document.getElementById('btnBot').style.display=(window.scrollY+window.innerHeight>=document.body.scrollHeight-50)?'none':'block';
+});
+
+var CRITERIA={
+  1:'- ตรวจสอบอนุมัติจัดเวรฯ กับป้ายชื่อผู้อยู่เวร ในวันที่ตรวจ - ตรวจสอบการจัดเวรแทน ย้อนหลังไม่เกิน 1 เดือน * อยู่เวร Standby (แบบเฝ้าระวัง)',
+  2:'ตรวจสอบอนุมัติตรวจสอบเวรฯ และรายงานการอยู่เวร (หรือใบเซ็นชื่อปฏิบัติงาน) ย้อนหลัง 1 เดือน',
+  3:'- ตรวจสอบสถานะผังอัพเดทล่าสุดไม่เกิน 1 ปี - มีใช้งาน สถานะถูกต้องเป็นปัจจุบัน ในรูปแบบ ไฟล์ PDF หรือ กระดาษ A3 - ตรวจที่ห้องเวรฯ และ รถยนต์แก้ไฟ',
+  4:'- ตรวจสอบสถานะผังอัพเดทล่าสุดไม่เกิน 1 ปี - มีใช้งาน สถานะถูกต้อง เป็นปัจจุบัน ในรูปแบบ ไฟล์ PDF หรือ กระดาษ A0 - ตรวจที่ห้องเวรฯ และ รถยนต์แก้ไฟ',
+  5:'- ให้พนักงานประจำห้องเวรแก้ไฟฟ้าขัดข้อง ใช้วิทยุสื่อสารพูดคุยกับวิทยุสื่อสารประจำรถยนต์ สื่อสารกันได้หรือไม่ โดยให้รถยนต์จอดภายในพื้นที่ สนง. แล้วใช้ช่องความถี่แบบเรียกตรง',
+  6:'- ให้พนักงานประจำห้องเวรแก้ไฟฟ้าขัดข้อง ใช้วิทยุสื่อสารพูดคุยกับวิทยุสื่อสารประจำรถยนต์ สื่อสารกันได้หรือไม่ โดยให้รถยนต์จอดภายในพื้นที่ สนง. แล้วใช้ช่องความถี่แบบเรียกตรง',
+  7:'- โทรศัพท์ (ภายในสำนักงาน, ภายนอกสำนักงาน) มีความพร้อมใช้งาน ตลอดเวลา หรือไม่',
+  8:'- มีสมุดโทรศัพท์ / รายชื่อโทรศัพท์ และเป็นปัจจุบัน หรือไม่ (เบอร์ฉุกเฉิน, ผู้บริหารในพื้นที่, ศจฟ.ต.2, กฟฟ.ในสังกัด)',
+  9:'ตรวจสอบสมุดแบบฟอร์ม บร.1 ประจำรถยนต์แก้ไฟทุกคัน',
+  10:'- ตรวจสอบสภาพห้อง, การจัดวางสิ่งของ, ความสะอาด',
+  11:'- ตรวจสอบสภาพห้อง, การจัดวางสิ่งของ, ความสะอาด',
+  12:'- ตรวจสอบสภาพห้อง, การจัดวางสิ่งของ, ความสะอาด',
+  13:'- ความสะอาด เป็นระเบียบ เรียบร้อย: ตรวจสอบพื้นที่ในการจัดเก็บ ทั้งในด้านความปลอดภัย ความสะอาด เป็นระเบียบ เรียบร้อย - การจัดวาง First In First Out: ความง่ายในการตรวจสอบและความสะดวกในการนำไปใช้งาน',
+  14:'- ตรวจนับจำนวนและความพร้อมใช้งาน ตามหนังสือเลขที่ ก.2 กบษ. 2586/2565 กฟภ. (ขั้นมาตรฐาน) ประจำกายและประจำรถยนต์แก้ไฟฟ้าขัดข้องทุกคันที่ กฟฟ. มีใช้งาน - คำนวณตามสูตร: % ความครบถ้วน = (จำนวนที่นับได้ x 100) / จำนวนตามมาตรฐาน | คะแนน = (% ความครบถ้วน x 4) / 91%',
+  15:'ตรวจสอบเอกสารการส่งมอบ/การดูแลเครื่องมือเครื่องใช้ ประจำรถยนต์ ในวันที่ตรวจประเมิน และย้อนหลังไม่เกิน 1 เดือน',
+  16:'ตรวจสอบว่ามีการนำนวัตกรรมด้านความปลอดภัย / เครื่องมือวัดกระแสไฟฟ้ารั่ว (นอกเหนือจาก Voltage detector) มาใช้ในงานแก้ไฟฟ้าขัดข้องหรือไม่',
+  17:'ตรวจสอบว่ามีอนุมัติใช้งานเป็นฉบับปัจจุบันหรือไม่ หนังสือเลขที่ ต.2กบษ.(บร.)1792/2568 ลว. 2 ก.ย.2568 อนุมัติรายการและยอดพัสดุสำรองคลังสำหรับงานแก้ไฟฟ้าขัดข้อง พื้นที่ กฟต.2',
+  18:'- ตรวจสอบอุปกรณ์สำรองแก้ไฟพัสดุฉุกเฉิน จากระบบ SAP T-Code MB52 เปรียบเทียบตามอนุมัติเลขที่ ต.2กบษ.(บร.)1792/2568 ลว. 2 ก.ย.2568 และตรวจสอบบัญชีทรัพย์สิน - คะแนน = (% ความครบถ้วน x 2) / 91%',
+  19:'- สอบถาม กฟฟ. ว่าสำรองพัสดุที่คลังย่อยเป็นรอบ 7 วัน หรือ 14 วัน - ตรวจสอบอุปกรณ์สำรองแก้ไฟพัสดุฉุกเฉิน จากระบบ SAP T-Code MB52 - คะแนน = (% ความครบถ้วน x 3) / 91%',
+  20:'รถยนต์ กฟภ.: ตรวจสอบแผนงาน-ผล บำรุงรักษาประจำปี, ยาง, น้ำมันเครื่อง ของรถยนต์แก้ไฟฟ้าขัดข้องทุกคัน | รถยนต์เช่า: ตรวจสอบเอกสารมอบหมายผู้รับผิดชอบ-ผล บำรุงรักษา (ประจำรถ), ยาง, น้ำมันเครื่อง',
+  21:'ตรวจสอบการใช้งานแบบฟอร์ม FM1-SOH3-S04-6103 ย้อนหลัง 1 เดือน',
+  22:'- ตรวจสอบสภาพรถยนต์แก้ไฟฟ้าขัดข้องที่ กฟฟ.ใช้งานทุกคัน ตามแบบฟอร์ม FM1-SOH3-S04-6103 ทั้ง 19 รายการ (รายการที่ปกติ = 1 คะแนน) - คะแนน = (จำนวนรายการที่ปกติ x 4) / 19 รายการ',
+  23:'ตรวจสอบการสวมใส่เครื่องแต่งกาย/เครื่องแบบ ตามมาตรฐาน กฟภ.',
+  24:'ตรวจสอบการสวมใส่เครื่องแต่งกาย/เครื่องแบบ ตามมาตรฐาน กฟภ.',
+  25:'- ตรวจนับจำนวนตามหนังสือเลขที่ ก.2 กบษ. 2586/2565 กฟภ. (ขั้นมาตรฐาน) ประจำกายและประจำรถยนต์แก้ไฟฟ้าขัดข้องทุกคัน - คะแนน = (% ความครบถ้วน x 4) / 91%',
+  26:'- ตรวจนับจำนวนและความพร้อมใช้งาน ตามหนังสือเลขที่ ก.2 กบษ. 2586/2565 กฟภ. (ขั้นมาตรฐาน) ประจำกายและประจำรถยนต์แก้ไฟฟ้าขัดข้องทุกคัน - คะแนน = (% ความครบถ้วน x 4) / 91%',
+  27:'- ตรวจสอบการใช้งาน WeSafe เทียบกับข้อมูลไฟฟ้าขัดข้องจาก OMS ย้อนหลัง 1 เดือน - % ใช้งาน = (จำนวนรายการ WeSafe กรณีไฟฟ้าขัดข้อง x 100) / จำนวนไฟฟ้าขัดข้องจากระบบ OMS ทั้งหมด',
+  28:'- สุ่มตรวจการปฏิบัติงานแก้ไฟฟ้าขัดข้อง/ดับไฟปฏิบัติงาน ดูกระบวนการปฏิบัติงานด้านความปลอดภัย ประกอบด้วย 1) ความพร้อมสถานที่ก่อนปฏิบัติงาน 2) ความพร้อมชุดทีมงาน (PPE) 3) ความพร้อมรถยนต์ 4) ขั้นตอนความปลอดภัย (WeSafe, KYT, การทำกราวด์) 5) ความเข้าใจขั้นตอนปฏิบัติงาน - หากไม่มีเหตุการณ์ ให้จำลองเหตุการณ์เปลี่ยน Drop ต้นหม้อแปลง',
+  29:'ตรวจผลดำเนินงาน การบริหารเหตุการณ์และปรับปรุงประมาณการ/เวลาจ่ายไฟกลับคืน หลังจากได้รับแจ้งเหตุการณ์ไฟฟ้าขัดข้องในเชิง Realtime ภายใน 1 ชั่วโมง (สะสมตั้งแต่วันที่ 1 ม.ค.69 - ปัจจุบัน)',
+  30:'ตรวจผลดำเนินงาน บริหารเหตุการณ์แผนดับไฟหม้อแปลงจำหน่ายแรงต่ำ ในวันที่ปฏิบัติงาน และแจ้งข้อมูลวันเวลาขอดับไฟฟ้าให้แก่ผู้ใช้ไฟทราบก่อนวันเริ่มปฏิบัติงานภายใน 3 วันทำการ',
+  31:'- กฟจ., กฟส.L/M, S: ตรวจสอบบันทึกแจ้งแผนดับไฟหม้อแปลงจำหน่ายแรงต่ำ (วันที่มีการอนุมัติแผน เทียบกับ วันปฏิบัติงาน ต้องมากกว่าเกณฑ์ 14 วัน) - กฟส.XS: ให้คะแนนเต็ม 2 เนื่องจากดำเนินการโดย กฟฟ.ต้นสังกัด',
+  32:'- กฟจ., กฟส.L/M, S: ตรวจสอบการเปิดเหตุการณ์แผนดับไฟหม้อแปลงจำหน่ายแรงต่ำ เทียบกับแผนดับไฟที่ได้รับมา - กฟส.XS: ให้คะแนนเต็ม 3 เนื่องจากดำเนินการโดย กฟฟ.ต้นสังกัด',
+  33:'ตรวจสอบผลการแก้ไขข้อบกพร่อง จากการตรวจจากปีก่อนหน้า'
+};
+
+var CATS=[
+  {name:"ความพร้อมอุปกรณ์และการสนับสนุนการแก้ไฟฟ้าขัดข้อง",max:16},
+  {name:"ความพร้อมสถานที่อยู่เวรแก้ไฟฟ้าขัดข้อง",max:12},
+  {name:"ความพร้อมเครื่องมือเครื่องใช้แก้ไฟฟ้าขัดข้อง",max:8},
+  {name:"ความพร้อมพัสดุสำรองคลังแก้ไฟฟ้าขัดข้อง",max:7},
+  {name:"ความพร้อมรถยนต์แก้ไฟฟ้าขัดข้อง",max:10},
+  {name:"ความพร้อมชุดปฏิบัติงานแก้ไฟฟ้าขัดข้อง",max:27},
+  {name:"ความพร้อมระบบบริหารงานแก้ไฟฟ้าขัดข้อง",max:15},
+  {name:"ความสำเร็จการปรับปรุงข้อบกพร่องจากการตรวจปีก่อนหน้า",max:5}
+];
+var ITEMS=[
+  {id:1,cat:0,no:"1",max:2,opts:[{v:"0",l:"0 - ไม่มีการดำเนินการ"},{v:"1",l:"1 - มีอนุมัติจัดเวรฯ หรือจัดเวรแทน อย่างใดอย่างหนึ่ง"},{v:"2",l:"2 - มีอนุมัติจัดเวรฯ และจัดเวรแทน ครบถ้วน"}],topic:"อนุมัติจัดเวรฯ และจัดเวรแทน ถูกต้องตามหลักเกณฑ์"},
+  {id:2,cat:0,no:"2",max:2,opts:[{v:"0",l:"0 - ไม่มีการดำเนินการ"},{v:"1",l:"1 - มีการตรวจสอบเวรฯ หรือการรายงาน ผจก. อย่างใดอย่างหนึ่ง"},{v:"2",l:"2 - มีการตรวจสอบเวรฯ และการรายงาน ผจก. ครบถ้วน"}],topic:"การตรวจสอบเวรฯ และรายงานการอยู่เวรให้ผู้บังคับบัญชาทราบ"},
+  {id:3,cat:0,no:"3",max:2,opts:[{v:"0",l:"0 - ไม่มีผัง"},{v:"1",l:"1 - มีผัง แต่ไม่เป็นปัจจุบัน"},{v:"2",l:"2 - มีผังถูกต้อง เป็นปัจจุบัน"}],topic:"ผัง Switching Diagram (A3)"},
+  {id:4,cat:0,no:"4",max:2,opts:[{v:"0",l:"0 - ไม่มีผัง"},{v:"1",l:"1 - มีผัง แต่ไม่เป็นปัจจุบัน"},{v:"2",l:"2 - มีผังถูกต้อง เป็นปัจจุบัน"}],topic:"ผัง Single line Diagram (A0)"},
+  {id:5,cat:0,no:"5",max:2,opts:[{v:"0",l:"0 - ชำรุด ไม่ดำเนินการใดๆ"},{v:"1",l:"1 - ชำรุด อยู่ระหว่างซ่อม มีเอกสารอ้างอิง"},{v:"2",l:"2 - ใช้งานได้ปกติ"}],topic:"วิทยุสื่อสารสำนักงาน"},
+  {id:6,cat:0,no:"6",max:2,opts:[{v:"0",l:"0 - ชำรุด ไม่ดำเนินการใดๆ"},{v:"1",l:"1 - ชำรุด อยู่ระหว่างซ่อม มีเอกสารอ้างอิง"},{v:"2",l:"2 - ใช้งานได้ปกติ"}],topic:"วิทยุสื่อสารติดรถยนต์"},
+  {id:7,cat:0,no:"7",max:2,opts:[{v:"0",l:"0 - ชำรุด ไม่ดำเนินการใดๆ"},{v:"1",l:"1 - ชำรุด และแจ้งส่วนเกี่ยวข้องแล้ว"},{v:"2",l:"2 - สามารถใช้งานได้ปกติ"}],topic:"โทรศัพท์"},
+  {id:8,cat:0,no:"8",max:1,opts:[{v:"0",l:"0 - ไม่มีสมุดโทรศัพท์"},{v:"0.5",l:"0.5 - มีสมุดโทรศัพท์ แต่ไม่เป็นปัจจุบัน"},{v:"1",l:"1 - มีสมุดโทรศัพท์ เป็นปัจจุบัน"}],topic:"สมุดโทรศัพท์ / รายชื่อโทรศัพท์"},
+  {id:9,cat:0,no:"9",max:1,opts:[{v:"0",l:"0 - ไม่มีการใช้งาน"},{v:"0.5",l:"0.5 - มีใช้งาน แต่ไม่ครบทุกคัน"},{v:"1",l:"1 - มีใช้งานประจำรถยนต์ทุกคัน"}],topic:"มีการใช้งานแบบฟอร์ม บร.1"},
+  {id:10,cat:1,no:"10",max:3,opts:[{v:"0",l:"0 - ไม่สะอาด ไม่เป็นระเบียบ"},{v:"1",l:"1 - ไม่สะอาด"},{v:"2",l:"2 - สะอาด เป็นระเบียบ"},{v:"3",l:"3 - สะอาด เป็นระเบียบ และไม่มีมลพิษ"}],topic:"ห้องอยู่เวรฯ"},
+  {id:11,cat:1,no:"11",max:3,opts:[{v:"0",l:"0 - ไม่สะอาด ไม่เป็นระเบียบ"},{v:"1",l:"1 - ไม่สะอาด"},{v:"2",l:"2 - สะอาด เป็นระเบียบ"},{v:"3",l:"3 - สะอาด เป็นระเบียบ และไม่มีมลพิษ"}],topic:"ห้องสุขา สำหรับอยู่เวรฯ"},
+  {id:12,cat:1,no:"12",max:3,opts:[{v:"0",l:"0 - ไม่สะอาด ไม่เป็นระเบียบ"},{v:"1",l:"1 - ไม่สะอาด"},{v:"2",l:"2 - สะอาด เป็นระเบียบ"},{v:"3",l:"3 - สะอาด เป็นระเบียบ และไม่มีมลพิษ"}],topic:"ห้องพักเวรฯ / ห้องนอนเวรฯ"},
+  {id:13,cat:1,no:"13",max:3,opts:[{v:"0",l:"0 - ไม่สะอาด ไม่เป็นระเบียบ ไม่มีระบบ FIFO"},{v:"1",l:"1 - ไม่สะอาด หรือไม่เป็นระเบียบ ไม่มีระบบ FIFO"},{v:"2",l:"2 - สะอาด เป็นระเบียบ ไม่มีระบบ FIFO"},{v:"3",l:"3 - สะอาด เป็นระเบียบ และมีระบบ FIFO"}],topic:"ห้องเก็บพัสดุแก้ไฟ / สถานที่จัดเก็บพัสดุชั่วคราว"},
+  {id:14,cat:2,no:"14",max:4,type:"calc",topic:"เครื่องมือเครื่องใช้ (หมวด 3-5)",formula:"คะแนน = (% ความครบถ้วน x 4) / 91",hint:"กรอก % ความครบถ้วน (0-100) เต็ม 4 คะแนน เมื่อ >= 91%"},
+  {id:15,cat:2,no:"15",max:2,opts:[{v:"0",l:"0 - ไม่มีเอกสารส่งมอบพัสดุประจำรถยนต์"},{v:"1",l:"1 - มีเอกสารส่งมอบ ไม่สม่ำเสมอ"},{v:"2",l:"2 - มีเอกสารส่งมอบ อย่างสม่ำเสมอ"}],topic:"การดูแลเครื่องมือเครื่องใช้"},
+  {id:16,cat:2,no:"16",max:2,opts:[{v:"0",l:"0 - ไม่มีการใช้งาน"},{v:"1",l:"1 - มีใช้งาน เก็บไว้ประจำรถยนต์บางคัน"},{v:"2",l:"2 - มีใช้งาน เก็บไว้ประจำรถยนต์ทุกคัน"}],topic:"นำเครื่องมือวัดกระแสไฟฟ้ารั่วมาใช้งาน"},
+  {id:17,cat:3,no:"17",max:2,opts:[{v:"0",l:"0 - ไม่มีอนุมัติ Safety stock"},{v:"0.5",l:"0.5 - มีอนุมัติ Safety stock ก่อนปี 2567"},{v:"1",l:"1 - มีอนุมัติ Safety stock ปี 2567"},{v:"2",l:"2 - มีอนุมัติ Safety stock ปัจจุบัน (ปี 2568)"}],topic:"อนุมัติรายการและยอดพัสดุสำรองคลัง"},
+  {id:18,cat:3,no:"18",max:2,type:"calc",topic:"ความครบถ้วนของพัสดุสำรองคลัง (รายการพัสดุ)",formula:"คะแนน = (% ความครบถ้วน x 2) / 91",hint:"กรอก % ความครบถ้วนรายการพัสดุ (0-100)"},
+  {id:19,cat:3,no:"19",max:3,type:"calc",topic:"ความครบถ้วนของพัสดุสำรองคลัง (ปริมาณ >= 50% ของยอดอนุมัติ)",formula:"คะแนน = (% ความครบถ้วน x 3) / 91",hint:"กรอก % ความครบถ้วนปริมาณพัสดุ (0-100)"},
+  {id:20,cat:4,no:"20",max:4,opts:[{v:"0",l:"0 - ไม่มีแผนงาน หรือสภาพไม่ปลอดภัย"},{v:"2",l:"2 - มีแผนงาน มีการบำรุงรักษา หรือไม่สอดคล้องกับแผน"},{v:"4",l:"4 - มีแผนงาน และมีการบำรุงรักษาสอดคล้องกับแผน"}],topic:"การบำรุงรักษารถยนต์"},
+  {id:21,cat:4,no:"21",max:2,opts:[{v:"0",l:"0 - ไม่มีการดำเนินการ"},{v:"1",l:"1 - มีใช้งานแบบฟอร์ม ไม่สม่ำเสมอ"},{v:"2",l:"2 - มีใช้งานแบบฟอร์ม อย่างสม่ำเสมอ"}],topic:"การตรวจสภาพรถยนต์ก่อนปฏิบัติงาน"},
+  {id:22,cat:4,no:"22",max:4,opts:[{v:"0",l:"0 - ค่าเฉลี่ยผลตรวจ 0.00-1.00"},{v:"1",l:"1 - ค่าเฉลี่ยผลตรวจ 1.01-2.00"},{v:"2",l:"2 - ค่าเฉลี่ยผลตรวจ 2.01-3.00"},{v:"3",l:"3 - ค่าเฉลี่ยผลตรวจ 3.01-4.00"},{v:"4",l:"4 - ค่าเฉลี่ยผลตรวจ 4.01-5.00"}],topic:"ความพร้อมใช้งานรถยนต์ (ตรวจ 19 รายการ ตาม FM1-SOH3-S04-6103)"},
+  {id:23,cat:5,no:"23",max:2,opts:[{v:"0",l:"0 - ไม่ถูกต้องตามมาตรฐาน / ไม่สุภาพ"},{v:"1",l:"1 - ไม่ถูกต้องตามมาตรฐาน แต่สุภาพ"},{v:"2",l:"2 - ถูกต้องตามมาตรฐาน สุภาพ"}],topic:"เครื่องแต่งกาย พนักงาน, ผู้ช่วยช่าง"},
+  {id:24,cat:5,no:"24",max:2,opts:[{v:"0",l:"0 - ไม่ถูกต้องตามมาตรฐาน / ไม่สุภาพ"},{v:"1",l:"1 - ไม่ถูกต้องตามมาตรฐาน แต่สุภาพ"},{v:"2",l:"2 - ถูกต้องตามมาตรฐาน สุภาพ"}],topic:"เครื่องแต่งกาย คนงาน, พขร.(บ)"},
+  {id:25,cat:5,no:"25",max:4,type:"calc",topic:"PPE จำนวน 14 รายการ (หมวด 1)",formula:"คะแนน = (% ความครบถ้วน x 4) / 91",hint:"กรอก % ความครบถ้วน PPE หมวด 1 (0-100)"},
+  {id:26,cat:5,no:"26",max:4,type:"calc",topic:"อุปกรณ์ความปลอดภัย จำนวน 18 รายการ (หมวด 2)",formula:"คะแนน = (% ความครบถ้วน x 4) / 91",hint:"กรอก % ความครบถ้วนอุปกรณ์ความปลอดภัย หมวด 2 (0-100)"},
+  {id:27,cat:5,no:"27",max:5,opts:[{v:"0",l:"0 - ไม่มีการใช้งานเลย"},{v:"1",l:"1 - 1-20%"},{v:"2",l:"2 - 21-40%"},{v:"3",l:"3 - 41-60%"},{v:"4",l:"4 - 61-80%"},{v:"5",l:"5 - 81-100% หรือไม่มีเหตุการณ์ไฟฟ้าขัดข้องเลย"}],topic:"WeSafe"},
+  {id:28,cat:5,no:"28",max:10,opts:[{v:"0",l:"0 - ปฏิบัติงานไม่เป็นไปตามหลักความปลอดภัย"},{v:"2.5",l:"2.5 - ละเลย 3 จุด"},{v:"5",l:"5 - ละเลย 2 จุด"},{v:"7.5",l:"7.5 - ละเลย 1 จุด"},{v:"10",l:"10 - ปฏิบัติครบถ้วน ไม่พบละเลย"}],topic:"สุ่มตรวจการปฏิบัติงานจริง"},
+  {id:29,cat:6,no:"29",max:5,opts:[{v:"1",l:"1 - น้อยกว่า 94%"},{v:"2",l:"2 - 94%"},{v:"3",l:"3 - 95%"},{v:"4",l:"4 - 96%"},{v:"5",l:"5 - 97% ขึ้นไป"}],topic:"บริหารเหตุการณ์และปรับปรุงประมาณการ/เวลาจ่ายไฟคืน (Realtime ภายใน 1 ชั่วโมง)"},
+  {id:30,cat:6,no:"30",max:5,opts:[{v:"1",l:"1 - น้อยกว่า 94%"},{v:"2",l:"2 - 94%"},{v:"3",l:"3 - 95%"},{v:"4",l:"4 - 96%"},{v:"5",l:"5 - 97% ขึ้นไป"}],topic:"บริหารเหตุการณ์แผนดับไฟหม้อแปลงจำหน่ายแรงต่ำ และแจ้งผู้ใช้ไฟก่อน 3 วันทำการ"},
+  {id:31,cat:6,no:"31",max:2,opts:[{v:"0",l:"0 - ไม่มีการส่งแผน"},{v:"1",l:"1 - มีการส่งแผน ระยะเวลา < 14 วัน"},{v:"2",l:"2 - มีการส่งแผน ระยะเวลา >= 14 วัน"}],topic:"กระบวนการส่งแผนดับไฟหม้อแปลงจำหน่ายแรงต่ำ ให้แผนกปฏิบัติการทราบภายใน 14 วัน"},
+  {id:32,cat:6,no:"32",max:3,opts:[{v:"0",l:"0 - น้อยกว่า 70%"},{v:"1",l:"1 - 70%-79%"},{v:"2",l:"2 - 80%-99%"},{v:"3",l:"3 - 100%"}],topic:"ความสำเร็จการเปิดเหตุการณ์แผนดับไฟหม้อแปลงจำหน่ายแรงต่ำ"},
+  {id:33,cat:7,no:"33",max:5,opts:[{v:"0",l:"0 - ไม่มีการแก้ไขปรับปรุงเลย"},{v:"1",l:"1 - 1-20%"},{v:"2",l:"2 - 21-40%"},{v:"3",l:"3 - 41-60%"},{v:"4",l:"4 - 61-80%"},{v:"5",l:"5 - 81-100% หรือไม่มีข้อบกพร่องจากปีก่อนหน้า"}],topic:"ความสำเร็จการปรับปรุงข้อบกพร่องจากการตรวจปีก่อนหน้า"}
+];
+var EXTRAS=[
+  {title:"ข้อมูลเพิ่มเติม : รถยนต์แก้ไฟฟ้าขัดข้อง (1 คัน / 1 ชุด)",sections:[{name:"รายการที่ชำรุดไม่พร้อมใช้งาน",n:10},{name:"อื่นๆ (ระบุ)",n:10}]},
+  {title:"ข้อมูลเพิ่มเติม : เครื่องมือเครื่องใช้แก้ไฟฟ้าขัดข้อง",sections:[{name:"รายการเครื่องมือเครื่องใช้ที่ชำรุดไม่พร้อมใช้งาน",n:10},{name:"อื่นๆ (ระบุ)",n:10}]},
+  {title:"ข้อมูลเพิ่มเติม : อาคาร/สถานที่",sections:[{name:"ห้องปฏิบัติการแก้ไฟฟ้าขัดข้อง : รายการที่ชำรุด / ต้องปรับปรุง",n:10},{name:"ห้องเก็บพัสดุฉุกเฉิน : รายการที่ชำรุด / ต้องปรับปรุง",n:10},{name:"อื่นๆ (ระบุ)",n:10}]},
+  {title:"ข้อมูลเพิ่มเติม : ชุดปฏิบัติการระบบไฟฟ้า / ชุดปฏิบัติงานแก้ไฟฟ้าขัดข้อง",sections:[{name:"รายการ PPE ที่ขาดแคลน / ชำรุดไม่พร้อมใช้งาน",n:10},{name:"อื่นๆ (ระบุ)",n:10}]}
+];
+
+var scores={},pcts={},stations=[];
+
+function getScore(item){
+  if(item.type==='calc'){var p=parseFloat(pcts[item.id]||0);if(!p||p<=0)return 0;return Math.min(item.max,Math.round(p*item.max/91*100)/100);}
+  return parseFloat(scores[item.id])||0;
+}
+function getCatScore(ci){return Math.round(ITEMS.filter(function(it){return it.cat===ci;}).reduce(function(s,it){return s+getScore(it);},0)*10)/10;}
+function getTotal(){return Math.round(ITEMS.reduce(function(s,it){return s+getScore(it);},0)*10)/10;}
+function getGrade(t){
+  if(t>=90)return{g:'A',lbl:'ดีเยี่ยม',color:'#4ade80'};
+  if(t>=80)return{g:'B',lbl:'ดี',color:'#93c5fd'};
+  if(t>=70)return{g:'C',lbl:'พอใช้',color:'#fcd34d'};
+  if(t>=60)return{g:'D',lbl:'ต้องปรับปรุง',color:'#fb923c'};
+  return{g:'F',lbl:'ไม่ผ่าน',color:'#f87171'};
+}
+function chipCls(v,max){return v>=max?'score-chip full':v===0?'score-chip zero':'score-chip mid';}
+
+function toggleCriteria(id){
+  var box=document.getElementById('crit-'+id);
+  var btn=document.getElementById('qbtn-'+id);
+  if(!box)return;
+  if(box.classList.contains('show')){box.classList.remove('show');btn.classList.remove('active');}
+  else{box.classList.add('show');btn.classList.add('active');}
 }
 
-function opts(max){
-  max=Number(max)||0;
-  let o='';
-  const step=max<=2?0.5:1;
-  for(let v=0;v<=max;v+=step){
-    const vv=parseFloat(v.toFixed(1));
-    o+=`<option value="${vv}">${vv}</option>`;
-    if(vv>=max)break;
+function buildCatGrid(){
+  document.getElementById('catGrid').innerHTML=CATS.map(function(c,ci){
+    return '<div class="cat-card"><div class="cat-name">'+c.name+'</div>'
+      +'<div class="cat-score" id="catScore-'+ci+'">0</div>'
+      +'<div class="cat-max">/ '+c.max+' คะแนน</div>'
+      +'<div class="cat-bar-bg"><div class="cat-bar-fg" id="catBar-'+ci+'" style="width:0%"></div></div></div>';
+  }).join('');
+}
+
+function buildItems(){
+  document.getElementById('itemsContainer').innerHTML=CATS.map(function(cat,ci){
+    var items=ITEMS.filter(function(it){return it.cat===ci;});
+    return '<div class="card"><div class="card-hdr"><span>'+cat.name+'</span>'
+      +'<span class="ms">ได้ <span id="catHdrScore-'+ci+'">0</span> / '+cat.max+' คะแนน</span></div>'
+      +'<div class="card-body">'+items.map(function(item,ii){return buildItem(item,ii===items.length-1);}).join('')+'</div></div>';
+  }).join('');
+}
+
+function buildItem(item,isLast){
+  var hasCrit=CRITERIA[item.id];
+  var critBtn=hasCrit?'<button class="btn-q" id="qbtn-'+item.id+'" onclick="toggleCriteria('+item.id+')" title="ดูวิธีการตรวจ">?</button>':'';
+  var critText=hasCrit?CRITERIA[item.id].replace(/ - /g,'<br>- ').replace(/ \| /g,'<br>'):'';
+  var critBox=hasCrit?'<div class="criteria-box" id="crit-'+item.id+'"><div class="criteria-title">วิธีการตรวจ</div>'+critText+'</div>':'';
+  var inp='';
+  if(item.type==='calc'){
+    inp='<div class="calc-box"><div class="calc-formula">'+item.formula+'</div>'
+      +'<div class="calc-row"><div>'
+      +'<label style="font-size:11px;color:#6b7c8d;display:block;margin-bottom:3px">% ความครบถ้วน</label>'
+      +'<input type="number" min="0" max="100" step="0.01" class="calc-pct-input" id="pct-'+item.id+'" placeholder="0-100" oninput="onPctChange('+item.id+')">'
+      +'</div><div class="calc-hint">'+item.hint+'</div>'
+      +'<div class="calc-result" id="calcResult-'+item.id+'" style="display:none"></div></div></div>';
+  } else {
+    inp=(item.opts||[]).map(function(o){
+      return '<div class="opt" id="opt-'+item.id+'-'+o.v.replace('.','_')+'" onclick="selOpt('+item.id+',\''+o.v+'\')">'
+        +'<input type="radio" name="item-'+item.id+'" value="'+o.v+'"><span>'+o.l+'</span></div>';
+    }).join('');
   }
-  return o;
+  return '<div class="ci" style="'+(isLast?'border-bottom:none':'')+'">'
+    +'<div class="ci-top"><div class="ci-no">'+item.no+'</div>'
+    +'<div class="ci-content"><div class="ci-head"><div class="ci-topic">'+item.topic+'</div>'
+    +'<div class="ci-actions"><span class="'+chipCls(0,item.max)+'" id="chip-'+item.id+'">0/'+item.max+'</span>'+critBtn+'</div></div>'
+    +critBox+inp
+    +'<input class="note-input" type="text" id="note-'+item.id+'" placeholder="หมายเหตุรายการนี้...">'
+    +'</div></div></div>';
 }
 
-function recalc(){
-  let total=0;
-  document.querySelectorAll('.ss').forEach(s=>{total+=parseFloat(s.value)||0;});
-  total=Math.round(total*10)/10;
-  document.getElementById('sdis').textContent=total;
-  const p=Math.round(total);
-  let g='';
-  if(p>=90)g='🏆 A ดีเยี่ยม';
-  else if(p>=80)g='🥈 B ดี';
-  else if(p>=70)g='🥉 C พอใช้';
-  else if(p>=60)g='⚠️ D ต้องปรับปรุง';
-  else g='❌ F ไม่ผ่าน';
-  document.getElementById('gdis').textContent=g;
-}
-
-function submit(){
-  const sid=document.getElementById('sid');
-  if(!sid.value){toast('กรุณาเลือกหน่วยงาน','err');return;}
-  const iname=document.getElementById('iname').value.trim();
-  if(!iname){toast('กรุณาใส่ชื่อผู้ตรวจ','err');return;}
-  const empty=[];
-  document.querySelectorAll('.ss').forEach(s=>{if(!s.value)empty.push(s.dataset.id);});
-  if(empty.length>0&&!confirm(`ยังไม่ได้ลงคะแนน ${empty.length} รายการ ต้องการบันทึกต่อหรือไม่?`))return;
-  const scores=[];
-  document.querySelectorAll('.ss').forEach(s=>{
-    const n=document.querySelector(`[data-note="${s.dataset.id}"]`);
-    scores.push({item_id:s.dataset.id,score:parseFloat(s.value)||0,note:n?n.value:''});
+function buildExtraForms(){
+  EXTRAS.forEach(function(et,ti){
+    var secs=et.sections.map(function(sec,si){
+      var rows=Array(sec.n).fill(0).map(function(_,ri){
+        return '<tr><td class="t-num">'+(ri+1)+'</td>'
+          +'<td><input class="t-inp" id="ex-'+ti+'-'+si+'-'+ri+'-item" placeholder="ระบุรายการ..."></td>'
+          +'<td><input class="t-inp" id="ex-'+ti+'-'+si+'-'+ri+'-qty" placeholder="จำนวน" style="text-align:center"></td>'
+          +'<td><input class="t-inp" id="ex-'+ti+'-'+si+'-'+ri+'-note" placeholder="หมายเหตุ"></td></tr>';
+      }).join('');
+      return '<div class="card"><div class="card-hdr">'+sec.name+'</div>'
+        +'<div class="tbl-wrap"><table><thead><tr><th style="width:36px">ที่</th><th>ผลการตรวจประเมิน</th><th style="width:80px">จำนวน</th><th style="width:140px">หมายเหตุ</th></tr></thead>'
+        +'<tbody>'+rows+'</tbody></table></div></div>';
+    }).join('');
+    document.getElementById('tab-'+(ti+1)).innerHTML='<div class="container">'
+      +'<div class="card"><div class="card-hdr">'+et.title+'</div><div class="card-body">'
+      +'<div class="form-row"><div class="fg"><label>หน่วยงานที่รับการตรวจ</label>'
+      +'<input class="ro-input" id="ex-station-'+ti+'" readonly placeholder="(จากแบบฟอร์มหลัก)"></div>'
+      +'<div class="fg"><label>วันที่ตรวจ</label><input type="date" class="ro-input" id="ex-date-'+ti+'" readonly></div>'
+      +'</div></div></div>'+secs
+      +'<div class="card"><div class="btn-row"><button class="btn btn-secondary" onclick="switchTab(0)">กลับแบบฟอร์มหลัก</button></div></div>'
+      +'</div>';
   });
-  const sname=sid.options[sid.selectedIndex].text;
-  const payload={
-    station_id:sid.value,station_name:sname,
+}
+
+function switchTab(i){
+  document.querySelectorAll('.tab-content').forEach(function(el){el.classList.remove('active');});
+  document.querySelectorAll('.tab-btn').forEach(function(el){el.classList.remove('active');});
+  document.getElementById('tab-'+i).classList.add('active');
+  document.querySelectorAll('.tab-btn')[i].classList.add('active');
+  if(i>0)syncExtra(i-1);
+}
+function syncExtra(ti){
+  var sid=document.getElementById('sid');
+  var name=sid.options[sid.selectedIndex]?sid.options[sid.selectedIndex].text:'';
+  var e1=document.getElementById('ex-station-'+ti);
+  var e2=document.getElementById('ex-date-'+ti);
+  if(e1)e1.value=name;
+  if(e2)e2.value=document.getElementById('idate').value||'';
+}
+
+// เมื่อเลือกหน่วยงาน → โหลดคณะกรรมการที่รับผิดชอบ
+function onStationChange(){
+  var sid=document.getElementById('sid').value;
+  if(sid) loadCommittees(sid);
+  else{
+    var sel=document.getElementById('icommittee');
+    sel.innerHTML='<option value="">-- เลือกคณะ (ถ้ามี) --</option>';
+  }
+}
+
+// โหลดคณะกรรมการตามหน่วยงาน
+function loadCommittees(stationId){
+  var sel=document.getElementById('icommittee');
+  sel.innerHTML='<option value="">-- เลือกคณะ (ถ้ามี) --</option>';
+  google.script.run.withSuccessHandler(function(list){
+    (list||[]).forEach(function(c){
+      var opt=document.createElement('option');
+      opt.value=c.committee_id;
+      opt.textContent=c.name;
+      opt.dataset.members=c.members||'';
+      sel.appendChild(opt);
+    });
+    // ถ้ามีคณะเดียว เลือกให้อัตโนมัติ
+    if(sel.options.length===2){
+      sel.selectedIndex=1;
+      fillCommittee();
+    }
+  }).getCommitteesByStation(stationId||'');
+}
+
+// เติมชื่อกรรมการอัตโนมัติเมื่อเลือกคณะ
+function fillCommittee(){
+  var sel=document.getElementById('icommittee');
+  var opt=sel.options[sel.selectedIndex];
+  if(!opt||!opt.dataset||!opt.dataset.members)return;
+  var members=opt.dataset.members.split('|').map(function(m){return m.trim();}).filter(function(m){return m;}).join('\n');
+  if(members) document.getElementById('iname').value=members;
+}
+
+function selOpt(itemId,val){
+  scores[itemId]=val;
+  document.querySelectorAll('[id^="opt-'+itemId+'-"]').forEach(function(el){el.classList.remove('selected');});
+  var el=document.getElementById('opt-'+itemId+'-'+val.replace('.','_'));
+  if(el)el.classList.add('selected');
+  refreshChip(ITEMS.find(function(it){return it.id===itemId;}));
+  updateTotals();
+}
+function onPctChange(itemId){
+  var el=document.getElementById('pct-'+itemId);
+  pcts[itemId]=el?el.value:'';
+  var item=ITEMS.find(function(it){return it.id===itemId;});
+  var sc=getScore(item);
+  var r=document.getElementById('calcResult-'+itemId);
+  if(r){if(pcts[itemId]>0){r.style.display='';r.textContent='คะแนนที่ได้: '+sc;}else{r.style.display='none';}}
+  refreshChip(item);updateTotals();
+}
+function refreshChip(item){
+  var sc=getScore(item);
+  var chip=document.getElementById('chip-'+item.id);
+  if(chip){chip.textContent=sc+'/'+item.max;chip.className=chipCls(sc,item.max);}
+}
+function updateTotals(){
+  var total=getTotal();var gi=getGrade(total);
+  document.getElementById('totalScore').textContent=total;
+  var gl=document.getElementById('gradeLabel');
+  gl.textContent='เกรด '+gi.g+' - '+gi.lbl;gl.style.color=gi.color;
+  CATS.forEach(function(cat,ci){
+    var cs=getCatScore(ci);
+    var s=document.getElementById('catScore-'+ci);var b=document.getElementById('catBar-'+ci);var h=document.getElementById('catHdrScore-'+ci);
+    if(s)s.textContent=cs;if(b)b.style.width=Math.min(100,cs/cat.max*100)+'%';if(h)h.textContent=cs;
+  });
+  var ans=ITEMS.filter(function(it){return scores[it.id]!==undefined||pcts[it.id];}).length;
+  document.getElementById('answeredCount').textContent=ans+'/33 รายการที่ลงคะแนนแล้ว';
+}
+
+function loadStations(stList){
+  stations=stList||[];
+  var sid=document.getElementById('sid');
+  var pre=PRE_STATION_ID||'';
+  sid.innerHTML='<option value="">-- เลือกหน่วยงาน --</option>'
+    +stations.map(function(s){
+      return '<option value="'+s.station_id+'"'+(s.station_id===pre?' selected':'')+'>'+s.name+' ('+s.type+')</option>';
+    }).join('');
+  // ถ้ามีการ pre-select → โหลดคณะกรรมการ
+  if(pre){
+    loadCommittees(pre);
+  }
+}
+
+function submitForm(){
+  var sid=document.getElementById('sid');
+  if(!sid.value){showToast('กรุณาเลือกหน่วยงาน','err');return;}
+  var iname=document.getElementById('iname').value.trim();
+  if(!iname){showToast('กรุณาใส่ชื่อผู้ตรวจ','err');return;}
+  var empty=ITEMS.filter(function(it){return scores[it.id]===undefined&&!pcts[it.id];});
+  if(empty.length>0&&!confirm('ยังไม่ได้ลงคะแนน '+empty.length+' รายการ ต้องการบันทึกต่อหรือไม่?'))return;
+  var scoreArr=ITEMS.map(function(item){
+    return{item_id:item.id,item_no:item.no,score:getScore(item),
+      pct:item.type==='calc'?(parseFloat(pcts[item.id])||0):null,
+      note:(document.getElementById('note-'+item.id)||{}).value||''};
+  });
+  var extraArr=EXTRAS.map(function(et,ti){
+    return{title:et.title,sections:et.sections.map(function(sec,si){
+      return{name:sec.name,rows:Array(sec.n).fill(0).map(function(_,ri){
+        return{item:(document.getElementById('ex-'+ti+'-'+si+'-'+ri+'-item')||{}).value||'',
+          qty:(document.getElementById('ex-'+ti+'-'+si+'-'+ri+'-qty')||{}).value||'',
+          note:(document.getElementById('ex-'+ti+'-'+si+'-'+ri+'-note')||{}).value||''};
+      }).filter(function(r){return r.item;})};
+    })};
+  });
+  var payload={
+    station_id:sid.value,station_name:sid.options[sid.selectedIndex].text,
     inspect_date:document.getElementById('idate').value,
-    inspector_name:iname,
-    inspector_email:document.getElementById('iemail').value,
+    inspector_name:iname,inspector_email:document.getElementById('iemail').value,
+    committee_id:document.getElementById('icommittee').value||'',
     note:document.getElementById('gnote').value,
-    scores:scores
+    total_score:getTotal(),scores:scoreArr,extras:extraArr
   };
-  document.getElementById('sbtn').disabled=true;
-  document.getElementById('sbtn').textContent='⏳ กำลังบันทึก...';
+  var btn=document.getElementById('saveBtn');
+  btn.disabled=true;btn.textContent='กำลังบันทึก...';
   google.script.run
-    .withSuccessHandler(res=>{
+    .withSuccessHandler(function(res){
       if(res.success){
-        toast(`✅ บันทึกสำเร็จ! ${res.total_score}/${res.max_score} คะแนน (${res.percent}%) เกรด ${res.grade}`,'ok');
-        setTimeout(()=>{window.top.location.href='?page=index';},2500);
-      }else{toast('บันทึกล้มเหลว: '+res.error,'err');reset();}
+        showToast('บันทึกสำเร็จ! '+res.total_score+'/'+res.max_score+' คะแนน ('+res.percent+'%) เกรด '+res.grade,'ok');
+        setTimeout(function(){goHome();},2500);
+      }else{showToast('บันทึกล้มเหลว: '+res.error,'err');resetBtn();}
     })
-    .withFailureHandler(e=>{toast('เกิดข้อผิดพลาด: '+e.message,'err');reset();})
+    .withFailureHandler(function(e){showToast('เกิดข้อผิดพลาด: '+e.message,'err');resetBtn();})
     .saveInspection(payload);
 }
-
-function reset(){
-  document.getElementById('sbtn').disabled=false;
-  document.getElementById('sbtn').textContent='💾 บันทึกการตรวจ';
+function resetBtn(){var btn=document.getElementById('saveBtn');btn.disabled=false;btn.textContent='บันทึกการตรวจ';}
+function showToast(msg,type){
+  var t=document.getElementById('toast');t.textContent=msg;
+  t.className='toast show t-'+(type||'info');
+  setTimeout(function(){t.className='toast';},5000);
 }
 
-function toast(msg,type){
-  const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.className=`toast show t-${type||'info'}`;
-  setTimeout(()=>t.className='toast',5000);
-}
-
-function err(msg){document.getElementById('content').innerHTML=`<div style="text-align:center;padding:60px;color:#dc2626">❌ ${msg}</div>`;}
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('idate').value=new Date().toISOString().slice(0,10);
+  buildCatGrid();buildItems();buildExtraForms();updateTotals();
+  google.script.run
+    .withSuccessHandler(loadStations)
+    .withFailureHandler(function(e){loadStations([]);console.error(e.message);})
+    .getStations();
+});
 </script>
 </body>
 </html>

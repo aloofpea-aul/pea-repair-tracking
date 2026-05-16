@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ตั้งค่าคณะกรรมการตรวจ</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Sarabun',sans-serif;}
+body{background:#f0f4f8;color:#1a2b3c;}
+.topbar{background:#1a3c5e;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:12px;}
+.topbar .logo{font-size:15px;font-weight:700;}
+.spacer{flex:1;}
+.btn-back{color:#fff;background:rgba(255,255,255,.15);padding:6px 14px;border-radius:6px;border:none;font-size:13px;cursor:pointer;font-family:Sarabun,sans-serif;}
+.container{max-width:1000px;margin:0 auto;padding:20px;}
+.card{background:#fff;border-radius:10px;border:1px solid #dde3ea;margin-bottom:16px;overflow:hidden;}
+.card-hdr{background:#1a3c5e;color:#fff;padding:10px 16px;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;}
+.card-body{padding:16px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.fg{display:flex;flex-direction:column;gap:4px;}
+.fg label{font-size:12px;font-weight:700;color:#4b5563;}
+.fg input,.fg select,.fg textarea{padding:8px 10px;border:1px solid #c8d0da;border-radius:6px;font-size:13px;font-family:Sarabun,sans-serif;width:100%;}
+.fg textarea{resize:vertical;min-height:80px;}
+.btn{padding:8px 18px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:Sarabun,sans-serif;}
+.btn-primary{background:#e84c0a;color:#fff;}.btn-primary:hover{background:#c93d07;}
+.btn-secondary{background:#f0f4f8;color:#1a3c5e;border:1px solid #c8d0da;}
+.btn-danger{background:#fee2e2;color:#991b1b;border:1px solid #fecaca;}
+.btn-sm{padding:4px 10px;font-size:11px;border-radius:5px;}
+.com-card{background:#fff;border:1px solid #dde3ea;border-radius:8px;padding:14px;margin-bottom:10px;}
+.com-name{font-size:14px;font-weight:700;color:#1a3c5e;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+.com-section{font-size:11px;font-weight:700;color:#6b7c8d;margin-bottom:4px;margin-top:8px;}
+.tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;margin:2px;background:#e8f4ff;color:#1a3c5e;border:1px solid #bfdbfe;}
+.tag-st{background:#fff3ee;color:#9a3412;border:1px solid #fed7aa;}
+.loading{text-align:center;padding:40px;color:#9ca3af;}
+.empty{text-align:center;padding:30px;color:#9ca3af;font-size:13px;}
+.modal-bg{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:100;align-items:center;justify-content:center;}
+.modal-bg.show{display:flex;}
+.modal{background:#fff;border-radius:12px;padding:24px;width:90%;max-width:600px;max-height:90vh;overflow-y:auto;}
+.modal-title{font-size:16px;font-weight:700;color:#1a3c5e;margin-bottom:16px;}
+.st-check-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;max-height:200px;overflow-y:auto;border:1px solid #dde3ea;border-radius:6px;padding:8px;}
+.st-check{display:flex;align-items:center;gap:6px;font-size:12px;padding:3px;}
+.st-check input{accent-color:#e84c0a;}
+.toast{position:fixed;top:20px;right:20px;padding:12px 18px;border-radius:8px;font-size:13px;z-index:999;display:none;color:#fff;}
+.toast.show{display:block;}
+.t-ok{background:#166534;}.t-err{background:#dc2626;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo">&#9881; ตั้งค่าคณะกรรมการตรวจ</div>
+  <div class="spacer"></div>
+  <button class="btn-back" onclick="goHome()">← กลับหน้าหลัก</button>
+</div>
+
+<div class="container">
+  <div class="card">
+    <div class="card-hdr">
+      <span>&#128101; คณะกรรมการทั้งหมด</span>
+      <button class="btn btn-primary btn-sm" onclick="openModal()">+ เพิ่มคณะใหม่</button>
+    </div>
+    <div class="card-body">
+      <div id="comList" class="loading">&#9203; กำลังโหลด...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">เพิ่มคณะกรรมการใหม่</div>
+    <input type="hidden" id="editId">
+    <div class="fg" style="margin-bottom:12px;">
+      <label>ชื่อคณะกรรมการ *</label>
+      <input type="text" id="fName" placeholder="เช่น คณะที่ 1 / ทีมตรวจ A">
+    </div>
+    <div class="fg" style="margin-bottom:12px;">
+      <label>รายชื่อกรรมการ * (คนละบรรทัด)</label>
+      <textarea id="fMembers" placeholder="นาย ก. ข. ค.&#10;นาย ง. จ. ฉ.&#10;นาย ช. ซ. ฌ."></textarea>
+    </div>
+    <div class="fg" style="margin-bottom:16px;">
+      <label>หน่วยงานที่รับผิดชอบ</label>
+      <div class="st-check-grid" id="stChecks"><div class="loading" style="padding:10px;">กำลังโหลด...</div></div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-secondary" onclick="closeModal()">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveCommittee()">&#128190; บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Scroll buttons -->
+<div style="position:fixed;right:16px;bottom:24px;display:flex;flex-direction:column;gap:8px;z-index:999;">
+  <button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="width:40px;height:40px;border-radius:50%;background:#1a3c5e;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);display:none;" id="btnTop">&#8679;</button>
+  <button onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})" style="width:40px;height:40px;border-radius:50%;background:#e84c0a;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);" id="btnBot">&#8681;</button>
+</div>
+
+<script>
+var EXEC_URL='';
+var ALL_STATIONS=[];
+google.script.run.withSuccessHandler(function(u){EXEC_URL=u;}).getScriptUrl();
+
+function goHome(){google.script.run.withSuccessHandler(function(u){window.top.location.href=u+'?page=index';}).getScriptUrl();}
+
+window.addEventListener('scroll',function(){
+  var atTop=window.scrollY<200;
+  document.getElementById('btnTop').style.display=atTop?'none':'block';
+  document.getElementById('btnBot').style.display=(window.scrollY+window.innerHeight>=document.body.scrollHeight-50)?'none':'block';
+});
+
+// Load stations + committees on start
+google.script.run.withSuccessHandler(function(st){
+  ALL_STATIONS=st||[];
+  loadCommittees();
+}).getStations();
+
+function loadCommittees(){
+  google.script.run.withSuccessHandler(renderCommittees)
+    .withFailureHandler(function(e){
+      document.getElementById('comList').innerHTML='<div class="empty">&#10060; '+e.message+'</div>';
+    })
+    .getCommittees();
+}
+
+function renderCommittees(list){
+  var el=document.getElementById('comList');
+  if(!list||list.length===0){
+    el.innerHTML='<div class="empty">ยังไม่มีคณะกรรมการ กดปุ่ม "+ เพิ่มคณะใหม่" เพื่อเริ่มต้น</div>';
+    return;
+  }
+  el.innerHTML=list.map(function(c){
+    var members=(c.members||'').split('|').filter(function(m){return m.trim();});
+    var stIds=(c.station_ids||'').split('|').filter(function(s){return s.trim();});
+    var stNames=stIds.map(function(sid){
+      var st=ALL_STATIONS.find(function(s){return s.station_id===sid;});
+      return st?st.short_name:sid;
+    });
+    return '<div class="com-card">'
+      +'<div class="com-name"><span>&#128101; '+c.name+'</span>'
+      +'<div style="display:flex;gap:6px;">'
+      +'<button class="btn btn-secondary btn-sm" onclick="editCommittee(\''+c.committee_id+'\')">&#9998; แก้ไข</button>'
+      +'<button class="btn btn-danger btn-sm" onclick="delCommittee(\''+c.committee_id+'\',\''+c.name+'\')">&#128465; ลบ</button>'
+      +'</div></div>'
+      +'<div class="com-section">กรรมการ ('+members.length+' คน)</div>'
+      +'<div>'+members.map(function(m){return'<span class="tag">'+m.trim()+'</span>';}).join('')+'</div>'
+      +'<div class="com-section">หน่วยงานที่รับผิดชอบ ('+stNames.length+' แห่ง)</div>'
+      +'<div>'+(stNames.length?stNames.map(function(n){return'<span class="tag tag-st">'+n+'</span>';}).join(''):'<span style="color:#9ca3af;font-size:12px;">ยังไม่ได้กำหนด</span>')+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function buildStationChecks(selectedIds){
+  var el=document.getElementById('stChecks');
+  if(!ALL_STATIONS.length){el.innerHTML='<div class="empty">ไม่พบหน่วยงาน</div>';return;}
+  var groups={'L/M':[],'S':[],'XS':[]};
+  ALL_STATIONS.forEach(function(s){
+    var g=s.type==='L'||s.type==='M'?'L/M':s.type==='S'?'S':'XS';
+    groups[g].push(s);
+  });
+  var html='';
+  Object.keys(groups).forEach(function(g){
+    if(!groups[g].length)return;
+    html+='<div style="grid-column:1/-1;font-size:10px;font-weight:700;color:#6b7c8d;margin-top:4px;">กฟส.'+g+'</div>';
+    groups[g].forEach(function(s){
+      var chk=selectedIds.indexOf(s.station_id)>-1?'checked':'';
+      html+='<label class="st-check"><input type="checkbox" value="'+s.station_id+'" '+chk+'> '+s.short_name+'</label>';
+    });
+  });
+  el.innerHTML=html;
+}
+
+function openModal(c){
+  document.getElementById('editId').value='';
+  document.getElementById('modalTitle').textContent='เพิ่มคณะกรรมการใหม่';
+  document.getElementById('fName').value='';
+  document.getElementById('fMembers').value='';
+  buildStationChecks([]);
+  document.getElementById('modalBg').classList.add('show');
+}
+
+function editCommittee(id){
+  google.script.run.withSuccessHandler(function(c){
+    if(!c)return;
+    document.getElementById('editId').value=c.committee_id;
+    document.getElementById('modalTitle').textContent='แก้ไขคณะกรรมการ';
+    document.getElementById('fName').value=c.name||'';
+    document.getElementById('fMembers').value=(c.members||'').split('|').join('\n');
+    var stIds=(c.station_ids||'').split('|').filter(function(s){return s.trim();});
+    buildStationChecks(stIds);
+    document.getElementById('modalBg').classList.add('show');
+  }).getCommitteeById(id);
+}
+
+function closeModal(){document.getElementById('modalBg').classList.remove('show');}
+
+function saveCommittee(){
+  var name=document.getElementById('fName').value.trim();
+  if(!name){showToast('กรุณาใส่ชื่อคณะกรรมการ','err');return;}
+  var membersRaw=document.getElementById('fMembers').value;
+  var members=membersRaw.split('\n').map(function(m){return m.trim();}).filter(function(m){return m;}).join('|');
+  var stIds=[];
+  document.querySelectorAll('#stChecks input[type=checkbox]:checked').forEach(function(cb){stIds.push(cb.value);});
+  var payload={
+    committee_id:document.getElementById('editId').value||'',
+    name:name,
+    members:members,
+    station_ids:stIds.join('|'),
+    active:'Y'
+  };
+  google.script.run
+    .withSuccessHandler(function(res){
+      if(res.success){showToast('บันทึกสำเร็จ','ok');closeModal();loadCommittees();}
+      else showToast('เกิดข้อผิดพลาด: '+res.error,'err');
+    })
+    .withFailureHandler(function(e){showToast('เกิดข้อผิดพลาด: '+e.message,'err');})
+    .saveCommittee(payload);
+}
+
+function delCommittee(id,name){
+  if(!confirm('ยืนยันลบคณะ "'+name+'" ?'))return;
+  google.script.run
+    .withSuccessHandler(function(res){
+      if(res.success){showToast('ลบสำเร็จ','ok');loadCommittees();}
+      else showToast('เกิดข้อผิดพลาด','err');
+    })
+    .deleteCommittee(id);
+}
+
+function showToast(msg,type){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show t-'+(type||'ok');
+  setTimeout(function(){t.className='toast';},3000);
+}
+</script>
+</body>
+</html>
