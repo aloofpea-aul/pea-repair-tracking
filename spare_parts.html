@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>รายการพัสดุสำรองแก้ไฟ 2569</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Sarabun',sans-serif;}
+body{background:#f0f4f8;color:#1a2b3c;}
+.topbar{background:#1a3c5e;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:12px;}
+.topbar .logo{font-size:15px;font-weight:700;}
+.topbar .sub{font-size:11px;opacity:.75;margin-top:2px;}
+.spacer{flex:1;}
+.btn-back{color:#fff;background:rgba(255,255,255,.15);padding:6px 14px;border-radius:6px;border:none;font-size:13px;cursor:pointer;font-family:Sarabun,sans-serif;}
+.container{max-width:1200px;margin:0 auto;padding:20px;}
+.card{background:#fff;border-radius:10px;border:1px solid #dde3ea;margin-bottom:16px;overflow:hidden;}
+.card-hdr{background:#1a3c5e;color:#fff;padding:10px 16px;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;}
+.stat{background:#fff;border-radius:8px;padding:14px;border:1px solid #dde3ea;text-align:center;}
+.stat .num{font-size:28px;font-weight:700;color:#1a3c5e;}
+.stat .lbl{font-size:11px;color:#6b7c8d;margin-top:2px;}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.filters input,.filters select{padding:7px 12px;border:1px solid #c8d0da;border-radius:6px;font-size:13px;background:#fff;font-family:Sarabun,sans-serif;}
+.filters input{flex:1;min-width:200px;}
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+thead th{background:#1a3c5e;color:#fff;padding:8px 10px;text-align:left;font-weight:600;white-space:nowrap;}
+thead th.r{text-align:right;}
+tbody tr:hover{background:#f5f8fb;}
+tbody td{padding:7px 10px;border-bottom:1px solid #edf0f3;}
+tbody td.r{text-align:right;font-weight:600;}
+.no{color:#9ca3af;width:36px;text-align:center;}
+.code{font-family:monospace;font-size:11px;color:#6b7c8d;}
+.badge-n{background:#dcfce7;color:#166534;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:700;}
+.badge-i{background:#fef9c3;color:#713f12;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:700;}
+.badge-s{background:#fee2e2;color:#991b1b;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:700;}
+.btn{padding:7px 14px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:Sarabun,sans-serif;}
+.btn-primary{background:#e84c0a;color:#fff;}
+.tab-group{display:flex;gap:0;border:1px solid #c8d0da;border-radius:7px;overflow:hidden;margin-bottom:16px;}
+.tab-g-btn{padding:7px 16px;border:none;background:#fff;font-size:12.5px;font-weight:400;color:#1a3c5e;cursor:pointer;font-family:Sarabun,sans-serif;border-right:1px solid #c8d0da;}
+.tab-g-btn:last-child{border-right:none;}
+.tab-g-btn.active{background:#1a3c5e;color:#fff;font-weight:700;}
+@media print{.topbar,.filters,.tab-group,.no-print{display:none!important;}body{background:#fff;}@page{size:A4 landscape;margin:10mm;}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div>
+    <div class="logo">&#128230; รายการพัสดุสำรองแก้ไฟ 2569</div>
+    <div class="sub">อนุมัติโดย ต.2กบษ.(บร.)1792/2568 ลว. 2 ก.ย.2568 | กฟต.2</div>
+  </div>
+  <div class="spacer"></div>
+  <button class="btn-back no-print" onclick="goHome()">← หน้าหลัก</button>
+  <button class="btn btn-primary no-print" onclick="window.print()" style="margin-left:8px;">&#128438; พิมพ์</button>
+</div>
+
+<div class="container">
+  <div class="stat-row">
+    <div class="stat"><div class="num">73</div><div class="lbl">รายการพัสดุ (ชีต 1)</div></div>
+    <div class="stat"><div class="num" id="s7total">-</div><div class="lbl">ยอดรวม 7 วัน</div></div>
+    <div class="stat"><div class="num" id="s14total">-</div><div class="lbl">ยอดรวม 14 วัน</div></div>
+    <div class="stat"><div class="num" id="ss7total">-</div><div class="lbl">ยอดรวมมรสุม 7 วัน</div></div>
+  </div>
+
+  <div class="tab-group">
+    <button class="tab-g-btn active" onclick="setMode('ref')">ตารางอ้างอิง</button>
+    <button class="tab-g-btn" onclick="setMode('count')">นับพัสดุ (คำนวณ %)</button>
+  </div>
+
+  <div class="card">
+    <div class="card-hdr">
+      <span id="tableTitle">รายการพัสดุสำรองคลัง — ยอดอนุมัติ</span>
+      <span id="countResult" style="font-size:12px;background:rgba(255,255,255,.15);padding:4px 10px;border-radius:6px;display:none;"></span>
+    </div>
+    <div class="card-body" style="padding:12px 16px;">
+      <div class="filters">
+        <input id="sq" placeholder="&#128269; ค้นหารายการ รหัส..." oninput="ft()">
+        <select id="typeFilter" onchange="setTypeFilter()">
+          <option value="7d">ยอดสำรอง 7 วัน (พื้นที่ทั่วไป)</option>
+          <option value="14d">ยอดสำรอง 14 วัน (พื้นที่เกาะ)</option>
+          <option value="s7d">ยอดสำรองมรสุม 7 วัน</option>
+        </select>
+      </div>
+      <div class="tbl-wrap">
+        <table id="tbl">
+          <thead>
+            <tr>
+              <th class="no">ที่</th>
+              <th>รหัสพัสดุ</th>
+              <th>รายการ</th>
+              <th>หน่วยนับ</th>
+              <th class="r" id="qtyHeader">ยอดสำรอง (7 วัน)</th>
+              <th id="checkHeader" style="display:none;text-align:center;">มีในคลัง?</th>
+              <th id="check50Header" style="display:none;text-align:center;">≥ 50%?</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scroll buttons -->
+<div style="position:fixed;right:16px;bottom:24px;display:flex;flex-direction:column;gap:8px;z-index:999;">
+  <button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="width:40px;height:40px;border-radius:50%;background:#1a3c5e;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);display:none;" id="btnTop">&#8679;</button>
+  <button onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})" style="width:40px;height:40px;border-radius:50%;background:#e84c0a;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);" id="btnBot">&#8681;</button>
+</div>
+
+<script>
+var EXEC_URL='';
+google.script.run.withSuccessHandler(function(u){EXEC_URL=u;}).getScriptUrl();
+function goHome(){google.script.run.withSuccessHandler(function(u){window.top.location.href=u+'?page=index';}).getScriptUrl();}
+window.addEventListener('scroll',function(){
+  document.getElementById('btnTop').style.display=window.scrollY<200?'none':'block';
+  document.getElementById('btnBot').style.display=(window.scrollY+window.innerHeight>=document.body.scrollHeight-50)?'none':'block';
+});
+
+var SPARE_PARTS=[
+{no:1,code:'1010110201',name:'สลักเกลียว เอ็ม 16x170 มม.',unit:'ชุด',qty7:4,qty14:8,qtyS7:12},
+{no:2,code:'1010110202',name:'สลักเกลียว เอ็ม 16x200 มม.',unit:'ชุด',qty7:4,qty14:8,qtyS7:12},
+{no:3,code:'1010110203',name:'สลักเกลียว เอ็ม 16x250 มม.',unit:'ชุด',qty7:4,qty14:8,qtyS7:12},
+{no:4,code:'1010110204',name:'สลักเกลียว เอ็ม 16x300 มม.',unit:'ชุด',qty7:4,qty14:8,qtyS7:12},
+{no:5,code:'1010110205',name:'สลักเกลียว เอ็ม 16x350 มม.',unit:'ชุด',qty7:4,qty14:8,qtyS7:12},
+{no:6,code:'1010110208',name:'สลักเกลียว เอ็ม 16x500 มม.',unit:'ชุด',qty7:4,qty14:8,qtyS7:12},
+{no:7,code:'1010130002',name:'สลักเกลียวห่วงกลม เอ็ม 16x500 มม.',unit:'ชุด',qty7:3,qty14:6,qtyS7:9},
+{no:8,code:'1010180100',name:'แหวนรองแบบเรียบ ประเภทจัตุรัสขนาดใหญ่ 52x52x4.5 มม.',unit:'อัน',qty7:10,qty14:20,qtyS7:30},
+{no:9,code:'1010200010',name:'BRACE,L SHAPE, 50X10 MM., FOR FSD',unit:'ชุด',qty7:25,qty14:50,qtyS7:75},
+{no:10,code:'1010230000',name:'ยูแคล็มป์ สลัก 1 ตัว เอ็ม 8 (ไวร์ โร๊ป คลิ๊ฟ)',unit:'ชุด',qty7:15,qty14:30,qtyS7:45},
+{no:11,code:'1010230012',name:'CLAMP DOUBLE BOLTS ST. WIRE 25 SQ.MM.',unit:'ชุด',qty7:15,qty14:30,qtyS7:45},
+{no:12,code:'1020050100',name:'เคเบิลอากาศ อลูมิเนียม 33 เควี 1x50 ต.มม.',unit:'เมตร',qty7:100,qty14:200,qtyS7:300},
+{no:13,code:'1020050104',name:'เคเบิลอากาศ อลูมิเนียม 33 เควี 1x185 ต.มม.',unit:'เมตร',qty7:100,qty14:200,qtyS7:300},
+{no:14,code:'1020070000',name:'สายอลูมิเนียมตีเกลียวหุ้มฉนวน PVC 750V 25 ต.มม.',unit:'เมตร',qty7:150,qty14:300,qtyS7:450},
+{no:15,code:'1020070002',name:'สายอลูมิเนียมตีเกลียวหุ้มฉนวน PVC 750V 50 ต.มม.',unit:'เมตร',qty7:300,qty14:600,qtyS7:900},
+{no:16,code:'1020070004',name:'สายอลูมิเนียมตีเกลียวหุ้มฉนวน PVC 750V 95 ต.มม.',unit:'เมตร',qty7:150,qty14:300,qtyS7:450},
+{no:17,code:'1020180001',name:'เทปไฟฟ้า PVC ใช้ภายนอก 0.18x19x10,000 มม. มอก.386',unit:'ม้วน',qty7:70,qty14:140,qtyS7:210},
+{no:18,code:'1020180008',name:'EPR, HIGH-VOLTAGE INSULATING TAPE',unit:'ม้วน',qty7:20,qty14:40,qtyS7:60},
+{no:19,code:'1020200000',name:'ลวดอลูมิเนียมแบน 1x10 มม.',unit:'กก.',qty7:5,qty14:10,qtyS7:15},
+{no:20,code:'1020200002',name:'ลวดอลูมิเนียมกลม 4.0 มม.',unit:'กก.',qty7:5,qty14:10,qtyS7:15},
+{no:21,code:'1020200003',name:'Covered TIE Wire 4.0 ต.มม.',unit:'เมตร',qty7:50,qty14:100,qtyS7:150},
+{no:22,code:'1020260206',name:'PREFORMED D/E, SAC 33kV 50sq.mm.',unit:'ชุด',qty7:6,qty14:12,qtyS7:18},
+{no:23,code:'1020260209',name:'PREFORMED D/E, SAC 33kV 185sq.mm.',unit:'ชุด',qty7:6,qty14:12,qtyS7:18},
+{no:24,code:'1020260300',name:'PREFORMED D/E, AW 25 SQ.MM.',unit:'อัน',qty7:12,qty14:24,qtyS7:36},
+{no:25,code:'1020260301',name:'PREFORMED D/E, AW 50 SQ.MM.',unit:'อัน',qty7:12,qty14:24,qtyS7:36},
+{no:26,code:'1020260302',name:'PREFORMED D/E, AW 95 SQ.MM.',unit:'อัน',qty7:12,qty14:24,qtyS7:36},
+{no:27,code:'1020280102',name:'ชุดผูกสายคอมโพสิท สาย 185 ต.มม. 33 เควี บนลูกถ้วย',unit:'ชุด',qty7:15,qty14:30,qtyS7:45},
+{no:28,code:'1020280106',name:'ชุดผูกสายคอมโพสิท สาย 185 ต.มม. 33 เควี ในลูกถ้วย',unit:'ชุด',qty7:15,qty14:30,qtyS7:45},
+{no:29,code:'1020300102',name:'พีจี. คอนเนคเตอร์สลักคู่ สายอลูมิเนียม',unit:'อัน',qty7:50,qty14:100,qtyS7:150},
+{no:30,code:'1020300103',name:'พีจี. คอนเนคเตอร์ 3 สลัก สายอลูมิเนียม',unit:'อัน',qty7:20,qty14:40,qtyS7:60},
+{no:31,code:'1020330005',name:'HOTLINE BAIL-CLAMP, MAIN 35-70 SQ.MM.',unit:'อัน',qty7:12,qty14:24,qtyS7:36},
+{no:32,code:'1020330006',name:'HOTLINE BAIL-CLAMP, MAIN 70-185 SQ.MM.',unit:'อัน',qty7:12,qty14:24,qtyS7:36},
+{no:33,code:'1020330104',name:'HOTLINE CLAMP, MAIN35-185, TAP50-185 SQ.MM.',unit:'ชุด',qty7:24,qty14:48,qtyS7:72},
+{no:34,code:'1020360000',name:'IPC MAIN 16-95 SQ.MM. TAP 6-35 SQ.MM.',unit:'ชุด',qty7:25,qty14:50,qtyS7:75},
+{no:35,code:'1020400004',name:'หลอดต่อสายบีบ รับแรงดึง AL 95 ต.มม.',unit:'อัน',qty7:10,qty14:20,qtyS7:30},
+{no:36,code:'1020400012',name:'SLEEVE, TENSION AL 50 SQ.MM.',unit:'อัน',qty7:20,qty14:40,qtyS7:60},
+{no:37,code:'1020400017',name:'SLEEVE, TENSION AL 185 SQ.MM.',unit:'อัน',qty7:20,qty14:40,qtyS7:60},
+{no:38,code:'1020410014',name:'SLEEVE, TENSIONLESS AL 50 SQ.MM.',unit:'อัน',qty7:20,qty14:40,qtyS7:60},
+{no:39,code:'1020410017',name:'SLEEVE, TENSIONLESS AL 185 SQ.MM.',unit:'อัน',qty7:20,qty14:40,qtyS7:60},
+{no:40,code:'1020420102',name:'หางปลาสาย AL 50 ต.มม. (เจาะรูมาตรฐาน NEMA)',unit:'อัน',qty7:20,qty14:40,qtyS7:60},
+{no:41,code:'1020420104',name:'หางปลาสาย AL 95 ต.มม. (เจาะรูมาตรฐาน NEMA)',unit:'อัน',qty7:10,qty14:20,qtyS7:30},
+{no:42,code:'1020420106',name:'หางปลาสาย AL 185 ต.มม. (เจาะรูมาตรฐาน NEMA)',unit:'อัน',qty7:20,qty14:40,qtyS7:60},
+{no:43,code:'1020420400',name:'สลักต่อปลายสายเข้าอุปกรณ์ไฟฟ้า AL 50 ต.มม.',unit:'อัน',qty7:20,qty14:40,qtyS7:60},
+{no:44,code:'1030010009',name:'INSULATOR, LINE-POST, 57-3, TIS.2623',unit:'ลูก',qty7:10,qty14:20,qtyS7:30},
+{no:45,code:'1030010106',name:'INSULATOR, PIN-POST, 56/57-4, TIS.2623',unit:'ลูก',qty7:3,qty14:6,qtyS7:9},
+{no:46,code:'1030020002',name:'ลูกถ้วยแขวนแบบ ง (แบบ 52-4) มอก.354',unit:'ลูก',qty7:18,qty14:36,qtyS7:54},
+{no:47,code:'1030030000',name:'ลูกรอกแรงต่ำ แบบ ข (แบบ 53-2) มอก.2623',unit:'ลูก',qty7:10,qty14:20,qtyS7:30},
+{no:48,code:'1030130000',name:'แร็ค 2x200 มม. (2x8") แบบหลังยื่น',unit:'ก้าน',qty7:2,qty14:4,qtyS7:6},
+{no:49,code:'1030130002',name:'แร็ค 4x200 มม. (4x8") แบบหลังยื่น',unit:'ก้าน',qty7:2,qty14:4,qtyS7:6},
+{no:50,code:'1040000003',name:'ล่อฟ้า 24-26 เควี 10 กิโลแอมป์',unit:'ชุด',qty7:3,qty14:6,qtyS7:9},
+{no:51,code:'1040000100',name:'ล่อฟ้า 30 เควี 5 กิโลแอมป์',unit:'ชุด',qty7:3,qty14:6,qtyS7:9},
+{no:52,code:'1040000300',name:'ล่อฟ้า 250-500 โวลท์ 2.5-5.0 กิโลแอมป์',unit:'ชุด',qty7:3,qty14:6,qtyS7:9},
+{no:53,code:'1040010100',name:'ดรอพเอาท์ฟิวส์คัทเอาท์ 33 เควี 100 แอมป์',unit:'ชุด',qty7:10,qty14:20,qtyS7:30},
+{no:54,code:'1040010102',name:'กระบอกฟิวส์ 33 เควี 100 แอมป์',unit:'ชุด',qty7:10,qty14:20,qtyS7:30},
+{no:55,code:'1040020008',name:'HRC ฟิวส์แรงต่ำ 350-355 แอมป์',unit:'อัน',qty7:3,qty14:6,qtyS7:9},
+{no:56,code:'1040020011',name:'H.R.C. FUSE, BLADE CONTACT, 50 A',unit:'อัน',qty7:10,qty14:20,qtyS7:30},
+{no:57,code:'1040020012',name:'H.R.C. FUSE, BLADE CONTACT, 80 A',unit:'อัน',qty7:10,qty14:20,qtyS7:30},
+{no:58,code:'1040020013',name:'H.R.C. FUSE, BLADE CONTACT, 100 A',unit:'อัน',qty7:20,qty14:40,qtyS7:60},
+{no:59,code:'1040020014',name:'H.R.C. FUSE, BLADE CONTACT, 160 A',unit:'อัน',qty7:20,qty14:40,qtyS7:60},
+{no:60,code:'1040020015',name:'H.R.C. FUSE, BLADE CONTACT, 200 A',unit:'อัน',qty7:10,qty14:20,qtyS7:30},
+{no:61,code:'1040020016',name:'H.R.C. FUSE, BLADE CONTACT, 250 A',unit:'อัน',qty7:10,qty14:20,qtyS7:30},
+{no:62,code:'1040020017',name:'H.R.C. FUSE, BLADE CONTACT, 315 A',unit:'อัน',qty7:5,qty14:10,qtyS7:15},
+{no:63,code:'1040020019',name:'H.R.C. FUSE, BLADE CONTACT, 400 A',unit:'อัน',qty7:3,qty14:6,qtyS7:9},
+{no:64,code:'1040020102',name:'FSD, FULL INSULATED, 1X400A, 400V',unit:'ชุด',qty7:25,qty14:50,qtyS7:75},
+{no:65,code:'1040030102',name:'ฟิวส์ลิงค์ 33 เควี 3 แอมป์ EEI-NEMA แบบ K',unit:'เส้น',qty7:50,qty14:100,qtyS7:150},
+{no:66,code:'1040030103',name:'ฟิวส์ลิงค์ 33 เควี 5-6 แอมป์ EEI-NEMA แบบ K',unit:'เส้น',qty7:50,qty14:100,qtyS7:150},
+{no:67,code:'1040030104',name:'ฟิวส์ลิงค์ 33 เควี 8 แอมป์ EEI-NEMA แบบ K',unit:'เส้น',qty7:30,qty14:60,qtyS7:90},
+{no:68,code:'1040030105',name:'ฟิวส์ลิงค์ 33 เควี 10 แอมป์ EEI-NEMA แบบ K',unit:'เส้น',qty7:50,qty14:100,qtyS7:150},
+{no:69,code:'1040030106',name:'ฟิวส์ลิงค์ 33 เควี 15 แอมป์ EEI-NEMA แบบ K',unit:'เส้น',qty7:60,qty14:120,qtyS7:180},
+{no:70,code:'1040030107',name:'ฟิวส์ลิงค์ 33 เควี 20 แอมป์ EEI-NEMA แบบ K',unit:'เส้น',qty7:40,qty14:80,qtyS7:120},
+{no:71,code:'1040030108',name:'ฟิวส์ลิงค์ 33 เควี 25 แอมป์ EEI-NEMA แบบ K',unit:'เส้น',qty7:40,qty14:80,qtyS7:120},
+{no:72,code:'1040030109',name:'ฟิวส์ลิงค์ 33 เควี 30 แอมป์ EEI-NEMA แบบ K',unit:'เส้น',qty7:20,qty14:40,qtyS7:60},
+{no:73,code:'1040030110',name:'ฟิวส์ลิงค์ 33 เควี 40 แอมป์ EEI-NEMA แบบ K',unit:'เส้น',qty7:20,qty14:40,qtyS7:60}
+];
+
+var MODE='ref', QTY_FIELD='qty7';
+var checks={}, checks50={};
+
+// Compute stats
+var t7=SPARE_PARTS.reduce(function(s,p){return s+p.qty7;},0);
+var t14=SPARE_PARTS.reduce(function(s,p){return s+p.qty14;},0);
+var ts7=SPARE_PARTS.reduce(function(s,p){return s+p.qtyS7;},0);
+document.getElementById('s7total').textContent=t7;
+document.getElementById('s14total').textContent=t14;
+document.getElementById('ss7total').textContent=ts7;
+
+function setMode(m){
+  MODE=m;
+  document.querySelectorAll('.tab-g-btn').forEach(function(b,i){b.classList.toggle('active',['ref','count'][i]===m);});
+  document.getElementById('checkHeader').style.display=m==='count'?'':'none';
+  document.getElementById('check50Header').style.display=m==='count'?'':'none';
+  document.getElementById('countResult').style.display=m==='count'?'':'none';
+  document.getElementById('tableTitle').textContent=m==='ref'?'รายการพัสดุสำรองคลัง — ยอดอนุมัติ':'นับพัสดุ — เช็คครบ/ปริมาณ ≥ 50%';
+  renderTable();
+  if(m==='count') updateCount();
+}
+
+function setTypeFilter(){
+  var t=document.getElementById('typeFilter').value;
+  QTY_FIELD=t==='7d'?'qty7':t==='14d'?'qty14':'qtyS7';
+  var lbl=t==='7d'?'ยอดสำรอง (7 วัน)':t==='14d'?'ยอดสำรอง (14 วัน)':'ยอดสำรองมรสุม (7 วัน)';
+  document.getElementById('qtyHeader').textContent=lbl;
+  renderTable();
+}
+
+function renderTable(){
+  var q=document.getElementById('sq').value.toLowerCase();
+  var rows=SPARE_PARTS.filter(function(p){return !q||(p.name.toLowerCase().includes(q)||p.code.includes(q));});
+  document.getElementById('tbody').innerHTML=rows.map(function(p){
+    var qty=p[QTY_FIELD];
+    var checkCell=MODE==='count'?'<td style="text-align:center"><input type="checkbox" '+(checks[p.no]?'checked':'')+' onchange="toggleCheck('+p.no+',this.checked,false)" style="accent-color:#1a3c5e;width:16px;height:16px;"></td>':'';
+    var check50Cell=MODE==='count'?'<td style="text-align:center"><input type="checkbox" '+(checks50[p.no]?'checked':'')+' onchange="toggleCheck('+p.no+',this.checked,true)" style="accent-color:#e84c0a;width:16px;height:16px;"></td>':'';
+    return '<tr id="tr-'+p.no+'">'
+      +'<td class="no">'+p.no+'</td>'
+      +'<td class="code">'+p.code+'</td>'
+      +'<td>'+p.name+'</td>'
+      +'<td style="color:#6b7c8d">'+p.unit+'</td>'
+      +'<td class="r">'+qty+'</td>'
+      +checkCell+check50Cell
+      +'</tr>';
+  }).join('');
+}
+
+function toggleCheck(no,val,is50){
+  if(is50) checks50[no]=val; else checks[no]=val;
+  updateCount();
+}
+
+function updateCount(){
+  var c=Object.keys(checks).filter(function(k){return checks[k];}).length;
+  var c50=Object.keys(checks50).filter(function(k){return checks50[k];}).length;
+  var pct18=Math.round(c/73*100);
+  var pct19=Math.round(c50/73*100);
+  var el=document.getElementById('countResult');
+  el.textContent='รายการ: '+c+'/73 ('+pct18+'%) | ปริมาณ≥50%: '+c50+'/73 ('+pct19+'%)';
+}
+
+function ft(){ renderTable(); }
+
+renderTable();
+</script>
+</body>
+</html>

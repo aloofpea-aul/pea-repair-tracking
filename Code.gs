@@ -12,12 +12,42 @@ const SH = {
   CHECKLIST   : 'CHECKLIST',
   INSPECTIONS : 'INSPECTIONS',
   SCORES      : 'SCORES',
-  LOG         : 'LOG'
+  LOG         : 'LOG',
+  COMMITTEES  : 'COMMITTEES'
 };
 
 function doGet(e) {
-  const page = (e && e.parameter && e.parameter.page) ? e.parameter.page : 'index';
-  const allowed = ['index','form','report'];
+  const page    = (e && e.parameter && e.parameter.page) ? e.parameter.page : 'index';
+  const station = (e && e.parameter && e.parameter.station) ? e.parameter.station : '';
+  const allowed = ['index','form','report','settings','spare_parts'];
+
+  // form.html — inject PRE_STATION_ID
+  if (page === 'form') {
+    var content = HtmlService.createHtmlOutputFromFile('form').getContent();
+    content = content.replace(
+      "var PRE_STATION_ID = '';",
+      "var PRE_STATION_ID = '" + station + "';"
+    );
+    return HtmlService.createHtmlOutput(content)
+      .setTitle('ระบบตรวจงานแก้ไฟฟ้าขัดข้อง กฟต.2')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  // settings.html
+  if (page === 'settings') {
+    return HtmlService.createHtmlOutputFromFile('settings')
+      .setTitle('ตั้งค่าคณะกรรมการตรวจ')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  // spare_parts.html
+  if (page === 'spare_parts') {
+    return HtmlService.createHtmlOutputFromFile('spare_parts')
+      .setTitle('รายการพัสดุสำรองแก้ไฟ 2569')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  // index / report — template
   const tpl = HtmlService.createTemplateFromFile(allowed.includes(page) ? page : 'index');
   tpl.page = page;
   return tpl.evaluate()
@@ -70,4 +100,8 @@ function writeLog(action, detail, user) {
       detail    : detail
     });
   } catch(e) {}
+}
+
+function getScriptUrl() {
+  return ScriptApp.getService().getUrl();
 }
