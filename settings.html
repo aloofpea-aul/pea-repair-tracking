@@ -42,6 +42,41 @@ body{background:#f0f4f8;color:#1a2b3c;}
 .toast{position:fixed;top:20px;right:20px;padding:12px 18px;border-radius:8px;font-size:13px;z-index:999;display:none;color:#fff;}
 .toast.show{display:block;}
 .t-ok{background:#166534;}.t-err{background:#dc2626;}
+/* MOBILE */
+@media(max-width:640px){
+  .topbar{flex-wrap:wrap;gap:6px;padding:10px 12px;}
+  .topbar .logo{font-size:14px;}
+  .topbar .sub{font-size:10px;}
+  .topbar .spacer{width:100%;order:-1;}
+  .topbar a,.topbar button,.btn-back{font-size:11px;padding:5px 9px;border-radius:5px;}
+  .container{padding:12px;}
+  .stat .num{font-size:26px;}
+  .stat{padding:12px;}
+  .form-row{grid-template-columns:1fr;}
+  .cat-grid{grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;}
+  .ci-topic{font-size:12.5px;}
+  .opt{padding:9px 10px;margin-bottom:5px;}
+  .opt input[type=radio]{width:18px;height:18px;}
+  .calc-pct-input{width:90px;}
+  .tab-btn{padding:8px 11px;font-size:11.5px;}
+  .card-hdr{font-size:12.5px;flex-wrap:wrap;}
+  .btn-row{flex-wrap:wrap;gap:8px;padding:12px;}
+  .btn{padding:11px 18px;font-size:13px;}
+  .filters{gap:6px;}
+  .filters input,.filters select{font-size:13px;padding:8px 10px;}
+  thead th{padding:7px 6px;font-size:11px;}
+  tbody td{padding:8px 6px;font-size:12px;}
+  .tbl-wrap{-webkit-overflow-scrolling:touch;}
+  .score-box{padding:6px 12px;}
+  .score-num{font-size:22px;}
+  .score-lbl{font-size:9px;}
+  .score-grade{font-size:11px;}
+  .fg input,.fg select,.fg textarea{font-size:14px;padding:10px 10px;}
+  .fg label{font-size:13px;}
+  .note-input{font-size:13px;padding:8px 10px;}
+  .btn-q{width:28px;height:28px;font-size:13px;}
+  .criteria-box{font-size:12.5px;}
+}
 </style>
 </head>
 <body>

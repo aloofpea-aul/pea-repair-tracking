@@ -65,6 +65,41 @@ tbody td{padding:5px 8px;border-bottom:1px solid #edf0f3;white-space:nowrap;}
 .print-table th{background:#1a3c5e;color:#fff;text-align:center;}
 .print-table .pt-cat td{background:#eef3f8;font-weight:700;color:#1a3c5e;}
 .print-table .pt-total td{background:#1a3c5e;color:#fff;font-weight:700;}
+/* MOBILE */
+@media(max-width:640px){
+  .topbar{flex-wrap:wrap;gap:6px;padding:10px 12px;}
+  .topbar .logo{font-size:14px;}
+  .topbar .sub{font-size:10px;}
+  .topbar .spacer{width:100%;order:-1;}
+  .topbar a,.topbar button,.btn-back{font-size:11px;padding:5px 9px;border-radius:5px;}
+  .container{padding:12px;}
+  .stat .num{font-size:26px;}
+  .stat{padding:12px;}
+  .form-row{grid-template-columns:1fr;}
+  .cat-grid{grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;}
+  .ci-topic{font-size:12.5px;}
+  .opt{padding:9px 10px;margin-bottom:5px;}
+  .opt input[type=radio]{width:18px;height:18px;}
+  .calc-pct-input{width:90px;}
+  .tab-btn{padding:8px 11px;font-size:11.5px;}
+  .card-hdr{font-size:12.5px;flex-wrap:wrap;}
+  .btn-row{flex-wrap:wrap;gap:8px;padding:12px;}
+  .btn{padding:11px 18px;font-size:13px;}
+  .filters{gap:6px;}
+  .filters input,.filters select{font-size:13px;padding:8px 10px;}
+  thead th{padding:7px 6px;font-size:11px;}
+  tbody td{padding:8px 6px;font-size:12px;}
+  .tbl-wrap{-webkit-overflow-scrolling:touch;}
+  .score-box{padding:6px 12px;}
+  .score-num{font-size:22px;}
+  .score-lbl{font-size:9px;}
+  .score-grade{font-size:11px;}
+  .fg input,.fg select,.fg textarea{font-size:14px;padding:10px 10px;}
+  .fg label{font-size:13px;}
+  .note-input{font-size:13px;padding:8px 10px;}
+  .btn-q{width:28px;height:28px;font-size:13px;}
+  .criteria-box{font-size:12.5px;}
+}
 </style>
 </head>
 <body>
@@ -253,24 +288,5 @@ google.script.run
   })
   .getReportData();
 </script>
-
-<!-- Scroll buttons -->
-<div id="scrollBtns" style="position:fixed;right:16px;bottom:24px;display:flex;flex-direction:column;gap:8px;z-index:999;">
-  <button onclick="window.scrollTo({top:0,behavior:'smooth'})"
-    style="width:40px;height:40px;border-radius:50%;background:#1a3c5e;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);display:none;"
-    id="btnTop" title="ขึ้นบน">&#8679;</button>
-  <button onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})"
-    style="width:40px;height:40px;border-radius:50%;background:#e84c0a;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);"
-    id="btnBot" title="ลงล่าง">&#8681;</button>
-</div>
-<script>
-window.addEventListener('scroll',function(){
-  var atTop=window.scrollY<200;
-  var atBot=window.scrollY+window.innerHeight>=document.body.scrollHeight-50;
-  document.getElementById('btnTop').style.display=atTop?'none':'block';
-  document.getElementById('btnBot').style.display=atBot?'none':'block';
-});
-</script>
-
 </body>
 </html>

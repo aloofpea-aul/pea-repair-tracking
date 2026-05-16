@@ -26,21 +26,78 @@ body{background:#f0f4f8;color:#1a2b3c;}
 table{width:100%;border-collapse:collapse;font-size:12.5px;}
 thead th{background:#1a3c5e;color:#fff;padding:8px 10px;text-align:left;font-weight:600;white-space:nowrap;}
 thead th.r{text-align:right;}
+thead th.c{text-align:center;}
 tbody tr:hover{background:#f5f8fb;}
-tbody td{padding:7px 10px;border-bottom:1px solid #edf0f3;}
+tbody tr.has-item{background:#f0fdf4;}
+tbody tr.half-item{background:#fefce8;}
+tbody td{padding:6px 10px;border-bottom:1px solid #edf0f3;vertical-align:middle;}
 tbody td.r{text-align:right;font-weight:600;}
+tbody td.c{text-align:center;}
 .no{color:#9ca3af;width:36px;text-align:center;}
 .code{font-family:monospace;font-size:11px;color:#6b7c8d;}
-.badge-n{background:#dcfce7;color:#166534;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:700;}
-.badge-i{background:#fef9c3;color:#713f12;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:700;}
-.badge-s{background:#fee2e2;color:#991b1b;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:700;}
-.btn{padding:7px 14px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:Sarabun,sans-serif;}
-.btn-primary{background:#e84c0a;color:#fff;}
+.qty-input{width:72px;padding:4px 8px;border:1px solid #c8d0da;border-radius:5px;font-size:12px;font-family:Sarabun,sans-serif;text-align:center;}
+.qty-input:focus{outline:none;border-color:#1a3c5e;}
+.pct-badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:700;}
+.pct-full{background:#dcfce7;color:#166534;}
+.pct-half{background:#fef9c3;color:#713f12;}
+.pct-low{background:#fee2e2;color:#991b1b;}
 .tab-group{display:flex;gap:0;border:1px solid #c8d0da;border-radius:7px;overflow:hidden;margin-bottom:16px;}
 .tab-g-btn{padding:7px 16px;border:none;background:#fff;font-size:12.5px;font-weight:400;color:#1a3c5e;cursor:pointer;font-family:Sarabun,sans-serif;border-right:1px solid #c8d0da;}
 .tab-g-btn:last-child{border-right:none;}
+@media(max-width:640px){.qty-input{width:60px;font-size:14px;} [id^="tick-"]{width:32px;height:32px;font-size:15px;} .stat-row{grid-template-columns:repeat(3,1fr);} .result-bar{flex-direction:column;gap:8px;} .tab-g-btn{padding:8px 10px;font-size:12px;}}
 .tab-g-btn.active{background:#1a3c5e;color:#fff;font-weight:700;}
-@media print{.topbar,.filters,.tab-group,.no-print{display:none!important;}body{background:#fff;}@page{size:A4 landscape;margin:10mm;}}
+.result-bar{background:#eef3f8;border-radius:8px;padding:10px 16px;margin-bottom:12px;display:flex;gap:20px;flex-wrap:wrap;align-items:center;}
+.result-bar .ri{font-size:13px;color:#1a3c5e;}
+.result-bar .rv{font-size:18px;font-weight:700;color:#e84c0a;}
+.btn{padding:7px 14px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:Sarabun,sans-serif;}
+.btn-primary{background:#e84c0a;color:#fff;}
+.btn-secondary{background:#f0f4f8;color:#1a3c5e;border:1px solid #c8d0da;}
+.modal-bg{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;}
+.modal-bg.show{display:flex;}
+.modal-box{background:#fff;border-radius:12px;padding:24px 28px;width:90%;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,.18);}
+.modal-icon{font-size:36px;text-align:center;margin-bottom:12px;}
+.modal-title{font-size:16px;font-weight:700;color:#1a3c5e;text-align:center;margin-bottom:6px;}
+.modal-msg{font-size:13px;color:#6b7c8d;text-align:center;line-height:1.6;margin-bottom:20px;}
+.modal-btns{display:flex;gap:10px;justify-content:center;}
+.modal-btns button{padding:9px 22px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:Sarabun,sans-serif;}
+.modal-cancel{background:#f0f4f8;color:#1a3c5e;border:1px solid #c8d0da!important;}
+.modal-confirm{background:#e84c0a;color:#fff;}
+@media print{.topbar,.filters,.tab-group,.no-print,.result-bar{display:none!important;}body{background:#fff;}.qty-input{border:none;background:transparent;}@page{size:A4 landscape;margin:10mm;}}
+/* MOBILE */
+@media(max-width:640px){
+  .topbar{flex-wrap:wrap;gap:6px;padding:10px 12px;}
+  .topbar .logo{font-size:14px;}
+  .topbar .sub{font-size:10px;}
+  .topbar .spacer{width:100%;order:-1;}
+  .topbar a,.topbar button,.btn-back{font-size:11px;padding:5px 9px;border-radius:5px;}
+  .container{padding:12px;}
+  .stat .num{font-size:26px;}
+  .stat{padding:12px;}
+  .form-row{grid-template-columns:1fr;}
+  .cat-grid{grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;}
+  .ci-topic{font-size:12.5px;}
+  .opt{padding:9px 10px;margin-bottom:5px;}
+  .opt input[type=radio]{width:18px;height:18px;}
+  .calc-pct-input{width:90px;}
+  .tab-btn{padding:8px 11px;font-size:11.5px;}
+  .card-hdr{font-size:12.5px;flex-wrap:wrap;}
+  .btn-row{flex-wrap:wrap;gap:8px;padding:12px;}
+  .btn{padding:11px 18px;font-size:13px;}
+  .filters{gap:6px;}
+  .filters input,.filters select{font-size:13px;padding:8px 10px;}
+  thead th{padding:7px 6px;font-size:11px;}
+  tbody td{padding:8px 6px;font-size:12px;}
+  .tbl-wrap{-webkit-overflow-scrolling:touch;}
+  .score-box{padding:6px 12px;}
+  .score-num{font-size:22px;}
+  .score-lbl{font-size:9px;}
+  .score-grade{font-size:11px;}
+  .fg input,.fg select,.fg textarea{font-size:14px;padding:10px 10px;}
+  .fg label{font-size:13px;}
+  .note-input{font-size:13px;padding:8px 10px;}
+  .btn-q{width:28px;height:28px;font-size:13px;}
+  .criteria-box{font-size:12.5px;}
+}
 </style>
 </head>
 <body>
@@ -50,36 +107,54 @@ tbody td.r{text-align:right;font-weight:600;}
     <div class="sub">อนุมัติโดย ต.2กบษ.(บร.)1792/2568 ลว. 2 ก.ย.2568 | กฟต.2</div>
   </div>
   <div class="spacer"></div>
-  <button class="btn-back no-print" onclick="goHome()">← หน้าหลัก</button>
+  <button class="btn-back no-print" onclick="goHome()">&#8592; หน้าหลัก</button>
   <button class="btn btn-primary no-print" onclick="window.print()" style="margin-left:8px;">&#128438; พิมพ์</button>
 </div>
 
 <div class="container">
   <div class="stat-row">
-    <div class="stat"><div class="num">73</div><div class="lbl">รายการพัสดุ (ชีต 1)</div></div>
-    <div class="stat"><div class="num" id="s7total">-</div><div class="lbl">ยอดรวม 7 วัน</div></div>
-    <div class="stat"><div class="num" id="s14total">-</div><div class="lbl">ยอดรวม 14 วัน</div></div>
-    <div class="stat"><div class="num" id="ss7total">-</div><div class="lbl">ยอดรวมมรสุม 7 วัน</div></div>
+    <div class="stat"><div class="num">73</div><div class="lbl">รายการพัสดุทั้งหมด</div></div>
+    <div class="stat"><div class="num" id="s7total">-</div><div class="lbl">ปกติ 7 วัน</div></div>
+    <div class="stat"><div class="num" id="s14total">-</div><div class="lbl">ปกติ 14 วัน</div></div>
+    <div class="stat"><div class="num" id="s30total">-</div><div class="lbl">ปกติ 1 เดือน</div></div>
+    <div class="stat"><div class="num" id="ss7total">-</div><div class="lbl">มรสุม 7 วัน</div></div>
+    <div class="stat"><div class="num" id="ss14total">-</div><div class="lbl">มรสุม 14 วัน</div></div>
+    <div class="stat"><div class="num" id="ss30total">-</div><div class="lbl">มรสุม 1 เดือน</div></div>
   </div>
 
-  <div class="tab-group">
+  <div class="tab-group no-print">
     <button class="tab-g-btn active" onclick="setMode('ref')">ตารางอ้างอิง</button>
     <button class="tab-g-btn" onclick="setMode('count')">นับพัสดุ (คำนวณ %)</button>
+  </div>
+
+  <!-- result bar for count mode -->
+  <div class="result-bar no-print" id="resultBar" style="display:none;">
+    <div><div class="ri">รายการ (ข้อ 18)</div><div class="rv" id="r18">0 / 73 (0%)</div></div>
+    <div><div class="ri">ปริมาณ ≥ 50% (ข้อ 19)</div><div class="rv" id="r19">0 / 73 (0%)</div></div>
+    <button class="btn btn-secondary no-print" onclick="clearAll()" style="margin-left:auto;">ล้างทั้งหมด</button>
   </div>
 
   <div class="card">
     <div class="card-hdr">
       <span id="tableTitle">รายการพัสดุสำรองคลัง — ยอดอนุมัติ</span>
-      <span id="countResult" style="font-size:12px;background:rgba(255,255,255,.15);padding:4px 10px;border-radius:6px;display:none;"></span>
-    </div>
-    <div class="card-body" style="padding:12px 16px;">
-      <div class="filters">
-        <input id="sq" placeholder="&#128269; ค้นหารายการ รหัส..." oninput="ft()">
-        <select id="typeFilter" onchange="setTypeFilter()">
-          <option value="7d">ยอดสำรอง 7 วัน (พื้นที่ทั่วไป)</option>
-          <option value="14d">ยอดสำรอง 14 วัน (พื้นที่เกาะ)</option>
-          <option value="s7d">ยอดสำรองมรสุม 7 วัน</option>
+      <div class="filters no-print" style="margin:0;background:none;padding:0;">
+        <select id="typeFilter" onchange="setTypeFilter()" style="font-size:12px;padding:4px 8px;">
+          <optgroup label="ช่วงปกติ">
+            <option value="7d">ปกติ — 7 วัน</option>
+            <option value="14d">ปกติ — 14 วัน (พื้นที่เกาะ)</option>
+            <option value="30d">ปกติ — 1 เดือน (30 วัน)</option>
+          </optgroup>
+          <optgroup label="ช่วงมรสุม / ภัยพิบัติ">
+            <option value="s7d">มรสุม — 7 วัน</option>
+            <option value="s14d">มรสุม — 14 วัน</option>
+            <option value="s30d">มรสุม — 1 เดือน (30 วัน)</option>
+          </optgroup>
         </select>
+      </div>
+    </div>
+    <div style="padding:12px 16px;">
+      <div class="filters no-print">
+        <input id="sq" placeholder="&#128269; ค้นหารายการ รหัส..." oninput="ft()">
       </div>
       <div class="tbl-wrap">
         <table id="tbl">
@@ -88,15 +163,28 @@ tbody td.r{text-align:right;font-weight:600;}
               <th class="no">ที่</th>
               <th>รหัสพัสดุ</th>
               <th>รายการ</th>
-              <th>หน่วยนับ</th>
-              <th class="r" id="qtyHeader">ยอดสำรอง (7 วัน)</th>
-              <th id="checkHeader" style="display:none;text-align:center;">มีในคลัง?</th>
-              <th id="check50Header" style="display:none;text-align:center;">≥ 50%?</th>
+              <th>หน่วย</th>
+              <th class="r" id="qtyHeader">ยอดอนุมัติ (7 วัน)</th>
+              <th class="c" id="colActual" style="display:none;">จำนวนที่มี</th>
+              <th class="c" id="colPct" style="display:none;">% เทียบยอด</th>
             </tr>
           </thead>
           <tbody id="tbody"></tbody>
         </table>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Custom Modal -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal-box">
+    <div class="modal-icon" id="modalIcon">&#9888;&#65039;</div>
+    <div class="modal-title" id="modalTitle">ยืนยันการดำเนินการ</div>
+    <div class="modal-msg" id="modalMsg">คุณต้องการดำเนินการนี้หรือไม่?</div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">ยกเลิก</button>
+      <button class="modal-confirm" id="modalOk" onclick="confirmModal()">ยืนยัน</button>
     </div>
   </div>
 </div>
@@ -124,16 +212,16 @@ var SPARE_PARTS=[
 {no:5,code:'1010110205',name:'สลักเกลียว เอ็ม 16x350 มม.',unit:'ชุด',qty7:4,qty14:8,qtyS7:12},
 {no:6,code:'1010110208',name:'สลักเกลียว เอ็ม 16x500 มม.',unit:'ชุด',qty7:4,qty14:8,qtyS7:12},
 {no:7,code:'1010130002',name:'สลักเกลียวห่วงกลม เอ็ม 16x500 มม.',unit:'ชุด',qty7:3,qty14:6,qtyS7:9},
-{no:8,code:'1010180100',name:'แหวนรองแบบเรียบ ประเภทจัตุรัสขนาดใหญ่ 52x52x4.5 มม.',unit:'อัน',qty7:10,qty14:20,qtyS7:30},
-{no:9,code:'1010200010',name:'BRACE,L SHAPE, 50X10 MM., FOR FSD',unit:'ชุด',qty7:25,qty14:50,qtyS7:75},
+{no:8,code:'1010180100',name:'แหวนรองแบบเรียบ ประเภทจัตุรัส 52x52x4.5 มม.',unit:'อัน',qty7:10,qty14:20,qtyS7:30},
+{no:9,code:'1010200010',name:'BRACE, L SHAPE, 50X10 MM., FOR FSD',unit:'ชุด',qty7:25,qty14:50,qtyS7:75},
 {no:10,code:'1010230000',name:'ยูแคล็มป์ สลัก 1 ตัว เอ็ม 8 (ไวร์ โร๊ป คลิ๊ฟ)',unit:'ชุด',qty7:15,qty14:30,qtyS7:45},
 {no:11,code:'1010230012',name:'CLAMP DOUBLE BOLTS ST. WIRE 25 SQ.MM.',unit:'ชุด',qty7:15,qty14:30,qtyS7:45},
 {no:12,code:'1020050100',name:'เคเบิลอากาศ อลูมิเนียม 33 เควี 1x50 ต.มม.',unit:'เมตร',qty7:100,qty14:200,qtyS7:300},
 {no:13,code:'1020050104',name:'เคเบิลอากาศ อลูมิเนียม 33 เควี 1x185 ต.มม.',unit:'เมตร',qty7:100,qty14:200,qtyS7:300},
-{no:14,code:'1020070000',name:'สายอลูมิเนียมตีเกลียวหุ้มฉนวน PVC 750V 25 ต.มม.',unit:'เมตร',qty7:150,qty14:300,qtyS7:450},
-{no:15,code:'1020070002',name:'สายอลูมิเนียมตีเกลียวหุ้มฉนวน PVC 750V 50 ต.มม.',unit:'เมตร',qty7:300,qty14:600,qtyS7:900},
-{no:16,code:'1020070004',name:'สายอลูมิเนียมตีเกลียวหุ้มฉนวน PVC 750V 95 ต.มม.',unit:'เมตร',qty7:150,qty14:300,qtyS7:450},
-{no:17,code:'1020180001',name:'เทปไฟฟ้า PVC ใช้ภายนอก 0.18x19x10,000 มม. มอก.386',unit:'ม้วน',qty7:70,qty14:140,qtyS7:210},
+{no:14,code:'1020070000',name:'สายอลูมิเนียมหุ้มฉนวน PVC 750V 25 ต.มม.',unit:'เมตร',qty7:150,qty14:300,qtyS7:450},
+{no:15,code:'1020070002',name:'สายอลูมิเนียมหุ้มฉนวน PVC 750V 50 ต.มม.',unit:'เมตร',qty7:300,qty14:600,qtyS7:900},
+{no:16,code:'1020070004',name:'สายอลูมิเนียมหุ้มฉนวน PVC 750V 95 ต.มม.',unit:'เมตร',qty7:150,qty14:300,qtyS7:450},
+{no:17,code:'1020180001',name:'เทปไฟฟ้า PVC ใช้ภายนอก 0.18x19x10,000 มม.',unit:'ม้วน',qty7:70,qty14:140,qtyS7:210},
 {no:18,code:'1020180008',name:'EPR, HIGH-VOLTAGE INSULATING TAPE',unit:'ม้วน',qty7:20,qty14:40,qtyS7:60},
 {no:19,code:'1020200000',name:'ลวดอลูมิเนียมแบน 1x10 มม.',unit:'กก.',qty7:5,qty14:10,qtyS7:15},
 {no:20,code:'1020200002',name:'ลวดอลูมิเนียมกลม 4.0 มม.',unit:'กก.',qty7:5,qty14:10,qtyS7:15},
@@ -156,9 +244,9 @@ var SPARE_PARTS=[
 {no:37,code:'1020400017',name:'SLEEVE, TENSION AL 185 SQ.MM.',unit:'อัน',qty7:20,qty14:40,qtyS7:60},
 {no:38,code:'1020410014',name:'SLEEVE, TENSIONLESS AL 50 SQ.MM.',unit:'อัน',qty7:20,qty14:40,qtyS7:60},
 {no:39,code:'1020410017',name:'SLEEVE, TENSIONLESS AL 185 SQ.MM.',unit:'อัน',qty7:20,qty14:40,qtyS7:60},
-{no:40,code:'1020420102',name:'หางปลาสาย AL 50 ต.มม. (เจาะรูมาตรฐาน NEMA)',unit:'อัน',qty7:20,qty14:40,qtyS7:60},
-{no:41,code:'1020420104',name:'หางปลาสาย AL 95 ต.มม. (เจาะรูมาตรฐาน NEMA)',unit:'อัน',qty7:10,qty14:20,qtyS7:30},
-{no:42,code:'1020420106',name:'หางปลาสาย AL 185 ต.มม. (เจาะรูมาตรฐาน NEMA)',unit:'อัน',qty7:20,qty14:40,qtyS7:60},
+{no:40,code:'1020420102',name:'หางปลาสาย AL 50 ต.มม. (มาตรฐาน NEMA)',unit:'อัน',qty7:20,qty14:40,qtyS7:60},
+{no:41,code:'1020420104',name:'หางปลาสาย AL 95 ต.มม. (มาตรฐาน NEMA)',unit:'อัน',qty7:10,qty14:20,qtyS7:30},
+{no:42,code:'1020420106',name:'หางปลาสาย AL 185 ต.มม. (มาตรฐาน NEMA)',unit:'อัน',qty7:20,qty14:40,qtyS7:60},
 {no:43,code:'1020420400',name:'สลักต่อปลายสายเข้าอุปกรณ์ไฟฟ้า AL 50 ต.มม.',unit:'อัน',qty7:20,qty14:40,qtyS7:60},
 {no:44,code:'1030010009',name:'INSULATOR, LINE-POST, 57-3, TIS.2623',unit:'ลูก',qty7:10,qty14:20,qtyS7:30},
 {no:45,code:'1030010106',name:'INSULATOR, PIN-POST, 56/57-4, TIS.2623',unit:'ลูก',qty7:3,qty14:6,qtyS7:9},
@@ -192,70 +280,180 @@ var SPARE_PARTS=[
 {no:73,code:'1040030110',name:'ฟิวส์ลิงค์ 33 เควี 40 แอมป์ EEI-NEMA แบบ K',unit:'เส้น',qty7:20,qty14:40,qtyS7:60}
 ];
 
-var MODE='ref', QTY_FIELD='qty7';
-var checks={}, checks50={};
+var MODE='ref', QTY_FIELD='7d';
+var actuals={};
 
-// Compute stats
-var t7=SPARE_PARTS.reduce(function(s,p){return s+p.qty7;},0);
-var t14=SPARE_PARTS.reduce(function(s,p){return s+p.qty14;},0);
-var ts7=SPARE_PARTS.reduce(function(s,p){return s+p.qtyS7;},0);
-document.getElementById('s7total').textContent=t7;
-document.getElementById('s14total').textContent=t14;
-document.getElementById('ss7total').textContent=ts7;
+var t7  =SPARE_PARTS.reduce(function(s,p){return s+p.qty7;},0);
+var t14 =SPARE_PARTS.reduce(function(s,p){return s+p.qty14;},0);
+var t30 =SPARE_PARTS.reduce(function(s,p){return s+Math.ceil(p.qty7*30/7);},0);
+var ts7 =SPARE_PARTS.reduce(function(s,p){return s+p.qtyS7;},0);
+var ts14=SPARE_PARTS.reduce(function(s,p){return s+p.qtyS7*2;},0);
+var ts30=SPARE_PARTS.reduce(function(s,p){return s+Math.ceil(p.qtyS7*30/7);},0);
+document.getElementById('s7total').textContent=t7.toLocaleString();
+document.getElementById('s14total').textContent=t14.toLocaleString();
+document.getElementById('s30total').textContent=t30.toLocaleString();
+document.getElementById('ss7total').textContent=ts7.toLocaleString();
+document.getElementById('ss14total').textContent=ts14.toLocaleString();
+document.getElementById('ss30total').textContent=ts30.toLocaleString();
 
 function setMode(m){
   MODE=m;
   document.querySelectorAll('.tab-g-btn').forEach(function(b,i){b.classList.toggle('active',['ref','count'][i]===m);});
-  document.getElementById('checkHeader').style.display=m==='count'?'':'none';
-  document.getElementById('check50Header').style.display=m==='count'?'':'none';
-  document.getElementById('countResult').style.display=m==='count'?'':'none';
-  document.getElementById('tableTitle').textContent=m==='ref'?'รายการพัสดุสำรองคลัง — ยอดอนุมัติ':'นับพัสดุ — เช็คครบ/ปริมาณ ≥ 50%';
+  document.getElementById('resultBar').style.display=m==='count'?'flex':'none';
+  document.getElementById('colActual').style.display=m==='count'?'':'none';
+  document.getElementById('colPct').style.display=m==='count'?'':'none';
+  document.getElementById('tableTitle').textContent=m==='ref'?'รายการพัสดุสำรองคลัง — ยอดอนุมัติ':'นับพัสดุ — กรอกจำนวนที่มีในคลัง';
   renderTable();
-  if(m==='count') updateCount();
+}
+
+function getQty(p, field){
+  if(field==='7d')  return p.qty7;
+  if(field==='14d') return p.qty14;
+  if(field==='30d') return Math.ceil(p.qty7*30/7);
+  if(field==='s7d') return p.qtyS7;
+  if(field==='s14d')return p.qtyS7*2;
+  if(field==='s30d')return Math.ceil(p.qtyS7*30/7);
+  return p.qty7;
 }
 
 function setTypeFilter(){
   var t=document.getElementById('typeFilter').value;
-  QTY_FIELD=t==='7d'?'qty7':t==='14d'?'qty14':'qtyS7';
-  var lbl=t==='7d'?'ยอดสำรอง (7 วัน)':t==='14d'?'ยอดสำรอง (14 วัน)':'ยอดสำรองมรสุม (7 วัน)';
-  document.getElementById('qtyHeader').textContent=lbl;
+  QTY_FIELD=t;
+  var lblMap={
+    '7d' :'ยอดอนุมัติ — ปกติ 7 วัน',
+    '14d':'ยอดอนุมัติ — ปกติ 14 วัน',
+    '30d':'ยอดอนุมัติ — ปกติ 1 เดือน',
+    's7d':'ยอดอนุมัติ — มรสุม 7 วัน',
+    's14d':'ยอดอนุมัติ — มรสุม 14 วัน',
+    's30d':'ยอดอนุมัติ — มรสุม 1 เดือน'
+  };
+  document.getElementById('qtyHeader').textContent=lblMap[t]||'ยอดอนุมัติ';
   renderTable();
+}
+
+function tickFull(no, approved){
+  var cur=actuals[no]||0;
+  var newVal=cur>=approved?0:approved;
+  actuals[no]=newVal;
+  var inp=document.getElementById('act-'+no);
+  if(inp) inp.value=newVal||'';
+  updateRowColor(no);
+  updateSummary();
+  updateTickBtn(no,approved,newVal);
+}
+
+function updateTickBtn(no,approved,actual){
+  var btn=document.getElementById('tick-'+no);
+  if(!btn)return;
+  if(actual>=approved&&actual>0){
+    btn.style.background='#166534';btn.style.color='#fff';btn.style.borderColor='#166534';
+  } else {
+    btn.style.background='';btn.style.color='';btn.style.borderColor='#c8d0da';
+  }
+}
+
+function onActualChange(no, val){
+  actuals[no]=parseFloat(val)||0;
+  updateRowColor(no);
+  updateSummary();
+  var p=SPARE_PARTS.find(function(x){return x.no===no;});
+  if(p) updateTickBtn(no,getQty(p,QTY_FIELD),actuals[no]);
+}
+
+function updateRowColor(no){
+  var tr=document.getElementById('tr-'+no);
+  if(!tr)return;
+  var p=SPARE_PARTS.find(function(x){return x.no===no;});
+  var approved=getQty(p,QTY_FIELD);
+  var actual=actuals[no]||0;
+  var pct=approved>0?actual/approved*100:0;
+  tr.className='';
+  if(actual>0&&pct>=50) tr.className='has-item';
+  else if(actual>0&&pct<50) tr.className='half-item';
+  // update pct badge
+  var pctEl=document.getElementById('pct-'+no);
+  if(pctEl){
+    if(actual===0){pctEl.textContent='—';pctEl.className='pct-badge';}
+    else if(pct>=100){pctEl.textContent='100%';pctEl.className='pct-badge pct-full';}
+    else if(pct>=50){pctEl.textContent=Math.round(pct)+'%';pctEl.className='pct-badge pct-half';}
+    else{pctEl.textContent=Math.round(pct)+'%';pctEl.className='pct-badge pct-low';}
+  }
+}
+
+function updateSummary(){
+  var hasAny=0,hasHalf=0;
+  SPARE_PARTS.forEach(function(p){
+    var approved=getQty(p,QTY_FIELD);
+    var actual=actuals[p.no]||0;
+    if(actual>0) hasAny++;
+    if(approved>0&&actual/approved>=0.5) hasHalf++;
+  });
+  var pct18=Math.round(hasAny/73*100);
+  var pct19=Math.round(hasHalf/73*100);
+  document.getElementById('r18').textContent=hasAny+' / 73 ('+pct18+'%)';
+  document.getElementById('r19').textContent=hasHalf+' / 73 ('+pct19+'%)';
+}
+
+var _modalCallback=null;
+function showModal(icon,title,msg,okLabel,cb){
+  document.getElementById('modalIcon').textContent=icon;
+  document.getElementById('modalTitle').textContent=title;
+  document.getElementById('modalMsg').textContent=msg;
+  document.getElementById('modalOk').textContent=okLabel||'ยืนยัน';
+  _modalCallback=cb;
+  document.getElementById('modalBg').classList.add('show');
+}
+function closeModal(){document.getElementById('modalBg').classList.remove('show');_modalCallback=null;}
+function confirmModal(){closeModal();if(_modalCallback)_modalCallback();}
+
+function clearAll(){
+  showModal('&#128465;&#65039;','ล้างข้อมูลทั้งหมด','จำนวนที่กรอกไว้ทั้งหมดจะถูกล้างออก ดำเนินการต่อหรือไม่?','ล้างข้อมูล',function(){
+  actuals={};
+  document.querySelectorAll('.qty-input').forEach(function(el){el.value='';});
+  document.querySelectorAll('tbody tr').forEach(function(tr){tr.className='';});
+  document.querySelectorAll('.pct-badge').forEach(function(el){el.textContent='—';el.className='pct-badge';});
+  document.querySelectorAll('[id^="tick-"]').forEach(function(b){b.style.background='';b.style.color='';b.style.borderColor='#c8d0da';});
+  updateSummary();
+  });
 }
 
 function renderTable(){
   var q=document.getElementById('sq').value.toLowerCase();
   var rows=SPARE_PARTS.filter(function(p){return !q||(p.name.toLowerCase().includes(q)||p.code.includes(q));});
+  var isCount=MODE==='count';
   document.getElementById('tbody').innerHTML=rows.map(function(p){
-    var qty=p[QTY_FIELD];
-    var checkCell=MODE==='count'?'<td style="text-align:center"><input type="checkbox" '+(checks[p.no]?'checked':'')+' onchange="toggleCheck('+p.no+',this.checked,false)" style="accent-color:#1a3c5e;width:16px;height:16px;"></td>':'';
-    var check50Cell=MODE==='count'?'<td style="text-align:center"><input type="checkbox" '+(checks50[p.no]?'checked':'')+' onchange="toggleCheck('+p.no+',this.checked,true)" style="accent-color:#e84c0a;width:16px;height:16px;"></td>':'';
-    return '<tr id="tr-'+p.no+'">'
+    var approved=getQty(p,QTY_FIELD);
+    var actual=actuals[p.no]||0;
+    var pct=approved>0?actual/approved*100:0;
+    var trClass='';
+    if(isCount&&actual>0&&pct>=50) trClass='has-item';
+    else if(isCount&&actual>0&&pct<50) trClass='half-item';
+    var pctText='—';
+    var pctCls='pct-badge';
+    if(isCount&&actual>0){
+      if(pct>=100){pctText='100%';pctCls='pct-badge pct-full';}
+      else if(pct>=50){pctText=Math.round(pct)+'%';pctCls='pct-badge pct-half';}
+      else{pctText=Math.round(pct)+'%';pctCls='pct-badge pct-low';}
+    }
+    var tickStyle=actuals[p.no]>=approved?'background:#166534;color:#fff;border-color:#166534;':'';
+    var actualCell=isCount?'<td class="c" style="white-space:nowrap;">'
+      +'<input type="number" min="0" class="qty-input" id="act-'+p.no+'" value="'+(actuals[p.no]||'')+'" placeholder="0" oninput="onActualChange('+p.no+',this.value)">'
+      +'<button onclick="tickFull('+p.no+','+approved+')" id="tick-'+p.no+'" title="ครบตามยอดอนุมัติ" style="margin-left:4px;width:26px;height:26px;border:1px solid #c8d0da;border-radius:5px;cursor:pointer;font-size:13px;'+tickStyle+'">&#10003;</button>'
+      +'</td>':'';
+
+    var pctCell=isCount?'<td class="c"><span class="pct-badge '+pctCls+'" id="pct-'+p.no+'">'+pctText+'</span></td>':'';
+    return '<tr id="tr-'+p.no+'" class="'+trClass+'">'
       +'<td class="no">'+p.no+'</td>'
       +'<td class="code">'+p.code+'</td>'
       +'<td>'+p.name+'</td>'
       +'<td style="color:#6b7c8d">'+p.unit+'</td>'
-      +'<td class="r">'+qty+'</td>'
-      +checkCell+check50Cell
+      +'<td class="r">'+approved+'</td>'
+      +actualCell+pctCell
       +'</tr>';
   }).join('');
 }
 
-function toggleCheck(no,val,is50){
-  if(is50) checks50[no]=val; else checks[no]=val;
-  updateCount();
-}
-
-function updateCount(){
-  var c=Object.keys(checks).filter(function(k){return checks[k];}).length;
-  var c50=Object.keys(checks50).filter(function(k){return checks50[k];}).length;
-  var pct18=Math.round(c/73*100);
-  var pct19=Math.round(c50/73*100);
-  var el=document.getElementById('countResult');
-  el.textContent='รายการ: '+c+'/73 ('+pct18+'%) | ปริมาณ≥50%: '+c50+'/73 ('+pct19+'%)';
-}
-
-function ft(){ renderTable(); }
-
+function ft(){renderTable();}
 renderTable();
 </script>
 </body>
