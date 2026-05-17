@@ -333,3 +333,127 @@ function deleteCommittee(id) {
     return { success: true };
   } catch(e) { return { success: false, error: e.message }; }
 }
+
+// ============================================================
+//  Vehicle Check Functions — เพิ่มต่อท้าย DataService.gs
+// ============================================================
+
+// ===== VEHICLES =====
+function getVehicles() {
+  try {
+    var ss = SpreadsheetApp.openById(SS_ID);
+    var sh = ss.getSheetByName('VEHICLES');
+    if (!sh) {
+      sh = ss.insertSheet('VEHICLES');
+      sh.appendRow(['vehicle_id','plate','code','brand','unit','responsible','active']);
+      sh.getRange(1,1,1,7).setFontWeight('bold').setBackground('#1a3c5e').setFontColor('#ffffff');
+    }
+    return getSheetData('VEHICLES').filter(function(v){ return v.active !== 'N'; });
+  } catch(e) { return []; }
+}
+
+function saveVehicle(payload) {
+  try {
+    var ss = SpreadsheetApp.openById(SS_ID);
+    var sh = ss.getSheetByName('VEHICLES');
+    if (!sh) { getVehicles(); sh = ss.getSheetByName('VEHICLES'); }
+    if (payload.vehicle_id) {
+      var data = sh.getDataRange().getValues();
+      var headers = data[0];
+      var idIdx = headers.indexOf('vehicle_id');
+      for (var i = 1; i < data.length; i++) {
+        if (String(data[i][idIdx]) === String(payload.vehicle_id)) {
+          headers.forEach(function(h,j){ if(payload[h]!==undefined) sh.getRange(i+1,j+1).setValue(payload[h]); });
+          break;
+        }
+      }
+    } else {
+      payload.vehicle_id = genId('VHC');
+      payload.active = 'Y';
+      appendRow('VEHICLES', payload);
+    }
+    return { success: true };
+  } catch(e) { return { success: false, error: e.message }; }
+}
+
+function deleteVehicle(id) {
+  try {
+    var ss = SpreadsheetApp.openById(SS_ID);
+    var sh = ss.getSheetByName('VEHICLES');
+    if (!sh) return { success: false };
+    var data = sh.getDataRange().getValues();
+    var idIdx = data[0].indexOf('vehicle_id');
+    var actIdx = data[0].indexOf('active');
+    for (var i = 1; i < data.length; i++) {
+      if (String(data[i][idIdx]) === String(id)) {
+        sh.getRange(i+1, actIdx+1).setValue('N'); break;
+      }
+    }
+    return { success: true };
+  } catch(e) { return { success: false, error: e.message }; }
+}
+
+// ===== VEHICLE CHECKS =====
+function saveVehicleCheck(payload) {
+  try {
+    var ss = SpreadsheetApp.openById(SS_ID);
+    var sh = ss.getSheetByName('VEHICLE_CHECKS');
+    if (!sh) {
+      sh = ss.insertSheet('VEHICLE_CHECKS');
+      sh.appendRow(['check_id','vehicle_id','check_date','signer','supervisor','supervisor_pos','results_json','defects_json','created_at']);
+      sh.getRange(1,1,1,9).setFontWeight('bold').setBackground('#1a3c5e').setFontColor('#ffffff');
+    }
+    // Check if record exists for this vehicle + date
+    var data = sh.getDataRange().getValues();
+    var headers = data[0];
+    var vidIdx = headers.indexOf('vehicle_id');
+    var dateIdx = headers.indexOf('check_date');
+    var checkDate = String(payload.check_date);
+    for (var i = 1; i < data.length; i++) {
+      if (String(data[i][vidIdx]) === String(payload.vehicle_id) &&
+          String(data[i][dateIdx]) === checkDate) {
+        // Update existing
+        headers.forEach(function(h,j){
+          if (payload[h] !== undefined) sh.getRange(i+1, j+1).setValue(payload[h]);
+        });
+        return { success: true, check_id: data[i][headers.indexOf('check_id')] };
+      }
+    }
+    // Insert new
+    var checkId = genId('CHK');
+    appendRow('VEHICLE_CHECKS', {
+      check_id      : checkId,
+      vehicle_id    : payload.vehicle_id,
+      check_date    : checkDate,
+      signer        : payload.signer || '',
+      supervisor    : payload.supervisor || '',
+      supervisor_pos: payload.supervisor_pos || '',
+      results_json  : payload.results_json || '{}',
+      defects_json  : payload.defects_json || '[]',
+      created_at    : nowTH()
+    });
+    return { success: true, check_id: checkId };
+  } catch(e) { return { success: false, error: e.message }; }
+}
+
+function getVehicleMonthlyData(vehicleId, year, month) {
+  try {
+    var sh = SpreadsheetApp.openById(SS_ID).getSheetByName('VEHICLE_CHECKS');
+    if (!sh) return [];
+    var prefix = String(year) + '-' + String(month).padStart(2,'0');
+    return getSheetData('VEHICLE_CHECKS').filter(function(r){
+      return String(r.vehicle_id) === String(vehicleId) &&
+             String(r.check_date).startsWith(prefix);
+    }).map(function(r){
+      return {
+        check_id      : String(r.check_id),
+        check_date    : String(r.check_date),
+        signer        : String(r.signer||''),
+        supervisor    : String(r.supervisor||''),
+        supervisor_pos: String(r.supervisor_pos||''),
+        results_json  : String(r.results_json||'{}'),
+        defects_json  : String(r.defects_json||'[]')
+      };
+    });
+  } catch(e) { return []; }
+}
