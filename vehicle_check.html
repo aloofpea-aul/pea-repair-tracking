@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes">
 <title>แบบฟอร์มตรวจยานพาหนะ FM1-SOH3-S04-6103</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -73,10 +73,45 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a2b3c;}
 /* Toast */
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:13px 22px;border-radius:10px;font-size:15px;z-index:99999;display:none;color:#fff;font-weight:700;box-shadow:0 4px 16px rgba(0,0,0,.25);}
 .toast.show{display:block;}.t-ok{background:#166534;}.t-err{background:#dc2626;}.t-info{background:#1a3c5e;}
-@media(max-width:640px){
-  html{font-size:17px;}.form-row,.signer-grid{grid-template-columns:1fr;}
-  .defect-item{grid-template-columns:1fr 46px;gap:6px;}.defect-item input[type=date]{grid-column:1/-1;}
-  .veh-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));}
+@media(max-width:700px){
+  html{font-size:18px!important;}
+  body{font-size:18px!important;}
+  .topbar{padding:10px 12px;gap:6px;}
+  .t-title{font-size:16px;}
+  .t-sub{font-size:12px;}
+  .btn{font-size:15px!important;padding:11px 14px!important;}
+  .container{padding:12px;}
+  .card-hdr{font-size:16px;padding:13px 14px;}
+  .veh-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;padding:14px;}
+  .veh-plate{font-size:18px;}
+  .veh-brand{font-size:14px;}
+  .veh-card{padding:14px 10px;}
+  .month-nav{padding:12px 14px;}
+  .mnav-btn{width:46px;height:46px;font-size:22px;}
+  .month-label{font-size:20px;}
+  .day-tabs{gap:8px;padding:12px 14px;}
+  .day-tab{min-width:48px;height:48px;font-size:16px;border-radius:10px;}
+  .ci{padding:15px 14px;gap:14px;}
+  .ci-no{min-width:38px;height:38px;font-size:16px;}
+  .ci-name{font-size:17px;}
+  .cbtn{width:52px!important;height:52px!important;font-size:22px!important;}
+  .cbtn-grp{gap:10px;}
+  .signer-row{padding:14px;}
+  .signer-grid{grid-template-columns:1fr;}
+  .signer-fg label{font-size:15px;}
+  .signer-fg input{font-size:16px;padding:12px;}
+  .summary-bar{gap:12px;padding:12px 14px;}
+  .sum-item{font-size:16px;}
+  .badge{font-size:15px;padding:5px 13px;}
+  .form-row{grid-template-columns:1fr;}
+  .fg label{font-size:15px;}
+  .fg input,.fg select{font-size:16px;padding:12px;}
+  .defect-item{grid-template-columns:1fr 52px;gap:8px;padding:12px 14px;}
+  .defect-item input{font-size:16px;padding:12px;}
+  .defect-item input[type=date]{grid-column:1/-1;}
+  .btn-del{width:52px;height:52px;font-size:20px;}
+  .modal{padding:20px;}
+  .modal-title{font-size:18px;}
 }
 @media print{
   *{font-family:'Sarabun',sans-serif!important;}
