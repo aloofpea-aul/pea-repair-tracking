@@ -5,359 +5,310 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>แบบฟอร์มตรวจยานพาหนะ FM1-SOH3-S04-6103</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Sarabun',sans-serif;}
-body{background:#f0f4f8;color:#1a2b3c;}
-.topbar{background:#1a3c5e;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:12px;}
-.topbar .logo{font-size:14px;font-weight:700;}
-.topbar .sub{font-size:11px;opacity:.75;margin-top:2px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;}
+body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a2b3c;}
+.topbar{background:#1a3c5e;color:#fff;padding:12px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.t-title{font-size:15px;font-weight:700;}.t-sub{font-size:11px;opacity:.75;}
 .spacer{flex:1;}
-.btn-back{color:#fff;background:rgba(255,255,255,.15);padding:6px 12px;border-radius:6px;border:none;font-size:12px;cursor:pointer;font-family:Sarabun,sans-serif;}
-.btn{padding:7px 14px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:Sarabun,sans-serif;}
-.btn-primary{background:#e84c0a;color:#fff;}
-.btn-green{background:#166534;color:#fff;}
-.container{max-width:900px;margin:0 auto;padding:20px;}
+.btn{padding:10px 16px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:'Sarabun',sans-serif;}
+.btn-back{background:rgba(255,255,255,.15);color:#fff;}
+.btn-save{background:#166534;color:#fff;}
+.btn-print{background:#e84c0a;color:#fff;}
+.container{max-width:900px;margin:0 auto;padding:16px;}
 .card{background:#fff;border-radius:10px;border:1px solid #dde3ea;margin-bottom:16px;overflow:hidden;}
-.card-hdr{background:#1a3c5e;color:#fff;padding:10px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.card-hdr{background:#1a3c5e;color:#fff;padding:12px 16px;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
 .card-body{padding:16px;}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
-.fg{display:flex;flex-direction:column;gap:4px;}
-.fg label{font-size:12px;font-weight:700;color:#4b5563;}
-.fg input,.fg select{padding:8px 10px;border:1px solid #c8d0da;border-radius:6px;font-size:13px;font-family:Sarabun,sans-serif;width:100%;}
-.check-grid{display:flex;flex-direction:column;gap:6px;}
-.check-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid #dde3ea;border-radius:8px;transition:background .1s;}
-.check-item:hover{background:#f8fafc;}
-.check-item.ok{background:#f0fdf4;border-color:#86efac;}
-.check-item.fail{background:#fef2f2;border-color:#fca5a5;}
-.item-no{min-width:28px;height:28px;background:#1a3c5e;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
-.item-name{flex:1;font-size:13px;font-weight:500;}
-.check-btns{display:flex;gap:6px;flex-shrink:0;}
-.cbtn{width:36px;height:36px;border-radius:7px;border:1.5px solid #c8d0da;background:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .1s;}
-.cbtn.ok-active{background:#166534;border-color:#166534;color:#fff;}
-.cbtn.fail-active{background:#dc2626;border-color:#dc2626;color:#fff;}
-.note-inp{border:1px solid #c8d0da;border-radius:5px;padding:4px 8px;font-size:11.5px;font-family:Sarabun,sans-serif;width:130px;}
-.note-inp:focus{outline:none;border-color:#1a3c5e;}
-.defect-area{display:flex;flex-direction:column;gap:6px;}
-.defect-row{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;}
-.defect-inp{padding:6px 10px;border:1px solid #c8d0da;border-radius:6px;font-size:12.5px;font-family:Sarabun,sans-serif;width:100%;}
-.summary-bar{display:flex;gap:16px;padding:12px 16px;background:#f8fafc;border-top:1px solid #dde3ea;font-size:12px;}
-.sum-item{display:flex;align-items:center;gap:6px;}
-.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
-.badge-ok{background:#dcfce7;color:#166534;}
-.badge-fail{background:#fee2e2;color:#dc2626;}
-.badge-skip{background:#f3f4f6;color:#6b7c8d;}
-.toast{position:fixed;top:20px;right:20px;padding:12px 18px;border-radius:8px;font-size:13px;z-index:999;display:none;color:#fff;max-width:320px;}
-.toast.show{display:block;}
-.t-ok{background:#166534;}.t-err{background:#dc2626;}
-
-/* PRINT */
-@media print {
-  body{background:#fff;}
-  .topbar,.no-print,.cbtn,.note-inp,.defect-inp,.summary-bar{display:none!important;}
-  .container{max-width:100%;padding:4mm;}
-  .card{border:none;border-radius:0;margin-bottom:4mm;}
-  .card-hdr{background:#000!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-  @page{size:A4 portrait;margin:8mm;}
-
-  /* Print table */
-  .print-table{display:table!important;width:100%;border-collapse:collapse;font-size:9pt;}
-  .print-table th,.print-table td{border:0.5px solid #000;padding:2px 4px;text-align:center;}
-  .print-table th{background:#1a3c5e!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:8pt;}
-  .print-table .td-name{text-align:left;}
-  .check-grid,.defect-area{display:none!important;}
-  .print-header{display:block!important;}
-}
-
-.print-table{display:none;}
-.print-header{display:none;}
-
-/* Scroll buttons */
+.fg{display:flex;flex-direction:column;gap:5px;}
+.fg label{font-size:14px;font-weight:700;color:#4b5563;}
+.fg input{padding:11px 12px;border:1.5px solid #c8d0da;border-radius:8px;font-size:15px;font-family:'Sarabun',sans-serif;width:100%;background:#fff;}
+.month-nav{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#f8fafc;border-bottom:1px solid #dde3ea;}
+.mnav-btn{width:40px;height:40px;border:1.5px solid #c8d0da;border-radius:8px;background:#fff;font-size:20px;cursor:pointer;}
+.month-label{font-size:17px;font-weight:700;color:#1a3c5e;flex:1;text-align:center;}
+.day-tabs{display:flex;overflow-x:auto;gap:6px;padding:12px 16px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.day-tabs::-webkit-scrollbar{display:none;}
+.day-tab{min-width:44px;height:44px;border-radius:8px;border:1.5px solid #c8d0da;background:#fff;font-size:14px;font-weight:600;cursor:pointer;flex-shrink:0;color:#374151;}
+.day-tab.today{border-color:#e84c0a;color:#e84c0a;}
+.day-tab.has-data{background:#dcfce7;border-color:#86efac;color:#166534;}
+.day-tab.has-fail{background:#fee2e2;border-color:#fca5a5;color:#dc2626;}
+.day-tab.active{background:#1a3c5e!important;color:#fff!important;border-color:#1a3c5e!important;}
+.ci{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid #edf0f3;}
+.ci:last-child{border-bottom:none;}
+.ci.stP{background:#f0fdf4;}.ci.stO{background:#fef2f2;}
+.ci-no{min-width:34px;height:34px;background:#1a3c5e;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;}
+.ci-name{flex:1;font-size:15px;font-weight:500;line-height:1.4;}
+.cbtn-grp{display:flex;gap:8px;flex-shrink:0;}
+.cbtn{width:46px;height:46px;border-radius:8px;border:1.5px solid #c8d0da;background:#fff;font-size:20px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.cbtn.aP{background:#166534;border-color:#166534;color:#fff;}
+.cbtn.aO{background:#dc2626;border-color:#dc2626;color:#fff;}
+.cbtn.aD{background:#6b7280;border-color:#6b7280;color:#fff;}
+.signer-row{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#f8fafc;border-top:1px solid #dde3ea;flex-wrap:wrap;}
+.signer-row label{font-size:14px;font-weight:700;color:#4b5563;}
+.signer-row input{flex:1;min-width:200px;padding:10px 12px;border:1.5px solid #c8d0da;border-radius:8px;font-size:15px;font-family:'Sarabun',sans-serif;}
+.summary-bar{display:flex;gap:14px;padding:10px 16px;background:#f0f4f8;border-top:1px solid #dde3ea;flex-wrap:wrap;}
+.sum-item{display:flex;align-items:center;gap:6px;font-size:14px;}
+.badge{display:inline-block;padding:4px 11px;border-radius:20px;font-size:13px;font-weight:700;}
+.badge-ok{background:#dcfce7;color:#166534;}.badge-fail{background:#fee2e2;color:#dc2626;}.badge-skip{background:#f3f4f6;color:#6b7280;}
+.defect-item{display:grid;grid-template-columns:1fr 160px 46px;gap:8px;align-items:center;padding:10px 16px;border-bottom:1px solid #edf0f3;}
+.defect-item input{padding:10px 12px;border:1.5px solid #c8d0da;border-radius:8px;font-size:14px;font-family:'Sarabun',sans-serif;width:100%;}
+.btn-del{width:46px;height:46px;border:none;background:#fee2e2;color:#dc2626;border-radius:8px;cursor:pointer;font-size:18px;}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:13px 22px;border-radius:10px;font-size:15px;z-index:9999;display:none;color:#fff;font-weight:700;box-shadow:0 4px 16px rgba(0,0,0,.25);}
+.toast.show{display:block;}.t-ok{background:#166534;}.t-err{background:#dc2626;}
 @media(max-width:640px){
-  .form-row{grid-template-columns:1fr;}
-  .check-item{flex-wrap:wrap;gap:8px;}
-  .note-inp{width:100%;}
-  .defect-row{grid-template-columns:1fr;}
-  .card-hdr{font-size:12px;}
+  html{font-size:17px;}.form-row{grid-template-columns:1fr;}
+  .signer-row{flex-direction:column;align-items:flex-start;}.signer-row input{width:100%;}
+  .defect-item{grid-template-columns:1fr 46px;gap:6px;}.defect-item input[type=date]{grid-column:1/-1;}
 }
+/* === PRINT === */
+@media print{
+  *{font-family:'Sarabun',sans-serif!important;}
+  body,html{background:#fff!important;margin:0;padding:0;}
+  .no-print,.topbar,.container{display:none!important;}
+  @page{size:A4 landscape;margin:5mm;}
+  .print-page{display:block!important;}
+}
+.print-page{display:none;}
 </style>
 </head>
 <body>
 <div class="topbar">
-  <div>
-    <div class="logo">&#128663; แบบฟอร์มตรวจยานพาหนะก่อนปฏิบัติงาน</div>
-    <div class="sub">FM1-SOH3-S04-6103 | กฟต.2</div>
-  </div>
+  <div><div class="t-title">&#128663; แบบฟอร์มตรวจยานพาหนะก่อนปฏิบัติงาน</div><div class="t-sub">FM1-SOH3-S04-6103 | กฟต.2</div></div>
   <div class="spacer"></div>
-  <button class="btn-back no-print" onclick="goHome()">&#8592; หน้าหลัก</button>
-  <button class="btn btn-green no-print" onclick="savePrint()" style="margin-left:8px;">&#128438; บันทึก &amp; พิมพ์</button>
+  <button class="btn btn-back no-print" onclick="goHome()">&#8592; หลัก</button>
+  <button class="btn btn-save no-print" onclick="saveData()">&#128190; บันทึก</button>
+  <button class="btn btn-print no-print" onclick="doPrint()">&#128438; พิมพ์</button>
 </div>
-
-<div class="container">
-
-  <!-- Header info -->
+<div class="container no-print">
   <div class="card">
     <div class="card-hdr">&#128203; ข้อมูลยานพาหนะ</div>
     <div class="card-body">
       <div class="form-row">
-        <div class="fg"><label>หน่วยงาน</label><input type="text" id="unit" placeholder="กฟฟ. / สาขา..."></div>
-        <div class="fg"><label>เลขทะเบียน</label><input type="text" id="plate" placeholder="กข 1234 กรุงเทพ"></div>
+        <div class="fg"><label>หน่วยงาน</label><input id="fUnit" type="text" placeholder="กฟฟ. / สาขา..."></div>
+        <div class="fg"><label>เลขทะเบียน</label><input id="fPlate" type="text" placeholder="กข 1234"></div>
       </div>
       <div class="form-row">
-        <div class="fg"><label>ผู้ตรวจสอบ</label><input type="text" id="inspector" placeholder="ชื่อ-นามสกุล"></div>
-        <div class="fg"><label>วันที่ตรวจ</label><input type="date" id="checkdate"></div>
-      </div>
-      <div class="form-row">
-        <div class="fg"><label>ยี่ห้อ/รุ่น</label><input type="text" id="carbrand" placeholder="Toyota Hilux Revo..."></div>
-        <div class="fg"><label>เลขไมล์ (กม.)</label><input type="number" id="mileage" placeholder="000000"></div>
+        <div class="fg"><label>รหัสรถ</label><input id="fCode" type="text" placeholder="รหัส..."></div>
+        <div class="fg"><label>ยี่ห้อ/รุ่น</label><input id="fBrand" type="text" placeholder="Toyota Hilux Revo..."></div>
       </div>
     </div>
   </div>
-
-  <!-- Checklist -->
   <div class="card">
     <div class="card-hdr">
-      <span>&#9989; รายการตรวจสอบ 19 รายการ</span>
+      <span id="checkHdr">&#9989; รายการตรวจสอบประจำวัน</span>
       <div style="display:flex;gap:6px;">
-        <button class="btn no-print" onclick="checkAll(true)" style="background:#166534;color:#fff;font-size:11px;padding:4px 10px;">&#10003; ผ่านทั้งหมด</button>
-        <button class="btn no-print" onclick="checkAll(false)" style="background:#f0f4f8;color:#1a3c5e;border:1px solid #c8d0da;font-size:11px;padding:4px 10px;">&#10006; ล้าง</button>
+        <button onclick="checkAll('P')" style="background:#166634;color:#fff;border:none;padding:8px 12px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;">&#10003; ผ่านทั้งหมด</button>
+        <button onclick="checkAll('')" style="background:rgba(255,255,255,.18);color:#fff;border:none;padding:8px 12px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;">&#10006; ล้าง</button>
       </div>
     </div>
-    <div class="card-body">
-      <div class="check-grid" id="checkList"></div>
-    </div>
-    <div class="summary-bar" id="summaryBar">
-      <div class="sum-item">ผ่าน: <span class="badge badge-ok" id="cntOk">0</span></div>
-      <div class="sum-item">ไม่ผ่าน: <span class="badge badge-fail" id="cntFail">0</span></div>
-      <div class="sum-item">ยังไม่ได้ตรวจ: <span class="badge badge-skip" id="cntSkip">19</span></div>
+    <div class="month-nav"><button class="mnav-btn" onclick="changeMonth(-1)">&#8592;</button><div class="month-label" id="monthLabel">-</div><button class="mnav-btn" onclick="changeMonth(1)">&#8594;</button></div>
+    <div class="day-tabs" id="dayTabs"></div>
+    <div id="checkList"></div>
+    <div class="signer-row"><label>&#128394; ลงชื่อผู้ตรวจ:</label><input id="fSigner" type="text" placeholder="ชื่อ-นามสกุล ผู้นำรถไปใช้งาน"></div>
+    <div class="summary-bar">
+      <div class="sum-item">&#10003; ผ่าน: <span class="badge badge-ok" id="cntP">0</span></div>
+      <div class="sum-item">&#10007; ไม่ผ่าน: <span class="badge badge-fail" id="cntO">0</span></div>
+      <div class="sum-item">- ไม่เกี่ยวข้อง: <span class="badge badge-skip" id="cntD">0</span></div>
+      <div class="sum-item">ยังไม่ตรวจ: <span class="badge badge-skip" id="cntN">19</span></div>
     </div>
   </div>
-
-  <!-- ลงชื่อผู้นำไปใช้งาน -->
   <div class="card">
-    <div class="card-hdr">&#128393; ลงชื่อผู้นำไปใช้งาน</div>
+    <div class="card-hdr"><span>&#9888;&#65039; ข้อบกพร่องที่พบ</span><button onclick="addDefect()" style="background:rgba(255,255,255,.18);color:#fff;border:none;padding:8px 12px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;">+ เพิ่ม</button></div>
+    <div id="defectArea"><div id="noDefect" style="padding:16px;text-align:center;color:#9ca3af;font-size:14px;">ไม่พบข้อบกพร่อง</div></div>
+  </div>
+  <div class="card">
+    <div class="card-hdr">&#128394;&#65039; ผู้ควบคุมยานพาหนะ</div>
     <div class="card-body">
       <div class="form-row">
-        <div class="fg"><label>ชื่อผู้นำรถไปใช้งาน</label><input type="text" id="driver" placeholder="ชื่อ-นามสกุล"></div>
-        <div class="fg"><label>ตำแหน่ง</label><input type="text" id="driverPos" placeholder="ช่างไฟฟ้า / พนักงานขับรถ"></div>
+        <div class="fg"><label>ชื่อผู้ควบคุมยาน</label><input id="fSuper" type="text" placeholder="ชื่อ-นามสกุล"></div>
+        <div class="fg"><label>ตำแหน่ง</label><input id="fSuperPos" type="text" placeholder="หัวหน้างาน..."></div>
       </div>
     </div>
   </div>
-
-  <!-- ข้อบกพร่อง -->
-  <div class="card">
-    <div class="card-hdr">
-      <span>&#9888;&#65039; ข้อบกพร่องที่พบ</span>
-      <button class="btn no-print" onclick="addDefect()" style="background:rgba(255,255,255,.15);color:#fff;font-size:11px;padding:4px 10px;">+ เพิ่มรายการ</button>
-    </div>
-    <div class="card-body">
-      <div class="defect-area" id="defectArea">
-        <div style="color:#9ca3af;font-size:12.5px;text-align:center;padding:12px 0;" id="noDefect">ไม่พบข้อบกพร่อง</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Print version (hidden on screen) -->
-  <div class="print-header">
-    <div style="text-align:center;font-size:13pt;font-weight:700;margin-bottom:4mm;">แบบฟอร์มการตรวจยานพาหนะก่อนปฏิบัติงานประจำวัน</div>
-    <div style="font-size:9pt;margin-bottom:2mm;">
-      หน่วยงาน: <span id="p-unit">______</span> &nbsp;&nbsp;
-      เลขทะเบียน: <span id="p-plate">______</span> &nbsp;&nbsp;
-      วันที่: <span id="p-date">______</span> &nbsp;&nbsp;
-      ผู้ตรวจ: <span id="p-inspector">______</span>
-    </div>
-    <div style="font-size:9pt;margin-bottom:3mm;">
-      ยี่ห้อ/รุ่น: <span id="p-brand">______</span> &nbsp;&nbsp;
-      เลขไมล์: <span id="p-mileage">______</span> กม.
-    </div>
-    <div style="font-size:8.5pt;margin-bottom:3mm;color:#555;">ใช้เครื่องหมายถูก (✓) สำหรับทุกรายการที่อยู่ในสภาพดี และเครื่องหมาย (✗) สำหรับรายการที่ไม่ผ่าน</div>
-  </div>
-
-  <table class="print-table" id="printTable">
-    <thead>
-      <tr>
-        <th style="width:28px;">ที่</th>
-        <th class="td-name">รายการตรวจสอบ</th>
-        <th style="width:40px;">ผล</th>
-        <th class="td-name">หมายเหตุ</th>
-      </tr>
-    </thead>
-    <tbody id="printBody"></tbody>
-    <tfoot>
-      <tr>
-        <td colspan="4" style="text-align:left;padding:4px 6px;font-size:8.5pt;">
-          ลงชื่อผู้นำรถไปใช้งาน: <span id="p-driver">_________________________</span> &nbsp;&nbsp;
-          ตำแหน่ง: <span id="p-driverPos">________________</span>
-        </td>
-      </tr>
-    </tfoot>
-  </table>
-
 </div>
-
-<!-- Scroll buttons -->
-<div style="position:fixed;right:16px;bottom:24px;display:flex;flex-direction:column;gap:8px;z-index:999;">
-  <button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="width:40px;height:40px;border-radius:50%;background:#1a3c5e;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);display:none;" id="btnTop">&#8679;</button>
-  <button onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})" style="width:40px;height:40px;border-radius:50%;background:#e84c0a;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);" id="btnBot">&#8681;</button>
+<div class="print-page" id="printPage"></div>
+<div style="position:fixed;right:14px;bottom:20px;display:flex;flex-direction:column;gap:8px;z-index:999;" class="no-print">
+  <button onclick="window.scrollTo({top:0,behavior:'smooth'})" id="btnTop" style="width:46px;height:46px;border-radius:50%;background:#1a3c5e;color:#fff;border:none;font-size:20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3);display:none;">&#8679;</button>
+  <button onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})" style="width:46px;height:46px;border-radius:50%;background:#e84c0a;color:#fff;border:none;font-size:20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3);">&#8681;</button>
 </div>
-
 <div class="toast" id="toast"></div>
-
 <script>
 var EXEC_URL='';
 google.script.run.withSuccessHandler(function(u){EXEC_URL=u;}).getScriptUrl();
 function goHome(){google.script.run.withSuccessHandler(function(u){window.top.location.href=u+'?page=index';}).getScriptUrl();}
-
-window.addEventListener('scroll',function(){
-  document.getElementById('btnTop').style.display=window.scrollY<200?'none':'block';
-  document.getElementById('btnBot').style.display=(window.scrollY+window.innerHeight>=document.body.scrollHeight-50)?'none':'block';
-});
-
-var ITEMS=[
-  '1. เข็มขัดนิรภัย',
-  '2. ไฟส่องสว่าง (สูง-ต่ำ) หน้า-หลัง',
-  '3. ไฟเบรก',
-  '4. ไฟสัญญาณ (ไฟวับวาบ, เลี้ยวซ้าย-ขวา, ถอยหลัง)',
-  '5. กระจกหน้ารถ',
-  '6. กระจกมองข้าง/หลัง',
-  '7. ที่ปัดน้ำฝน',
-  '8. น้ำฉีดกระจก',
-  '9. ระดับน้ำมันเชื้อเพลิง',
-  '10. ระดับน้ำมันหล่อลื่นเครื่องยนต์',
-  '11. การทำงานของแตร',
-  '12. ระบบเบรก (เบรกมือ/เบรกเท้า)',
-  '13. เครื่องปรับอากาศ',
-  '14. สภาพยาง กระทะล้อ และน๊อตยึดล้อ',
-  '15. อุปกรณ์ดับเพลิง',
-  '16. แบตเตอรี่ (ขั้ว, น้ำกลั่น)',
-  '17. ทำความสะอาดด้านในและด้านนอก',
-  '18. ความเสียหายภายใน',
-  '19. ความเสียหายภายนอก'
-];
-
-var states={}; // 1=ok, -1=fail, 0=skip
-
-function buildList(){
-  var el=document.getElementById('checkList');
-  el.innerHTML=ITEMS.map(function(name,i){
-    var no=i+1;
-    return '<div class="check-item" id="ci-'+no+'">'
-      +'<div class="item-no">'+no+'</div>'
-      +'<div class="item-name">'+name.replace(/^\d+\.\s*/,'')+'</div>'
-      +'<div class="check-btns">'
-      +'<button class="cbtn" id="ok-'+no+'" onclick="setCheck('+no+',1)" title="ผ่าน">&#10003;</button>'
-      +'<button class="cbtn" id="fail-'+no+'" onclick="setCheck('+no+',-1)" title="ไม่ผ่าน">&#10007;</button>'
-      +'</div>'
-      +'<input class="note-inp no-print" id="note-'+no+'" placeholder="หมายเหตุ...">'
-      +'</div>';
-  }).join('');
-  updateSummary();
+window.addEventListener('scroll',function(){document.getElementById('btnTop').style.display=window.scrollY<200?'none':'block';});
+var ITEMS=["เข็มขัดนิรภัย","ไฟส่องสว่าง (สูง-ต่ำ) หน้า-หลัง","ไฟเบรก","ไฟสัญญาณ (ไฟวับวาบ, เลี้ยวซ้าย-ขวา, ถอยหลัง)","กระจกหน้ารถ","กระจกมองข้าง/หลัง","ที่ปัดน้ำฝน","น้ำฉีดกระจก","ระดับน้ำมันเชื้อเพลิง","ระดับน้ำมันหล่อลื่นเครื่องยนต์","การทำงานของแตร","ระบบเบรก (เบรกมือ/เบรกเท้า)","เครื่องปรับอากาศ","สภาพยาง กระทะล้อ และน๊อตยึดล้อ","อุปกรณ์ดับเพลิง","แบตเตอรี่ (ขั้ว, น้ำกลั่น)","ทำความสะอาดด้านในและด้านนอก","ความเสียหายภายใน","ความเสียหายภายนอก"];
+var THAI_MONTHS=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+var monthData={};var curYear,curMonth,curDay;
+function daysInMonth(y,m){return new Date(y,m,0).getDate();}
+function init(){var now=new Date();curYear=now.getFullYear();curMonth=now.getMonth()+1;curDay=now.getDate();updateLabel();buildDayTabs();buildCheckList();}
+function updateLabel(){document.getElementById('monthLabel').textContent=THAI_MONTHS[curMonth-1]+' '+(curYear+543);document.getElementById('checkHdr').textContent='\u2705 ตรวจสอบวันที่ '+curDay+' '+THAI_MONTHS[curMonth-1]+' '+(curYear+543);}
+function changeMonth(d){flushDay();curMonth+=d;if(curMonth>12){curMonth=1;curYear++;}if(curMonth<1){curMonth=12;curYear--;}monthData={};curDay=1;updateLabel();buildDayTabs();buildCheckList();}
+function buildDayTabs(){
+  var total=daysInMonth(curYear,curMonth);var now=new Date();var isNow=(now.getFullYear()===curYear&&now.getMonth()+1===curMonth);var td=now.getDate();var html='';
+  for(var d=1;d<=total;d++){var dat=monthData[d];var hasFail=dat&&Object.keys(dat.results||{}).some(function(k){return dat.results[k]==='O';});var hasData=dat&&Object.keys(dat.results||{}).some(function(k){return dat.results[k]!=='';});var cls='day-tab';if(d===curDay)cls+=' active';else if(isNow&&d===td)cls+=' today';else if(hasFail)cls+=' has-fail';else if(hasData)cls+=' has-data';html+='<button class="'+cls+'" id="dt'+d+'" onclick="selDay('+d+')">'+d+'</button>';}
+  document.getElementById('dayTabs').innerHTML=html;setTimeout(function(){var b=document.getElementById('dt'+curDay);if(b)b.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});},80);
 }
-
-function setCheck(no, val){
-  if(states[no]===val){ states[no]=0; }
-  else { states[no]=val; }
-  var s=states[no]||0;
-  var ci=document.getElementById('ci-'+no);
-  ci.className='check-item'+(s===1?' ok':s===-1?' fail':'');
-  document.getElementById('ok-'+no).className='cbtn'+(s===1?' ok-active':'');
-  document.getElementById('fail-'+no).className='cbtn'+(s===-1?' fail-active':'');
-  updateSummary();
+function selDay(d){flushDay();curDay=d;updateLabel();buildDayTabs();buildCheckList();}
+function flushDay(){
+  if(!monthData[curDay])monthData[curDay]={results:{},signer:''};
+  for(var i=1;i<=ITEMS.length;i++){var ci=document.getElementById('ci'+i);if(ci)monthData[curDay].results[i]=ci.getAttribute('data-v')||'';}
+  var sg=document.getElementById('fSigner');if(sg)monthData[curDay].signer=sg.value||'';
 }
+function buildCheckList(){
+  var dat=(monthData[curDay]||{results:{},signer:''});var html='';
+  for(var i=0;i<ITEMS.length;i++){var no=i+1;var st=dat.results[no]||'';var rc='ci'+(st==='P'?' stP':st==='O'?' stO':'');html+='<div class="'+rc+'" id="ci'+no+'" data-v="'+st+'"><div class="ci-no">'+no+'</div><div class="ci-name">'+ITEMS[i]+'</div><div class="cbtn-grp"><button class="cbtn'+(st==='P'?' aP':'')+'" data-no="'+no+'" data-val="P" onclick="doCheck(this)">&#10003;</button><button class="cbtn'+(st==='O'?' aO':'')+'" data-no="'+no+'" data-val="O" onclick="doCheck(this)">&#10007;</button><button class="cbtn'+(st==='-'?' aD':'')+'" data-no="'+no+'" data-val="-" onclick="doCheck(this)">&#9135;</button></div></div>';}
+  document.getElementById('checkList').innerHTML=html;document.getElementById('fSigner').value=dat.signer||'';updateSummary();
+}
+function doCheck(btn){setCheck(parseInt(btn.dataset.no),btn.dataset.val);}
+function setCheck(no,val){var ci=document.getElementById('ci'+no);if(!ci)return;var cur=ci.getAttribute('data-v');var nv=(cur===val)?'':val;ci.setAttribute('data-v',nv);ci.className='ci'+(nv==='P'?' stP':nv==='O'?' stO':'');var btns=ci.querySelectorAll('.cbtn');if(btns[0])btns[0].className='cbtn'+(nv==='P'?' aP':'');if(btns[1])btns[1].className='cbtn'+(nv==='O'?' aO':'');if(btns[2])btns[2].className='cbtn'+(nv==='-'?' aD':'');updateSummary();}
+function checkAll(val){for(var i=1;i<=ITEMS.length;i++)setCheck(i,val);}
+function updateSummary(){var p=0,o=0,d=0,n=0;for(var i=1;i<=ITEMS.length;i++){var ci=document.getElementById('ci'+i);var st=ci?ci.getAttribute('data-v'):'';if(st==='P')p++;else if(st==='O')o++;else if(st==='-')d++;else n++;}document.getElementById('cntP').textContent=p;document.getElementById('cntO').textContent=o;document.getElementById('cntD').textContent=d;document.getElementById('cntN').textContent=n;}
+var defCount=0;
+function addDefect(){document.getElementById('noDefect').style.display='none';defCount++;var dc=document.createElement('div');dc.className='defect-item';dc.id='def'+defCount;dc.innerHTML='<input type="text" placeholder="\u0e23\u0e30\u0e1a\u0e38\u0e02\u0e49\u0e2d\u0e1a\u0e01\u0e1e\u0e23\u0e48\u0e2d\u0e07..."><input type="date"><button class="btn-del" onclick="rmDef('+defCount+')">&#128465;</button>';document.getElementById('defectArea').appendChild(dc);}
+function rmDef(id){var el=document.getElementById('def'+id);if(el)el.remove();if(!document.querySelector('.defect-item'))document.getElementById('noDefect').style.display='block';}
+function saveData(){flushDay();buildDayTabs();showToast('\u2714 \u0e1a\u0e31\u0e19\u0e17\u0e36\u0e01\u0e41\u0e25\u0e49\u0e27','ok');}
+function thDate(d){if(!d)return'';var p=d.split('-');return parseInt(p[2])+' '+THAI_MONTHS[parseInt(p[1])-1]+' '+(parseInt(p[0])+543);}
+function showToast(msg,type){var t=document.getElementById('toast');t.innerHTML=msg;t.className='toast show t-'+(type||'info');setTimeout(function(){t.className='toast';},3000);}
+function doPrint(){flushDay();buildPrint();window.print();}
 
-function checkAll(isOk){
-  ITEMS.forEach(function(_,i){
-    var no=i+1;
-    states[no]=isOk?1:0;
-    var ci=document.getElementById('ci-'+no);
-    ci.className='check-item'+(isOk?' ok':'');
-    document.getElementById('ok-'+no).className='cbtn'+(isOk?' ok-active':'');
-    document.getElementById('fail-'+no).className='cbtn';
+
+
+function buildPrint(){
+  var total=daysInMonth(curYear,curMonth);
+  var unit=document.getElementById('fUnit').value||'';
+  var plate=document.getElementById('fPlate').value||'';
+  var code=document.getElementById('fCode').value||'';
+  var brand=document.getElementById('fBrand').value||'';
+  var sup=document.getElementById('fSuper').value||'';
+  var supPos=document.getElementById('fSuperPos').value||'';
+  var defs=[];
+  document.querySelectorAll('.defect-item').forEach(function(d){
+    var inp=d.querySelectorAll('input');
+    defs.push({text:inp[0].value,date:inp[1].value});
   });
-  updateSummary();
-}
 
-function updateSummary(){
-  var ok=0,fail=0,skip=0;
-  ITEMS.forEach(function(_,i){
-    var s=states[i+1]||0;
-    if(s===1)ok++;else if(s===-1)fail++;else skip++;
-  });
-  document.getElementById('cntOk').textContent=ok;
-  document.getElementById('cntFail').textContent=fail;
-  document.getElementById('cntSkip').textContent=skip;
-}
+  /* logo from hidden img element */
+  var logoEl=document.getElementById('hiddenLogo');
+  var logoSrc=logoEl?logoEl.src:'';
 
-var defectCount=0;
-function addDefect(){
-  document.getElementById('noDefect').style.display='none';
-  defectCount++;
-  var d=document.createElement('div');
-  d.className='defect-row';
-  d.id='def-'+defectCount;
-  d.innerHTML='<input class="defect-inp" placeholder="ระบุข้อบกพร่อง...">'
-    +'<input class="defect-inp" style="width:110px;" placeholder="วันที่แจ้ง">'
-    +'<button onclick="removeDefect('+defectCount+')" style="background:#fee2e2;color:#991b1b;border:1px solid #fecaca;border-radius:5px;padding:4px 8px;cursor:pointer;font-size:12px;">ลบ</button>';
-  document.getElementById('defectArea').appendChild(d);
-}
+  /* column widths: ที่=3%, รายการ=25%, days, ข้อคิดเห็น=7% */
+  var dw=parseFloat((62/total).toFixed(3)); /* 62% for all day columns */
+  var B='border:0.5px solid #999;';
+  var CC='text-align:center;vertical-align:middle;';
 
-function removeDefect(id){
-  var el=document.getElementById('def-'+id);
-  if(el)el.remove();
-  if(!document.querySelector('.defect-row'))
-    document.getElementById('noDefect').style.display='block';
-}
+  var h='<div style="font-family:Sarabun,sans-serif;font-size:7.5pt;line-height:1.15;color:#000;width:100%;">';
 
-function formatDate(d){
-  if(!d)return '';
-  var parts=d.split('-');
-  if(parts.length!==3)return d;
-  var months=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
-  var year=parseInt(parts[0])+543;
-  return parseInt(parts[2])+' '+months[parseInt(parts[1])-1]+' '+year;
-}
+  /* HEADER */
+  h+='<table style="width:100%;border-collapse:collapse;margin-bottom:1.5mm;"><tr>';
+  h+='<td style="width:15mm;vertical-align:middle;"><img src="'+logoSrc+'" style="height:13mm;width:auto;" alt="Logo"></td>';
+  h+='<td style="text-align:center;vertical-align:middle;"><div style="font-size:12pt;font-weight:700;">แบบฟอร์มการตรวจยานพาหนะก่อนปฏิบัติงานประจำวัน</div></td>';
+  h+='</tr></table>';
 
-function savePrint(){
-  // Populate print fields
-  document.getElementById('p-unit').textContent=document.getElementById('unit').value||'________________';
-  document.getElementById('p-plate').textContent=document.getElementById('plate').value||'________________';
-  document.getElementById('p-date').textContent=formatDate(document.getElementById('checkdate').value)||'________________';
-  document.getElementById('p-inspector').textContent=document.getElementById('inspector').value||'________________';
-  document.getElementById('p-brand').textContent=document.getElementById('carbrand').value||'________________';
-  document.getElementById('p-mileage').textContent=document.getElementById('mileage').value||'________________';
-  document.getElementById('p-driver').textContent=document.getElementById('driver').value||'_________________________';
-  document.getElementById('p-driverPos').textContent=document.getElementById('driverPos').value||'________________';
+  /* INFO LINE */
+  var UL='border-bottom:0.5px solid #000;display:inline-block;padding:0 1px;min-width:';
+  h+='<div style="font-size:8.5pt;margin-bottom:1mm;">';
+  h+='หน่วยงาน: <span style="'+UL+'26mm;">'+unit+'</span>&ensp;';
+  h+='เลขทะเบียน: <span style="'+UL+'20mm;">'+plate+'</span>&ensp;';
+  h+='รหัส <span style="'+UL+'16mm;">'+code+'</span>&ensp;';
+  h+='ยี่ห้อรถ/รุ่น: <span style="'+UL+'18mm;">'+brand+'</span>&ensp;';
+  h+='ต้น&ensp;เดือน <span style="'+UL+'10mm;">'+THAI_MONTHS[curMonth-1]+'</span>&ensp;';
+  h+='พ.ศ. <span style="'+UL+'10mm;">'+(curYear+543)+'</span>';
+  h+='</div>';
 
-  // Build print table body
-  var rows=ITEMS.map(function(name,i){
-    var no=i+1;
-    var s=states[no]||0;
-    var result=s===1?'✓':s===-1?'✗':'';
-    var note=document.getElementById('note-'+no).value||'';
-    return '<tr>'
-      +'<td style="text-align:center">'+no+'</td>'
-      +'<td class="td-name" style="text-align:left">'+name.replace(/^\d+\.\s*/,'')+'</td>'
-      +'<td style="font-weight:700;color:'+(s===1?'#166534':s===-1?'#dc2626':'#000')+'">'+result+'</td>'
-      +'<td class="td-name">'+note+'</td>'
-      +'</tr>';
-  }).join('');
+  /* INSTRUCTION */
+  h+='<div style="font-size:7.5pt;text-align:center;margin-bottom:1mm;">';
+  h+='ใช้เครื่องหมายถูก (&#10003;) สำหรับทุกรายการที่อยู่ในสภาพดี';
+  h+='&emsp;ใช้เครื่องหมายผิด (&#10007;) สำหรับรายการที่ต้องการซ่อมแซม';
+  h+='&emsp;ใช้เครื่องหมาย (-) ในช่องที่ไม่เกี่ยวข้อง</div>';
 
-  // Add defect rows
-  var defs=document.querySelectorAll('.defect-row');
-  if(defs.length>0){
-    rows+='<tr><td colspan="4" style="background:#fee2e2;font-weight:700;font-size:8.5pt;padding:3px 6px;text-align:left;">ข้อบกพร่องที่พบ</td></tr>';
-    defs.forEach(function(d,i){
-      var inputs=d.querySelectorAll('input');
-      rows+='<tr><td>'+(i+1)+'</td><td class="td-name">'+inputs[0].value+'</td><td colspan="2">วันที่แจ้ง: '+inputs[1].value+'</td></tr>';
-    });
+  /* MAIN TABLE */
+  h+='<table style="width:100%;border-collapse:collapse;table-layout:fixed;font-size:7.5pt;">';
+  h+='<colgroup>';
+  h+='<col style="width:3%">';   /* ที่ */
+  h+='<col style="width:25%">';  /* รายการ */
+  for(var d=1;d<=total;d++) h+='<col style="width:'+dw+'%">';
+  h+='<col style="width:7%">';   /* ข้อคิดเห็น */
+  h+='</colgroup>';
+  h+='<thead>';
+  /* R0: section title */
+  h+='<tr style="background:#b8ccdc;-webkit-print-color-adjust:exact;print-color-adjust:exact;">';
+  h+='<th colspan="'+(3+total)+'" style="'+B+'padding:2px;'+CC+'font-size:8.5pt;font-weight:700;">การตรวจสอบยานพาหนะ</th></tr>';
+  /* R1: column headers */
+  h+='<tr style="background:#ccdde8;-webkit-print-color-adjust:exact;print-color-adjust:exact;">';
+  h+='<th rowspan="2" style="'+B+'padding:1.5px;'+CC+'">ที่</th>';
+  h+='<th rowspan="2" style="'+B+'padding:1.5px 3px;'+CC+'">รายการ</th>';
+  h+='<th colspan="'+total+'" style="'+B+'padding:1.5px;'+CC+'">วันที่</th>';
+  h+='<th rowspan="2" style="'+B+'padding:1.5px;'+CC+'">ข้อคิดเห็น</th>';
+  h+='</tr>';
+  /* R2: day numbers */
+  h+='<tr style="background:#ccdde8;-webkit-print-color-adjust:exact;print-color-adjust:exact;">';
+  for(var d=1;d<=total;d++){
+    h+='<th style="'+B+'padding:1px 0;'+CC+'font-size:6.5pt;">'+d+'</th>';
+  }
+  h+='</tr></thead><tbody>';
+
+  /* item rows */
+  for(var ii=0;ii<ITEMS.length;ii++){
+    var no=ii+1;
+    var bg=ii%2===0?'#fff':'#edf4f9';
+    h+='<tr style="background:'+bg+';-webkit-print-color-adjust:exact;print-color-adjust:exact;">';
+    h+='<td style="'+B+'padding:1px;'+CC+'">'+no+'</td>';
+    h+='<td style="'+B+'padding:1px 3px;font-size:7.5pt;overflow:hidden;white-space:nowrap;">'+ITEMS[ii]+'</td>';
+    for(var dd=1;dd<=total;dd++){
+      var r=(monthData[dd]&&monthData[dd].results&&monthData[dd].results[no])||'';
+      var sym=r==='P'?'&#10003;':r==='O'?'&#10007;':r==='-'?'-':'';
+      var fc=r==='O'?'color:#cc0000;':'';
+      h+='<td style="'+B+'padding:1px 0;'+CC+'font-weight:700;font-size:9pt;'+fc+'">'+sym+'</td>';
+    }
+    h+='<td style="'+B+'padding:1px;"></td>';
+    h+='</tr>';
   }
 
-  document.getElementById('printBody').innerHTML=rows;
-  window.print();
+  /* signature row */
+  h+='<tr style="background:#e4edf4;height:10mm;-webkit-print-color-adjust:exact;print-color-adjust:exact;">';
+  h+='<td colspan="2" style="'+B+'padding:2px;text-align:center;font-size:7.5pt;vertical-align:middle;">ลงชื่อผู้นำไปใช้งาน/ทำการตรวจสอบ</td>';
+  for(var dd2=1;dd2<=total;dd2++){
+    var sg=(monthData[dd2]&&monthData[dd2].signer)||'';
+    h+='<td style="'+B+'padding:0 1px;'+CC+'font-size:6pt;vertical-align:bottom;padding-bottom:1px;">'+sg+'</td>';
+  }
+  h+='<td style="'+B+'background:#c8c8c8;-webkit-print-color-adjust:exact;print-color-adjust:exact;"></td>';
+  h+='</tr></tbody></table>';
+
+  /* FOOTER */
+  var defRows=Math.max(defs.length,3);
+  h+='<table style="width:100%;border-collapse:collapse;margin-top:1.5mm;font-size:8pt;"><tr>';
+  h+='<td style="vertical-align:top;width:65%;">';
+  h+='<table style="width:100%;border-collapse:collapse;font-size:7.5pt;">';
+  h+='<tr style="background:#ccdde8;-webkit-print-color-adjust:exact;print-color-adjust:exact;">';
+  h+='<th style="'+B+'padding:2px 5px;text-align:center;width:58%;">ข้อบกพร่อง</th>';
+  h+='<th style="'+B+'padding:2px;text-align:center;width:21%;">วันที่แจ้ง</th>';
+  h+='<th style="'+B+'padding:2px;text-align:center;width:21%;">ผู้ควบคุมยาน</th>';
+  h+='</tr>';
+  for(var di=0;di<defRows;di++){
+    var dx=defs[di]||{text:'',date:''};
+    h+='<tr><td style="'+B+'padding:1.5px 5px;height:7mm;">'+dx.text+'</td>';
+    h+='<td style="'+B+'padding:1.5px;text-align:center;">'+thDate(dx.date)+'</td>';
+    h+='<td style="'+B+'padding:1.5px;"></td></tr>';
+  }
+  h+='</table></td>';
+  h+='<td style="vertical-align:top;padding-left:5mm;width:35%;font-size:9pt;">';
+  h+='<b>ลงชื่อผู้ควบคุมยาน :</b><br><br>';
+  h+='<div style="text-align:center;margin:3mm 0 0.5mm;">';
+  h+='<span style="border-bottom:0.5px solid #000;display:inline-block;min-width:55mm;padding-bottom:0.5mm;">'+sup+'</span></div>';
+  h+='<div style="text-align:center;font-size:8pt;">(&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;)</div>';
+  h+='<div style="margin-top:3mm;font-size:8.5pt;">ตำแหน่ง&nbsp;';
+  h+='<span style="border-bottom:0.5px solid #000;display:inline-block;min-width:45mm;padding-bottom:0.5mm;">'+supPos+'</span></div>';
+  h+='</td></tr></table>';
+  h+='<div style="margin-top:1.5mm;font-size:6.5pt;display:flex;justify-content:space-between;color:#555;">';
+  h+='<span>FM1-SOH3-S04-6103 ประกาศใช้ครั้งแรกเมื่อ 30/05/2561</span>';
+  h+='<span>ปรับปรุงครั้งที่ 00 วันที่ -/-/-</span></div>';
+  h+='</div>';
+  document.getElementById('printPage').innerHTML=h;
 }
 
-document.addEventListener('DOMContentLoaded',function(){
-  document.getElementById('checkdate').value=new Date().toISOString().slice(0,10);
-  buildList();
-});
+document.addEventListener('DOMContentLoaded',function(){init();});
 </script>
+<img id="hiddenLogo" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCABYAGQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD7JjRI12oqquScAYHPNOoooAKZLIkUbSSOqIoJZmOAB6k1W1nU7HSNLudU1K5jtrO2jMk0rnARR3r53+LPxCintI77xPFOunzjfpPhhHMcl4v8Nxekcqh6iLuOtK9jOrVhSjzTdkepal8T7Od5ofCWlXPiNoCVmu45FgsISOu64f5Tj0XdXFz/ABL8QahfPZ23i7wzb3SKWaz0XTp9UmVR1Jb5VP4CvI9E07xX8W2um1jXV0nSdO2otjDBshgBGVCwjACgfxGrnhbw/o3hDSpZtaWGHVF1UWE8xvCjfZ2H+siVCCvY5Oc1HP2PJlmdSTvTjaPdnXSfF/7JfSwzfE64guVbbKtz4SVQCOzbW3V22k/ELxZE8CmTwz4kWZd8cUMr6bdyr6ok3yv+Brx4WPgaL4cTvcQaXJqkEd1unllLTyvuxG3PJJHNZniTw+dQ/wCEQ8O3mqz+RFpQltpLOI3srzO2WG1TlAMjknoKOdmazCvB+8kz6p8LePtD1zUDpMgutI1lRltM1KLyZ/qoPDj3UmusBr481TxjBoWn2XhvWNI1HX9O0yVre9upmYlJQeJbW4HzRsP7ue1e0fDbx8YF06z1bVW1XRdRYRaTrcq7JPM/59rpf4ZfRujfWrTTPTw+Lp19Fv2PXKKQGlpnWFFFFAAM4560HpQOlUdf1BNK0W+1OX7lrbvMffapNAHjnxm8XWjX9/Ne4m0LwuyNJbN93UNSYZiiPqiD5mHrivHvCvhrxzruoH4nXemW+uO0jXDWksu2WVf7yDphew9qsfECSS8u/CXhGeyvdVluEfVNQtbWQJLNPcEsMMeMhcda6/wloniQLZeFbPUNZstMvbj7PNp+sWai4t4VG52hmQ4I7Z96yerPn8VP6xiOV7L8zovC+hTePr+31zQ7jUdH03yWt7m/ljC3F2h4aAKeCFOf3h5Hat/xPN8M/g/ZWU99oTSPdHy1uPI+0TMVH8TOc12reIfB/hxY9Gm1vS9Pa2jVFt5LhUZFxxwa8J/a31zR/EOl6Fb6DqdnqkyXDlo7SUSMBjqQKu3bc66qVCk3CzmdRP8AtD/C+WIpNpuoyJjlW09SPyzXSx+BfCvijSofFnhJZ/DOpX1sTDfWSCNwrdnT7pFfFAtLqUtHHbyvJg/KqEk4619rfCfxn4SsfhxoVpeeJdKguIrNFkjkulVkPoQTwafLOL99WMsLVr1JOOLjbt0PJdV0PxVpd5L4JbT/ADbqSFo7CCNsWLRk5lvZXf70mf4T0Nc295f+C/GD6f4s1Ntb8PeIYxFeyldhAU7RKo/heM4IYelfR/jhNM8Z+Erq78M6nZXmo6bma0mgdZQkgGdjY6hhwR3r5z8beGpb7wTJ4g1Ga61/VrpBMuqF1t7S0QcNAisfmI5G0Cs5K2qObFUXQanTe2qPpD4Ta5eXdld+HNYuRc6rorLE9wOl1AwzDOPXcuM+4Nd0K+bvgV4hkuF8Gaw8xaRhN4fvyerYHmW5b1I5FfSArRO6PdoVVVpqa6i0UUUzYz/DiNFoNjG8bxssCgo4IZeOhBrB+MrFfhf4hIOM2bA/QkA10mlveyW26/hjil3H5UORj8z79/fjOBmePtNfV/Bes6ZHy9xZSog/2tpI/WgD4x+N9zc2nxUnltJ5IJLe1tVhkjYqygRDGDXc/sfzXF/8QNRmvby5uHismaMTSs+CzDcRk8ZrmPipoF/4h17TNa01I2ivdBjuZWdwoj8geXJknvkdK6L4Rac/w0+JekXd5qdveWOqKbGeSNGQQTMoZVO7qORyOKwStK58lCNSnjnKW1zmP2okQ/GbVCUUnyouo/2ag+BVppR1prjUY0eITJG6LgMynsD2yeK9/wDiR8BtO8beLrnxHP4jvbN7hVUxRwoyjAx1NeM/Gf4Y2/wrt9Mv7DWrrUWu5ijJMgQDAyD8vetIq0m3odlOhPC4t4mqvcueyXstpJLqMd7BCdDKHyLcQKJLZgOCHHK4r5Y8f2ltB4ouRCkRDgOdqjqa1NR+IWs3mmtZTXF28RTGx5sqfqQAW/GvW/Bv7PGneJvDGna/c+KdQilvoFmZFgQhSewJ7VjRpSp03Fz5rs7c0xFLMKfssLq/uNr9ipF/4RPXV2gA3aggD/ZrwH4k6hfTeJtQ0ia8lnsLC+mW1hY/LECxzivrDwf4R0r4LeBddu21ie9g2m4Z5kVCCFwFGOuTXyj4w8M69Z2dp4mv7O4MOsh7sssLFYtzEgM3QEjmrndRSPIx9OpTw0KT3W53nwMkceEwQeYvFdiyfUgg/pX2KK+VfgLo7HQ/CtowzJq2uvqRH92G2TGfxYivqoda0hse7lsWsLBMWiqGoS6qkwFjaW00e3lpJihzk8YAPtRVHcW7bZ9nj8uUyrtGHLbt3vnvTzUalzbZSPynK/KjY+U9gccV4/B8cLHSNck0HxdZm0vImKmWFSEbBI4DfT1ppOTshpN7HN+PdBv9J1LUdC0xY1urV5NX0JXiEi3Ns/8Ax92pU8MQfmC+lcNrlh4b17wnN4ruNY17VbqeXyLCJVW1WO94CxxwDJwPXPau5u/iLo3xA1bULaXU4NGGlkXOk6ht+a0uF6MW/jVxlSvTtXKCS+1BZvF/gOCxl123SQ3OlbvMW3lJ+e7s16Hd1KnkZqJ05LVo8rMMJL40r9z074SfEu5g+zeC/iJE2keIYo1WCWcgR3i44Ibpu9RU37SXgDxD4+0zSYPD62he2mZ5PPl2DBHGPWvIbNtOv/h7LrPiiytbxru4ZhbkSmGw2/fG5ctBK555G3NWvC/iHX9I0DSb7w38SLnTrbU5mhstO8QW/nLlTggSjOF7ZOKhSurM4/rKnS9lV1T+8xm/Zz+JJU4TR+n/AD9//Wr6i8Gwr4P+HOm22v3Vtaf2faKlxK0gEakDnk9a+evGXxc+MPh2xhGrzaHY3Fw7rHElrmbapx5mCcBT2PesvxF5uqeHtH8WeN9e1PxLY3e2SWJrlLa2iXOHRIwdzyL14GOKE1HYjD1cNhZP2EXfzOq+I/jI/EvUYrWCC5tvAFnKTc6lLmKG7lX7qs/VY88ZxWBqeja/PqlofC3ifVY7rWJxaTWzIwtGgCfNJFv5aJF43kDPard1qdys6+HNA02z1TXo40gto/JMttqGnNyNyg7ImA+8x54qXQLXQNM1RvC8viK3gnv1I1nU1nZ0hgBybG0JJIU9C4+gpxi5PQ0pUZ4qd3r3Z6n8FtJtrm/n1+0jA0extxpGhnbjfCh/ezf8DfOD6CvVRXhHhT43eHdLvdQ0S/SC3sdP+SzS3UKIowMLH1+fjHze/Sur+G3xMn8e+IWTSLBYdHgRzLLKCXcjAXB6YrZwlFXaPfVNwVraHptFAoqQGRK4jUSsHcD5iq4BP0ycV8+ftSeAVuXh8V2ls0yqwF1GhOW9fzH6ivoG08r7NH5GfK2jbnOcfjzTNQs7e+s5rO6iEsEyFJEboQaqE3CXMioycXdH56yrLPPBa/aLe3s53AicDZCBnGWxzkd88iu/1fwXfeGHtNV8D6zPqMsVsLqeNPlkCg4EsYXnYT074r6J8R/BnwVqfh+TS4rA20pJZLkMS4b1PqK8Qu/DPj/4RajJNDYf21oplWU7GYbiv3SWX5hj06e1etDGRrR5Xo+3RndGvGouV/8ADmcfFWl+IdOkm8a+H9QtJJz9mm1fTW+zSyN/dlH3JD7MAaq6z4Y0fXbDTbTTfiRpyWumxmK0t9SsJLd1Unccsm5WOe9dNpniD4a+MNNbTvE97cae0b+e0F1I0ZeUnLtuH3v7ozzik1P4V+G7ewe50vX0C6rLHFYbcSiFm5ABVs4x1zXNPCU29bpnn4jK8NWd5KzOe8aeErzxNrY1bUfG/gy3228cACX0kuFRcA4255pr6X4K07QbXSfEPjG61+zs5WngtdMsvIVWb7w8+XkKfYVeuvhDqFvaWFvda1Lb311K658l2RNoyN5BwoI53GtfSvg7oNjLHNq2sXWo3JYNGkLIF6/e28llqFgqK1cvwMYZJhIScnqcjL4yurq2PhjwFocWkWU/yvFaZLze807csPxC0niv4btofgyPXdY1tLfWXOTZygbTj+BGH8QGCOxHSuw8RePtE0kXPh/wjpMuqX0hMVwBb7YsjjY/dxgkdh0qXwD8FvE/i24ttS8b3U9rp8SgQWruSwQdEAPQDpzXZTlTw6uvdX3tnq0lToRVlZHjWm29xqjR200QuJZ/ktSV/e5/vZHJUe/XoK+0fgp4Nj8HeDoLV0C3c6h5vbjgf1+pq3pfw48H6bqNpf2ekJFPaKBGQThiOhI7muvAxXBiMS6z7I5qtZ1H5C0UUVzGI2IuYlMiBHI+ZQ2QD9e9OoooAKbLGkkZR1VlbghhkH8KKKAOF8WfCbwN4j3Pe6LFFM3/AC0g+Q59cdK8/v8A9mnQxJ5mk6/qFmQcqM9D68GiirjXqQ+FlxqSjsyAfs63zIYpfHmptCRgp5j4I9OtbHh39nbwzptwtzcavqlxKBtJSYocdxkHOKKK0eJqtWchurN9T0jwx4I8L+G0A0nR7aFx/wAtGXc598mujxRRWDdzO9wooooAKKKKAP/Z" style="display:none;" alt="Logo">
 </body>
 </html>
