@@ -19,7 +19,7 @@ const SH = {
 function doGet(e) {
   const page    = (e && e.parameter && e.parameter.page) ? e.parameter.page : 'index';
   const station = (e && e.parameter && e.parameter.station) ? e.parameter.station : '';
-  const allowed = ['index','form','report','settings','spare_parts'];
+  const allowed = ['index','form','report','settings','spare_parts','vehicle_check'];
 
   // form.html — inject PRE_STATION_ID
   if (page === 'form') {
@@ -44,6 +44,13 @@ function doGet(e) {
   if (page === 'spare_parts') {
     return HtmlService.createHtmlOutputFromFile('spare_parts')
       .setTitle('รายการพัสดุสำรองแก้ไฟ 2569')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  // vehicle_check.html
+  if (page === 'vehicle_check') {
+    return HtmlService.createHtmlOutputFromFile('vehicle_check')
+      .setTitle('แบบฟอร์มตรวจยานพาหนะ FM1-SOH3-S04-6103')
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 

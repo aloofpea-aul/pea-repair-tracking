@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>แบบฟอร์มตรวจยานพาหนะ FM1-SOH3-S04-6103</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Sarabun',sans-serif;}
+body{background:#f0f4f8;color:#1a2b3c;}
+.topbar{background:#1a3c5e;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:12px;}
+.topbar .logo{font-size:14px;font-weight:700;}
+.topbar .sub{font-size:11px;opacity:.75;margin-top:2px;}
+.spacer{flex:1;}
+.btn-back{color:#fff;background:rgba(255,255,255,.15);padding:6px 12px;border-radius:6px;border:none;font-size:12px;cursor:pointer;font-family:Sarabun,sans-serif;}
+.btn{padding:7px 14px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:Sarabun,sans-serif;}
+.btn-primary{background:#e84c0a;color:#fff;}
+.btn-green{background:#166534;color:#fff;}
+.container{max-width:900px;margin:0 auto;padding:20px;}
+.card{background:#fff;border-radius:10px;border:1px solid #dde3ea;margin-bottom:16px;overflow:hidden;}
+.card-hdr{background:#1a3c5e;color:#fff;padding:10px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.card-body{padding:16px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.fg{display:flex;flex-direction:column;gap:4px;}
+.fg label{font-size:12px;font-weight:700;color:#4b5563;}
+.fg input,.fg select{padding:8px 10px;border:1px solid #c8d0da;border-radius:6px;font-size:13px;font-family:Sarabun,sans-serif;width:100%;}
+.check-grid{display:flex;flex-direction:column;gap:6px;}
+.check-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid #dde3ea;border-radius:8px;transition:background .1s;}
+.check-item:hover{background:#f8fafc;}
+.check-item.ok{background:#f0fdf4;border-color:#86efac;}
+.check-item.fail{background:#fef2f2;border-color:#fca5a5;}
+.item-no{min-width:28px;height:28px;background:#1a3c5e;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.item-name{flex:1;font-size:13px;font-weight:500;}
+.check-btns{display:flex;gap:6px;flex-shrink:0;}
+.cbtn{width:36px;height:36px;border-radius:7px;border:1.5px solid #c8d0da;background:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .1s;}
+.cbtn.ok-active{background:#166534;border-color:#166534;color:#fff;}
+.cbtn.fail-active{background:#dc2626;border-color:#dc2626;color:#fff;}
+.note-inp{border:1px solid #c8d0da;border-radius:5px;padding:4px 8px;font-size:11.5px;font-family:Sarabun,sans-serif;width:130px;}
+.note-inp:focus{outline:none;border-color:#1a3c5e;}
+.defect-area{display:flex;flex-direction:column;gap:6px;}
+.defect-row{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;}
+.defect-inp{padding:6px 10px;border:1px solid #c8d0da;border-radius:6px;font-size:12.5px;font-family:Sarabun,sans-serif;width:100%;}
+.summary-bar{display:flex;gap:16px;padding:12px 16px;background:#f8fafc;border-top:1px solid #dde3ea;font-size:12px;}
+.sum-item{display:flex;align-items:center;gap:6px;}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.badge-ok{background:#dcfce7;color:#166534;}
+.badge-fail{background:#fee2e2;color:#dc2626;}
+.badge-skip{background:#f3f4f6;color:#6b7c8d;}
+.toast{position:fixed;top:20px;right:20px;padding:12px 18px;border-radius:8px;font-size:13px;z-index:999;display:none;color:#fff;max-width:320px;}
+.toast.show{display:block;}
+.t-ok{background:#166534;}.t-err{background:#dc2626;}
+
+/* PRINT */
+@media print {
+  body{background:#fff;}
+  .topbar,.no-print,.cbtn,.note-inp,.defect-inp,.summary-bar{display:none!important;}
+  .container{max-width:100%;padding:4mm;}
+  .card{border:none;border-radius:0;margin-bottom:4mm;}
+  .card-hdr{background:#000!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  @page{size:A4 portrait;margin:8mm;}
+
+  /* Print table */
+  .print-table{display:table!important;width:100%;border-collapse:collapse;font-size:9pt;}
+  .print-table th,.print-table td{border:0.5px solid #000;padding:2px 4px;text-align:center;}
+  .print-table th{background:#1a3c5e!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:8pt;}
+  .print-table .td-name{text-align:left;}
+  .check-grid,.defect-area{display:none!important;}
+  .print-header{display:block!important;}
+}
+
+.print-table{display:none;}
+.print-header{display:none;}
+
+/* Scroll buttons */
+@media(max-width:640px){
+  .form-row{grid-template-columns:1fr;}
+  .check-item{flex-wrap:wrap;gap:8px;}
+  .note-inp{width:100%;}
+  .defect-row{grid-template-columns:1fr;}
+  .card-hdr{font-size:12px;}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div>
+    <div class="logo">&#128663; แบบฟอร์มตรวจยานพาหนะก่อนปฏิบัติงาน</div>
+    <div class="sub">FM1-SOH3-S04-6103 | กฟต.2</div>
+  </div>
+  <div class="spacer"></div>
+  <button class="btn-back no-print" onclick="goHome()">&#8592; หน้าหลัก</button>
+  <button class="btn btn-green no-print" onclick="savePrint()" style="margin-left:8px;">&#128438; บันทึก &amp; พิมพ์</button>
+</div>
+
+<div class="container">
+
+  <!-- Header info -->
+  <div class="card">
+    <div class="card-hdr">&#128203; ข้อมูลยานพาหนะ</div>
+    <div class="card-body">
+      <div class="form-row">
+        <div class="fg"><label>หน่วยงาน</label><input type="text" id="unit" placeholder="กฟฟ. / สาขา..."></div>
+        <div class="fg"><label>เลขทะเบียน</label><input type="text" id="plate" placeholder="กข 1234 กรุงเทพ"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>ผู้ตรวจสอบ</label><input type="text" id="inspector" placeholder="ชื่อ-นามสกุล"></div>
+        <div class="fg"><label>วันที่ตรวจ</label><input type="date" id="checkdate"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>ยี่ห้อ/รุ่น</label><input type="text" id="carbrand" placeholder="Toyota Hilux Revo..."></div>
+        <div class="fg"><label>เลขไมล์ (กม.)</label><input type="number" id="mileage" placeholder="000000"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checklist -->
+  <div class="card">
+    <div class="card-hdr">
+      <span>&#9989; รายการตรวจสอบ 19 รายการ</span>
+      <div style="display:flex;gap:6px;">
+        <button class="btn no-print" onclick="checkAll(true)" style="background:#166534;color:#fff;font-size:11px;padding:4px 10px;">&#10003; ผ่านทั้งหมด</button>
+        <button class="btn no-print" onclick="checkAll(false)" style="background:#f0f4f8;color:#1a3c5e;border:1px solid #c8d0da;font-size:11px;padding:4px 10px;">&#10006; ล้าง</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="check-grid" id="checkList"></div>
+    </div>
+    <div class="summary-bar" id="summaryBar">
+      <div class="sum-item">ผ่าน: <span class="badge badge-ok" id="cntOk">0</span></div>
+      <div class="sum-item">ไม่ผ่าน: <span class="badge badge-fail" id="cntFail">0</span></div>
+      <div class="sum-item">ยังไม่ได้ตรวจ: <span class="badge badge-skip" id="cntSkip">19</span></div>
+    </div>
+  </div>
+
+  <!-- ลงชื่อผู้นำไปใช้งาน -->
+  <div class="card">
+    <div class="card-hdr">&#128393; ลงชื่อผู้นำไปใช้งาน</div>
+    <div class="card-body">
+      <div class="form-row">
+        <div class="fg"><label>ชื่อผู้นำรถไปใช้งาน</label><input type="text" id="driver" placeholder="ชื่อ-นามสกุล"></div>
+        <div class="fg"><label>ตำแหน่ง</label><input type="text" id="driverPos" placeholder="ช่างไฟฟ้า / พนักงานขับรถ"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ข้อบกพร่อง -->
+  <div class="card">
+    <div class="card-hdr">
+      <span>&#9888;&#65039; ข้อบกพร่องที่พบ</span>
+      <button class="btn no-print" onclick="addDefect()" style="background:rgba(255,255,255,.15);color:#fff;font-size:11px;padding:4px 10px;">+ เพิ่มรายการ</button>
+    </div>
+    <div class="card-body">
+      <div class="defect-area" id="defectArea">
+        <div style="color:#9ca3af;font-size:12.5px;text-align:center;padding:12px 0;" id="noDefect">ไม่พบข้อบกพร่อง</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Print version (hidden on screen) -->
+  <div class="print-header">
+    <div style="text-align:center;font-size:13pt;font-weight:700;margin-bottom:4mm;">แบบฟอร์มการตรวจยานพาหนะก่อนปฏิบัติงานประจำวัน</div>
+    <div style="font-size:9pt;margin-bottom:2mm;">
+      หน่วยงาน: <span id="p-unit">______</span> &nbsp;&nbsp;
+      เลขทะเบียน: <span id="p-plate">______</span> &nbsp;&nbsp;
+      วันที่: <span id="p-date">______</span> &nbsp;&nbsp;
+      ผู้ตรวจ: <span id="p-inspector">______</span>
+    </div>
+    <div style="font-size:9pt;margin-bottom:3mm;">
+      ยี่ห้อ/รุ่น: <span id="p-brand">______</span> &nbsp;&nbsp;
+      เลขไมล์: <span id="p-mileage">______</span> กม.
+    </div>
+    <div style="font-size:8.5pt;margin-bottom:3mm;color:#555;">ใช้เครื่องหมายถูก (✓) สำหรับทุกรายการที่อยู่ในสภาพดี และเครื่องหมาย (✗) สำหรับรายการที่ไม่ผ่าน</div>
+  </div>
+
+  <table class="print-table" id="printTable">
+    <thead>
+      <tr>
+        <th style="width:28px;">ที่</th>
+        <th class="td-name">รายการตรวจสอบ</th>
+        <th style="width:40px;">ผล</th>
+        <th class="td-name">หมายเหตุ</th>
+      </tr>
+    </thead>
+    <tbody id="printBody"></tbody>
+    <tfoot>
+      <tr>
+        <td colspan="4" style="text-align:left;padding:4px 6px;font-size:8.5pt;">
+          ลงชื่อผู้นำรถไปใช้งาน: <span id="p-driver">_________________________</span> &nbsp;&nbsp;
+          ตำแหน่ง: <span id="p-driverPos">________________</span>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+
+</div>
+
+<!-- Scroll buttons -->
+<div style="position:fixed;right:16px;bottom:24px;display:flex;flex-direction:column;gap:8px;z-index:999;">
+  <button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="width:40px;height:40px;border-radius:50%;background:#1a3c5e;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);display:none;" id="btnTop">&#8679;</button>
+  <button onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})" style="width:40px;height:40px;border-radius:50%;background:#e84c0a;color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);" id="btnBot">&#8681;</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var EXEC_URL='';
+google.script.run.withSuccessHandler(function(u){EXEC_URL=u;}).getScriptUrl();
+function goHome(){google.script.run.withSuccessHandler(function(u){window.top.location.href=u+'?page=index';}).getScriptUrl();}
+
+window.addEventListener('scroll',function(){
+  document.getElementById('btnTop').style.display=window.scrollY<200?'none':'block';
+  document.getElementById('btnBot').style.display=(window.scrollY+window.innerHeight>=document.body.scrollHeight-50)?'none':'block';
+});
+
+var ITEMS=[
+  '1. เข็มขัดนิรภัย',
+  '2. ไฟส่องสว่าง (สูง-ต่ำ) หน้า-หลัง',
+  '3. ไฟเบรก',
+  '4. ไฟสัญญาณ (ไฟวับวาบ, เลี้ยวซ้าย-ขวา, ถอยหลัง)',
+  '5. กระจกหน้ารถ',
+  '6. กระจกมองข้าง/หลัง',
+  '7. ที่ปัดน้ำฝน',
+  '8. น้ำฉีดกระจก',
+  '9. ระดับน้ำมันเชื้อเพลิง',
+  '10. ระดับน้ำมันหล่อลื่นเครื่องยนต์',
+  '11. การทำงานของแตร',
+  '12. ระบบเบรก (เบรกมือ/เบรกเท้า)',
+  '13. เครื่องปรับอากาศ',
+  '14. สภาพยาง กระทะล้อ และน๊อตยึดล้อ',
+  '15. อุปกรณ์ดับเพลิง',
+  '16. แบตเตอรี่ (ขั้ว, น้ำกลั่น)',
+  '17. ทำความสะอาดด้านในและด้านนอก',
+  '18. ความเสียหายภายใน',
+  '19. ความเสียหายภายนอก'
+];
+
+var states={}; // 1=ok, -1=fail, 0=skip
+
+function buildList(){
+  var el=document.getElementById('checkList');
+  el.innerHTML=ITEMS.map(function(name,i){
+    var no=i+1;
+    return '<div class="check-item" id="ci-'+no+'">'
+      +'<div class="item-no">'+no+'</div>'
+      +'<div class="item-name">'+name.replace(/^\d+\.\s*/,'')+'</div>'
+      +'<div class="check-btns">'
+      +'<button class="cbtn" id="ok-'+no+'" onclick="setCheck('+no+',1)" title="ผ่าน">&#10003;</button>'
+      +'<button class="cbtn" id="fail-'+no+'" onclick="setCheck('+no+',-1)" title="ไม่ผ่าน">&#10007;</button>'
+      +'</div>'
+      +'<input class="note-inp no-print" id="note-'+no+'" placeholder="หมายเหตุ...">'
+      +'</div>';
+  }).join('');
+  updateSummary();
+}
+
+function setCheck(no, val){
+  if(states[no]===val){ states[no]=0; }
+  else { states[no]=val; }
+  var s=states[no]||0;
+  var ci=document.getElementById('ci-'+no);
+  ci.className='check-item'+(s===1?' ok':s===-1?' fail':'');
+  document.getElementById('ok-'+no).className='cbtn'+(s===1?' ok-active':'');
+  document.getElementById('fail-'+no).className='cbtn'+(s===-1?' fail-active':'');
+  updateSummary();
+}
+
+function checkAll(isOk){
+  ITEMS.forEach(function(_,i){
+    var no=i+1;
+    states[no]=isOk?1:0;
+    var ci=document.getElementById('ci-'+no);
+    ci.className='check-item'+(isOk?' ok':'');
+    document.getElementById('ok-'+no).className='cbtn'+(isOk?' ok-active':'');
+    document.getElementById('fail-'+no).className='cbtn';
+  });
+  updateSummary();
+}
+
+function updateSummary(){
+  var ok=0,fail=0,skip=0;
+  ITEMS.forEach(function(_,i){
+    var s=states[i+1]||0;
+    if(s===1)ok++;else if(s===-1)fail++;else skip++;
+  });
+  document.getElementById('cntOk').textContent=ok;
+  document.getElementById('cntFail').textContent=fail;
+  document.getElementById('cntSkip').textContent=skip;
+}
+
+var defectCount=0;
+function addDefect(){
+  document.getElementById('noDefect').style.display='none';
+  defectCount++;
+  var d=document.createElement('div');
+  d.className='defect-row';
+  d.id='def-'+defectCount;
+  d.innerHTML='<input class="defect-inp" placeholder="ระบุข้อบกพร่อง...">'
+    +'<input class="defect-inp" style="width:110px;" placeholder="วันที่แจ้ง">'
+    +'<button onclick="removeDefect('+defectCount+')" style="background:#fee2e2;color:#991b1b;border:1px solid #fecaca;border-radius:5px;padding:4px 8px;cursor:pointer;font-size:12px;">ลบ</button>';
+  document.getElementById('defectArea').appendChild(d);
+}
+
+function removeDefect(id){
+  var el=document.getElementById('def-'+id);
+  if(el)el.remove();
+  if(!document.querySelector('.defect-row'))
+    document.getElementById('noDefect').style.display='block';
+}
+
+function formatDate(d){
+  if(!d)return '';
+  var parts=d.split('-');
+  if(parts.length!==3)return d;
+  var months=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  var year=parseInt(parts[0])+543;
+  return parseInt(parts[2])+' '+months[parseInt(parts[1])-1]+' '+year;
+}
+
+function savePrint(){
+  // Populate print fields
+  document.getElementById('p-unit').textContent=document.getElementById('unit').value||'________________';
+  document.getElementById('p-plate').textContent=document.getElementById('plate').value||'________________';
+  document.getElementById('p-date').textContent=formatDate(document.getElementById('checkdate').value)||'________________';
+  document.getElementById('p-inspector').textContent=document.getElementById('inspector').value||'________________';
+  document.getElementById('p-brand').textContent=document.getElementById('carbrand').value||'________________';
+  document.getElementById('p-mileage').textContent=document.getElementById('mileage').value||'________________';
+  document.getElementById('p-driver').textContent=document.getElementById('driver').value||'_________________________';
+  document.getElementById('p-driverPos').textContent=document.getElementById('driverPos').value||'________________';
+
+  // Build print table body
+  var rows=ITEMS.map(function(name,i){
+    var no=i+1;
+    var s=states[no]||0;
+    var result=s===1?'✓':s===-1?'✗':'';
+    var note=document.getElementById('note-'+no).value||'';
+    return '<tr>'
+      +'<td style="text-align:center">'+no+'</td>'
+      +'<td class="td-name" style="text-align:left">'+name.replace(/^\d+\.\s*/,'')+'</td>'
+      +'<td style="font-weight:700;color:'+(s===1?'#166534':s===-1?'#dc2626':'#000')+'">'+result+'</td>'
+      +'<td class="td-name">'+note+'</td>'
+      +'</tr>';
+  }).join('');
+
+  // Add defect rows
+  var defs=document.querySelectorAll('.defect-row');
+  if(defs.length>0){
+    rows+='<tr><td colspan="4" style="background:#fee2e2;font-weight:700;font-size:8.5pt;padding:3px 6px;text-align:left;">ข้อบกพร่องที่พบ</td></tr>';
+    defs.forEach(function(d,i){
+      var inputs=d.querySelectorAll('input');
+      rows+='<tr><td>'+(i+1)+'</td><td class="td-name">'+inputs[0].value+'</td><td colspan="2">วันที่แจ้ง: '+inputs[1].value+'</td></tr>';
+    });
+  }
+
+  document.getElementById('printBody').innerHTML=rows;
+  window.print();
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('checkdate').value=new Date().toISOString().slice(0,10);
+  buildList();
+});
+</script>
+</body>
+</html>
