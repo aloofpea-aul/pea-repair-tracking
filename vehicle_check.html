@@ -5,112 +5,98 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes">
 <title>แบบฟอร์มตรวจยานพาหนะ FM1-SOH3-S04-6103</title>
 <style>
+/* ===== MOBILE FIRST — default is mobile size ===== */
 *{box-sizing:border-box;margin:0;padding:0;}
-html{font-size:16px;}
+html{font-size:18px;}
 body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a2b3c;}
-.topbar{background:#1a3c5e;color:#fff;padding:12px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.t-title{font-size:15px;font-weight:700;}.t-sub{font-size:11px;opacity:.75;}
+.topbar{background:#1a3c5e;color:#fff;padding:12px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.t-title{font-size:1rem;font-weight:700;}.t-sub{font-size:0.7rem;opacity:.75;}
 .spacer{flex:1;}
-.btn{padding:10px 16px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:'Sarabun',sans-serif;}
-.btn-sm{padding:8px 12px;font-size:13px;border-radius:7px;}
+.btn{padding:12px 16px;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;border:none;font-family:'Sarabun',sans-serif;}
+.btn-sm{padding:9px 13px;font-size:0.85rem;border-radius:7px;}
 .btn-back{background:rgba(255,255,255,.15);color:#fff;}
 .btn-save{background:#166534;color:#fff;}
 .btn-print{background:#e84c0a;color:#fff;}
-.btn-add{background:#1a3c5e;color:#fff;}
-.btn-danger{background:#fee2e2;color:#991b1b;}
-.container{max-width:900px;margin:0 auto;padding:16px;}
-.card{background:#fff;border-radius:10px;border:1px solid #dde3ea;margin-bottom:16px;overflow:hidden;}
-.card-hdr{background:#1a3c5e;color:#fff;padding:12px 16px;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
-.card-body{padding:16px;}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.container{max-width:960px;margin:0 auto;padding:12px;}
+.card{background:#fff;border-radius:10px;border:1px solid #dde3ea;margin-bottom:14px;overflow:hidden;}
+.card-hdr{background:#1a3c5e;color:#fff;padding:13px 14px;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.card-body{padding:14px;}
+.form-row{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px;}
 .fg{display:flex;flex-direction:column;gap:5px;}
-.fg label{font-size:14px;font-weight:700;color:#4b5563;}
-.fg input,.fg select{padding:11px 12px;border:1.5px solid #c8d0da;border-radius:8px;font-size:15px;font-family:'Sarabun',sans-serif;width:100%;background:#fff;}
-.veh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;padding:12px 16px;}
-.veh-card{border:2px solid #dde3ea;border-radius:10px;padding:12px;cursor:pointer;text-align:center;transition:all .15s;background:#fff;}
+.fg label{font-size:0.9rem;font-weight:700;color:#4b5563;}
+.fg input,.fg select{padding:12px;border:1.5px solid #c8d0da;border-radius:8px;font-size:1rem;font-family:'Sarabun',sans-serif;width:100%;background:#fff;}
+/* Vehicle grid */
+.veh-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:12px;}
+.veh-card{border:2px solid #dde3ea;border-radius:10px;padding:14px 10px;cursor:pointer;text-align:center;transition:all .15s;background:#fff;}
 .veh-card:hover{border-color:#1a3c5e;background:#f0f4f8;}
 .veh-card.selected{border-color:#e84c0a;background:#fff3ee;}
-.veh-plate{font-size:16px;font-weight:700;color:#1a3c5e;margin-bottom:3px;}
-.veh-brand{font-size:12px;color:#6b7c8d;}
-.veh-code{font-size:11px;color:#9ca3af;}
-.month-nav{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#f8fafc;border-bottom:1px solid #dde3ea;}
-.mnav-btn{width:40px;height:40px;border:1.5px solid #c8d0da;border-radius:8px;background:#fff;font-size:20px;cursor:pointer;}
-.month-label{font-size:17px;font-weight:700;color:#1a3c5e;flex:1;text-align:center;}
-.day-tabs{display:flex;overflow-x:auto;gap:6px;padding:12px 16px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.veh-plate{font-size:1.1rem;font-weight:700;color:#1a3c5e;margin-bottom:3px;}
+.veh-brand{font-size:0.8rem;color:#6b7c8d;}
+.veh-code{font-size:0.75rem;color:#9ca3af;}
+/* Month nav */
+.month-nav{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#f8fafc;border-bottom:1px solid #dde3ea;}
+.mnav-btn{width:50px;height:50px;border:1.5px solid #c8d0da;border-radius:8px;background:#fff;font-size:1.4rem;cursor:pointer;}
+.month-label{font-size:1.2rem;font-weight:700;color:#1a3c5e;flex:1;text-align:center;}
+/* Day tabs */
+.day-tabs{display:flex;overflow-x:auto;gap:8px;padding:12px 14px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .day-tabs::-webkit-scrollbar{display:none;}
-.day-tab{min-width:44px;height:44px;border-radius:8px;border:1.5px solid #c8d0da;background:#fff;font-size:14px;font-weight:600;cursor:pointer;flex-shrink:0;color:#374151;}
+.day-tab{min-width:50px;height:50px;border-radius:8px;border:1.5px solid #c8d0da;background:#fff;font-size:1rem;font-weight:600;cursor:pointer;flex-shrink:0;color:#374151;}
 .day-tab.today{border-color:#e84c0a;color:#e84c0a;}
 .day-tab.saved{background:#dcfce7;border-color:#86efac;color:#166534;}
 .day-tab.has-fail{background:#fee2e2;border-color:#fca5a5;color:#dc2626;}
 .day-tab.active{background:#1a3c5e!important;color:#fff!important;border-color:#1a3c5e!important;}
-.ci{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid #edf0f3;}
+/* Check items */
+.ci{display:flex;align-items:center;gap:12px;padding:14px 14px;border-bottom:1px solid #edf0f3;}
 .ci:last-child{border-bottom:none;}
 .ci.stP{background:#f0fdf4;}.ci.stO{background:#fef2f2;}
-.ci-no{min-width:34px;height:34px;background:#1a3c5e;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;}
-.ci-name{flex:1;font-size:15px;font-weight:500;line-height:1.4;}
-.cbtn-grp{display:flex;gap:8px;flex-shrink:0;}
-.cbtn{width:46px;height:46px;border-radius:8px;border:1.5px solid #c8d0da;background:#fff;font-size:20px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.ci-no{min-width:40px;height:40px;background:#1a3c5e;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;flex-shrink:0;}
+.ci-name{flex:1;font-size:1.05rem;font-weight:500;line-height:1.4;}
+.cbtn-grp{display:flex;gap:10px;flex-shrink:0;}
+.cbtn{width:56px;height:56px;border-radius:10px;border:1.5px solid #c8d0da;background:#fff;font-size:1.4rem;cursor:pointer;-webkit-tap-highlight-color:transparent;}
 .cbtn.aP{background:#166534;border-color:#166534;color:#fff;}
 .cbtn.aO{background:#dc2626;border-color:#dc2626;color:#fff;}
 .cbtn.aD{background:#6b7280;border-color:#6b7280;color:#fff;}
-.signer-row{padding:12px 16px;background:#f8fafc;border-top:1px solid #dde3ea;}
-.signer-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+/* Signer */
+.signer-row{padding:14px;background:#f8fafc;border-top:1px solid #dde3ea;}
+.signer-grid{display:grid;grid-template-columns:1fr;gap:12px;}
 .signer-fg{display:flex;flex-direction:column;gap:5px;}
-.signer-fg label{font-size:13px;font-weight:700;color:#4b5563;}
-.signer-fg input{padding:9px 12px;border:1.5px solid #c8d0da;border-radius:8px;font-size:14px;font-family:'Sarabun',sans-serif;width:100%;}
-.summary-bar{display:flex;gap:14px;padding:10px 16px;background:#f0f4f8;border-top:1px solid #dde3ea;flex-wrap:wrap;}
-.sum-item{display:flex;align-items:center;gap:6px;font-size:14px;}
-.badge{display:inline-block;padding:4px 11px;border-radius:20px;font-size:13px;font-weight:700;}
+.signer-fg label{font-size:0.9rem;font-weight:700;color:#4b5563;}
+.signer-fg input{padding:12px;border:1.5px solid #c8d0da;border-radius:8px;font-size:1rem;font-family:'Sarabun',sans-serif;width:100%;}
+/* Summary */
+.summary-bar{display:flex;gap:10px;padding:12px 14px;background:#f0f4f8;border-top:1px solid #dde3ea;flex-wrap:wrap;}
+.sum-item{display:flex;align-items:center;gap:6px;font-size:0.9rem;}
+.badge{display:inline-block;padding:4px 11px;border-radius:20px;font-size:0.85rem;font-weight:700;}
 .badge-ok{background:#dcfce7;color:#166534;}.badge-fail{background:#fee2e2;color:#dc2626;}.badge-skip{background:#f3f4f6;color:#6b7280;}
-.defect-item{display:grid;grid-template-columns:1fr 160px 46px;gap:8px;align-items:center;padding:10px 16px;border-bottom:1px solid #edf0f3;}
-.defect-item input{padding:10px 12px;border:1.5px solid #c8d0da;border-radius:8px;font-size:14px;font-family:'Sarabun',sans-serif;width:100%;}
-.btn-del{width:46px;height:46px;border:none;background:#fee2e2;color:#dc2626;border-radius:8px;cursor:pointer;font-size:18px;}
+/* Defects */
+.defect-item{display:grid;grid-template-columns:1fr 56px;gap:8px;align-items:center;padding:12px 14px;border-bottom:1px solid #edf0f3;}
+.defect-item input{padding:11px 12px;border:1.5px solid #c8d0da;border-radius:8px;font-size:1rem;font-family:'Sarabun',sans-serif;width:100%;}
+.defect-item input[type=date]{grid-column:1/-1;}
+.btn-del{width:56px;height:56px;border:none;background:#fee2e2;color:#dc2626;border-radius:8px;cursor:pointer;font-size:1.3rem;}
 /* Modal */
 .modal-bg{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;}
 .modal-bg.show{display:flex;}
-.modal{background:#fff;border-radius:12px;padding:24px;width:90%;max-width:480px;max-height:90vh;overflow-y:auto;}
-.modal-title{font-size:16px;font-weight:700;color:#1a3c5e;margin-bottom:16px;}
+.modal{background:#fff;border-radius:12px;padding:20px;width:92%;max-width:480px;max-height:90vh;overflow-y:auto;}
+.modal-title{font-size:1.1rem;font-weight:700;color:#1a3c5e;margin-bottom:16px;}
 /* Toast */
-.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:13px 22px;border-radius:10px;font-size:15px;z-index:99999;display:none;color:#fff;font-weight:700;box-shadow:0 4px 16px rgba(0,0,0,.25);}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:13px 22px;border-radius:10px;font-size:1rem;z-index:99999;display:none;color:#fff;font-weight:700;box-shadow:0 4px 16px rgba(0,0,0,.25);}
 .toast.show{display:block;}.t-ok{background:#166534;}.t-err{background:#dc2626;}.t-info{background:#1a3c5e;}
-@media(max-width:700px){
-  html{font-size:19px!important;}
+
+/* ===== DESKTOP OVERRIDE (min-width: 768px) ===== */
+@media(min-width:768px){
+  html{font-size:15px;}
+  .form-row{grid-template-columns:1fr 1fr;}
+  .veh-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));padding:16px;}
+  .day-tab{min-width:44px;height:44px;}
+  .cbtn{width:46px;height:46px;font-size:1.3rem;}
+  .signer-grid{grid-template-columns:1fr 1fr;}
+  .defect-item{grid-template-columns:1fr 160px 46px;}
+  .defect-item input[type=date]{grid-column:auto;}
+  .btn-del{width:46px;height:46px;}
+  .month-label{font-size:1.1rem;}
+  .mnav-btn{width:40px;height:40px;}
 }
-/* Mobile via JS data-mobile attribute */
-[data-mobile="1"] .topbar{padding:10px 12px;gap:6px;}
-[data-mobile="1"] .t-title{font-size:1rem;}
-[data-mobile="1"] .btn{padding:11px 14px;}
-[data-mobile="1"] .container{padding:12px;}
-[data-mobile="1"] .card-hdr{padding:13px 14px;}
-[data-mobile="1"] .veh-grid{grid-template-columns:repeat(2,1fr);gap:10px;padding:14px;}
-[data-mobile="1"] .veh-plate{font-size:1.1rem;}
-[data-mobile="1"] .veh-card{padding:14px 10px;}
-[data-mobile="1"] .month-nav{padding:12px 14px;}
-[data-mobile="1"] .mnav-btn{width:50px;height:50px;font-size:1.4rem;}
-[data-mobile="1"] .month-label{font-size:1.2rem;}
-[data-mobile="1"] .day-tabs{gap:8px;padding:12px 14px;}
-[data-mobile="1"] .day-tab{min-width:50px;height:50px;font-size:1rem;border-radius:10px;}
-[data-mobile="1"] .ci{padding:15px 14px;gap:14px;}
-[data-mobile="1"] .ci-no{min-width:40px;height:40px;font-size:1rem;}
-[data-mobile="1"] .ci-name{font-size:1.05rem;}
-[data-mobile="1"] .cbtn{width:54px;height:54px;font-size:1.4rem;}
-[data-mobile="1"] .cbtn-grp{gap:10px;}
-[data-mobile="1"] .signer-row{padding:14px;}
-[data-mobile="1"] .signer-grid{grid-template-columns:1fr;}
-[data-mobile="1"] .signer-fg label{font-size:0.9rem;}
-[data-mobile="1"] .signer-fg input{font-size:1rem;padding:12px;}
-[data-mobile="1"] .summary-bar{gap:10px;padding:12px 14px;flex-wrap:wrap;}
-[data-mobile="1"] .sum-item{font-size:0.9rem;}
-[data-mobile="1"] .badge{font-size:0.85rem;padding:4px 10px;}
-[data-mobile="1"] .form-row{grid-template-columns:1fr;}
-[data-mobile="1"] .fg label{font-size:0.9rem;}
-[data-mobile="1"] .fg input,[data-mobile="1"] .fg select{font-size:1rem;padding:12px;}
-[data-mobile="1"] .defect-item{grid-template-columns:1fr 54px;gap:8px;padding:12px 14px;}
-[data-mobile="1"] .defect-item input{font-size:1rem;padding:11px;}
-[data-mobile="1"] .defect-item input[type=date]{grid-column:1/-1;}
-[data-mobile="1"] .btn-del{width:54px;height:54px;font-size:1.3rem;}
-[data-mobile="1"] .modal{padding:20px;}
-[data-mobile="1"] .modal-title{font-size:1.1rem;}
+
+/* Print */
 @media print{
   *{font-family:'Sarabun',sans-serif!important;}
   body,html{background:#fff!important;margin:0;padding:0;}
@@ -123,15 +109,7 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a2b3c;}
 </head>
 <body>
 
-<script>
-(function(){
-  var w = window.screen.width || window.innerWidth;
-  if(w <= 700){
-    document.documentElement.style.fontSize = '19px';
-    document.documentElement.setAttribute('data-mobile','1');
-  }
-})();
-</script>
+
 <div class="topbar">
   <div><div class="t-title">&#128663; แบบฟอร์มตรวจยานพาหนะก่อนปฏิบัติงาน</div><div class="t-sub">FM1-SOH3-S04-6103 | กฟต.2</div></div>
   <div class="spacer"></div>
@@ -268,20 +246,26 @@ function loadVehicles(){
 function renderVehGrid(){
   var el=document.getElementById('vehGrid');
   if(!vehicles.length){
-    el.innerHTML='<div style="padding:20px;text-align:center;color:#9ca3af;grid-column:1/-1;font-size:14px;">ยังไม่มีรถ กดปุ่ม "+ เพิ่มรถ" เพื่อเริ่มต้น</div>';
+    el.innerHTML='<div style="padding:20px;text-align:center;color:#9ca3af;grid-column:1/-1;font-size:1rem;">ยังไม่มีรถ กดปุ่ม "+ เพิ่มรถ" เพื่อเริ่มต้น</div>';
     return;
   }
-  el.innerHTML=vehicles.map(function(v){
+  var html='';
+  for(var i=0;i<vehicles.length;i++){
+    var v=vehicles[i];
     var sel=selVehicle&&selVehicle.vehicle_id===v.vehicle_id;
-    return '<div class="veh-card'+(sel?' selected':'')+'" onclick="selectVehicle('+JSON.stringify(v).replace(/"/g,'&quot;')+')">'
+    html+='<div class="veh-card'+(sel?' selected':'')+'" onclick="selVehicleByIdx('+i+')">'
       +'<div class="veh-plate">'+v.plate+'</div>'
-      +'<div class="veh-brand">'+v.brand+'</div>'
+      +'<div class="veh-brand">'+(v.brand||'')+'</div>'
       +'<div class="veh-code">'+(v.code||'')+'</div>'
-      +'<div style="margin-top:6px;display:flex;gap:4px;justify-content:center;">'
-      +'<button onclick="event.stopPropagation();editVehicle(\''+v.vehicle_id+'\')" style="border:none;background:#e8f0fe;color:#1a3c5e;border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer;">&#9998;</button>'
-      +'<button onclick="event.stopPropagation();confirmDeleteVehicle(\''+v.vehicle_id+'\',\''+v.plate+'\')" style="border:none;background:#fee2e2;color:#dc2626;border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer;">&#128465;</button>'
+      +'<div style="margin-top:8px;display:flex;gap:6px;justify-content:center;">'
+      +'<button onclick="event.stopPropagation();editVehicle(\''+v.vehicle_id+'\')" style="border:none;background:#e8f0fe;color:#1a3c5e;border-radius:6px;padding:6px 12px;font-size:0.8rem;cursor:pointer;">&#9998;</button>'
+      +'<button onclick="event.stopPropagation();confirmDeleteVehicle(\''+v.vehicle_id+'\',\''+v.plate+'\')" style="border:none;background:#fee2e2;color:#dc2626;border-radius:6px;padding:6px 12px;font-size:0.8rem;cursor:pointer;">&#128465;</button>'
       +'</div></div>';
-  }).join('');
+  }
+  el.innerHTML=html;
+}
+function selVehicleByIdx(i){
+  if(vehicles[i])selectVehicle(vehicles[i]);
 }
 
 function selectVehicle(v){
@@ -623,7 +607,14 @@ function buildPrint(){
 
 function showToast(msg,type){var t=document.getElementById('toast');t.innerHTML=msg;t.className='toast show t-'+(type||'info');setTimeout(function(){t.className='toast';},3000);}
 
-document.addEventListener('DOMContentLoaded',function(){init();loadVehicles();});
+document.addEventListener('DOMContentLoaded',function(){
+  try{
+    init();
+    loadVehicles();
+  }catch(e){
+    document.body.innerHTML='<div style="padding:20px;font-size:16px;color:#dc2626;">เกิดข้อผิดพลาด: '+e.message+'</div>';
+  }
+});
 </script>
 </body>
 </html>
