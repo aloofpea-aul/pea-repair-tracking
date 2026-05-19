@@ -78,6 +78,19 @@ tbody td{padding:5px 8px;border-bottom:1px solid #edf0f3;vertical-align:middle;}
 .toast.show{display:block;}
 .t-ok{background:#166534;}.t-err{background:#dc2626;}.t-info{background:#1a3c5e;}
 .ro-input{background:#f8fafc;color:#6b7c8d;}
+
+/* Previous inspection highlight styles */
+.prev-badge{display:inline-block;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:700;margin-left:6px;background:#f0f4f8;color:#6b7c8d;border:1px solid #dde3ea;}
+.prev-badge.changed{background:#fef9c3;color:#92400e;border-color:#fbbf24;}
+.ci-prev{display:flex;align-items:center;gap:6px;margin-bottom:5px;font-size:11px;color:#9ca3af;padding:4px 8px;background:#f8fafc;border-radius:5px;border-left:3px solid #dde3ea;}
+.ci-prev.has-change{background:#fef9c3;border-left-color:#f59e0b;color:#78350f;}
+.ci.changed-item{border-left:3px solid #f59e0b;}
+.prev-info-bar{background:#e8f4ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#1e40af;display:none;}
+.prev-info-bar.show{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.prev-info-bar .pi-label{font-weight:700;}
+.change-summary{background:#fff3ee;border:1px solid #fbbf24;border-radius:6px;padding:8px 12px;font-size:12px;color:#92400e;margin-bottom:14px;display:none;}
+.change-summary.show{display:block;}
+
 /* MOBILE */
 @media(max-width:640px){
   .topbar{flex-wrap:wrap;gap:6px;padding:10px 12px;}
@@ -202,6 +215,113 @@ html,body { font-size: 18px !important; }
 
 <script>
 // ค่า station_id ที่ส่งมาจาก server (inject โดย Code.gs)
+
+var prevScores = {};  // item_id -> {score, pct, note}
+var prevInspection = null;
+
+function loadPrevInspection(stationId) {
+  prevScores = {};
+  prevInspection = null;
+  document.getElementById('prevInfoBar').classList.remove('show');
+  document.getElementById('changeSummary').classList.remove('show');
+  clearPrevHighlights();
+  if(!stationId) return;
+
+  google.script.run
+    .withSuccessHandler(function(data){
+      if(!data) return;
+      prevInspection = data.inspection;
+      (data.scores || []).forEach(function(s){
+        prevScores[String(s.item_id)] = {
+          score: parseFloat(s.score) || 0,
+          pct  : s.pct || '',
+          note : s.note || ''
+        };
+      });
+      // Show info bar
+      var bar = document.getElementById('prevInfoBar');
+      var dateStr = prevInspection.inspect_date || '';
+      document.getElementById('prevInfoText').textContent =
+        'ตรวจเมื่อ '+dateStr+' | คะแนน '+prevInspection.total_score+' | '+prevInspection.grade;
+      bar.classList.add('show');
+      // Show prev values on each item
+      showPrevValues();
+    })
+    .withFailureHandler(function(){})
+    .getLatestInspectionByStation(stationId);
+}
+
+function clearPrevHighlights(){
+  document.querySelectorAll('.ci-prev').forEach(function(el){el.remove();});
+  document.querySelectorAll('.ci.changed-item').forEach(function(el){el.classList.remove('changed-item');});
+  document.querySelectorAll('.prev-badge').forEach(function(el){el.remove();});
+}
+
+function showPrevValues(){
+  CHECKLIST.forEach(function(item){
+    var prev = prevScores[String(item.item_id)];
+    if(!prev) return;
+    // Find the ci div for this item
+    var ciEl = document.getElementById('ci_'+item.item_id);
+    if(!ciEl) return;
+    var ciPrev = document.createElement('div');
+    ciPrev.className = 'ci-prev';
+    ciPrev.id = 'prev_'+item.item_id;
+    ciPrev.innerHTML = '&#128196; เก่า: <strong>'+prev.score+'</strong> คะแนน'
+      + (prev.note ? ' / '+prev.note : '');
+    ciEl.insertBefore(ciPrev, ciEl.querySelector('.ci-top'));
+  });
+  updateChangeHighlights();
+}
+
+function updateChangeHighlights(){
+  var changedCount = 0;
+  CHECKLIST.forEach(function(item){
+    var prev = prevScores[String(item.item_id)];
+    if(!prev) return;
+    var ciEl = document.getElementById('ci_'+item.item_id);
+    var prevEl = document.getElementById('prev_'+item.item_id);
+    if(!ciEl) return;
+    // Get current score for this item
+    var curScore = getCurrentScore(item);
+    var isChanged = Math.abs(curScore - prev.score) > 0.001;
+    if(isChanged){
+      changedCount++;
+      ciEl.classList.add('changed-item');
+      if(prevEl) prevEl.classList.add('has-change');
+    } else {
+      ciEl.classList.remove('changed-item');
+      if(prevEl) prevEl.classList.remove('has-change');
+    }
+  });
+  var countEl = document.getElementById('prevChangeCount');
+  var sumEl = document.getElementById('changeSummary');
+  if(changedCount > 0){
+    countEl.textContent = changedCount + ' รายการเปลี่ยน';
+    countEl.style.display = 'inline-block';
+    sumEl.textContent = '⚠️ มีการเปลี่ยนแปลง '+changedCount+' รายการจากการตรวจครั้งก่อน';
+    sumEl.classList.add('show');
+  } else {
+    countEl.style.display = 'none';
+    sumEl.classList.remove('show');
+  }
+}
+
+function getCurrentScore(item){
+  // For radio items
+  var radios = document.querySelectorAll('input[name="score_'+item.item_id+'"]');
+  for(var i=0;i<radios.length;i++){
+    if(radios[i].checked) return parseFloat(radios[i].value)||0;
+  }
+  // For calc items
+  var calcInp = document.getElementById('pct_'+item.item_id);
+  if(calcInp){
+    var pctVal = parseFloat(calcInp.value)||0;
+    return Math.round(pctVal/100 * item.max_score * 10)/10;
+  }
+  return 0;
+}
+
 var PRE_STATION_ID = '';
 
 var EXEC_URL='';
@@ -416,6 +536,7 @@ function syncExtra(ti){
 // เมื่อเลือกหน่วยงาน → โหลดคณะกรรมการที่รับผิดชอบ
 function onStationChange(){
   var sid=document.getElementById('sid').value;
+  loadPrevInspection(sid);
   if(sid) loadCommittees(sid);
   else{
     var sel=document.getElementById('icommittee');
