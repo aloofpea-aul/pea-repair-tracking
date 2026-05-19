@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
 <title>ตรวจยานพาหนะ</title>
 <style>
 /* RESET */
@@ -10,6 +10,26 @@
 
 /* BASE — mobile size, no queries needed */
 html,body{font-size:18px;font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a2b3c;}
+
+/* Desktop: cap font size and container width */
+@media(min-width:768px){
+  html,body{font-size:14px;}
+  .tb{padding:10px 20px;}
+  .card{margin:10px 0;}
+  .vgrid{grid-template-columns:repeat(4,1fr);}
+  .cb{width:42px;height:42px;font-size:18px;}
+  .cino{min-width:32px;height:32px;font-size:13px;}
+  .ciname{font-size:14px;}
+  .ci{padding:10px 16px;}
+  .dtab{min-width:40px;height:40px;font-size:13px;}
+  .mbtn{width:40px;height:40px;font-size:18px;}
+  .mlabel{font-size:16px;}
+  .sginp{font-size:14px;padding:8px 10px;}
+  .sgrow label{font-size:13px;}
+  .definp{font-size:14px;padding:8px 10px;}
+  .delbtn{height:40px;font-size:14px;}
+  .tbtn{font-size:13px;padding:8px 12px;}
+}
 
 /* TOPBAR */
 .tb{background:#1a3c5e;color:#fff;padding:12px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
@@ -116,6 +136,22 @@ html,body{font-size:18px;font-family:'Sarabun',sans-serif;background:#f0f4f8;col
 </head>
 <body>
 
+<script>
+/* Force mobile viewport - fixes GAS iframe issue */
+(function(){
+  // Remove any existing viewport meta
+  var metas = document.getElementsByTagName('meta');
+  for(var i=metas.length-1;i>=0;i--){
+    if(metas[i].getAttribute('name')==='viewport') metas[i].parentNode.removeChild(metas[i]);
+  }
+  // Add correct viewport
+  var m=document.createElement('meta');
+  m.name='viewport';
+  m.content='width=device-width,initial-scale=1.0,maximum-scale=5.0';
+  document.getElementsByTagName('head')[0].appendChild(m);
+})();
+</script>
+
 <div class="tb">
   <div>
     <div class="tb-title">&#128663; ตรวจยานพาหนะ</div>
@@ -126,6 +162,7 @@ html,body{font-size:18px;font-family:'Sarabun',sans-serif;background:#f0f4f8;col
   <button class="tbtn tbtn-print" onclick="doPrint()">&#128438; พิมพ์</button>
 </div>
 
+<div style="max-width:900px;margin:0 auto;">
 <div class="card">
   <div class="chdr">
     <span>&#128663; เลือกรถที่ต้องการตรวจ</span>
@@ -194,6 +231,7 @@ html,body{font-size:18px;font-family:'Sarabun',sans-serif;background:#f0f4f8;col
   </div>
 </div>
 
+</div><!-- end max-width -->
 <div class="ppage" id="printPage"></div>
 <img id="hiddenLogo" src="data:image/jpeg;base64,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" style="display:none;" alt="Logo">
 <button class="scbtn" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})" style="background:#e84c0a;color:#fff;">&#8681;</button>

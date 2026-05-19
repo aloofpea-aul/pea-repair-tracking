@@ -37,21 +37,25 @@ function doGet(e) {
   if (page === 'settings') {
     return HtmlService.createHtmlOutputFromFile('settings')
       .setTitle('ตั้งค่าคณะกรรมการตรวจ')
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+      .addMetaTag('viewport', 'width=device-width, initial-scale=1.0');
   }
 
   // spare_parts.html
   if (page === 'spare_parts') {
     return HtmlService.createHtmlOutputFromFile('spare_parts')
       .setTitle('รายการพัสดุสำรองแก้ไฟ 2569')
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+      .addMetaTag('viewport', 'width=device-width, initial-scale=1.0');
   }
 
-  // vehicle_check.html
+  // vehicle_check.html — ใช้ template เพื่อให้ GAS render mobile ได้ถูกต้อง
   if (page === 'vehicle_check') {
-    return HtmlService.createHtmlOutputFromFile('vehicle_check')
+    var tplVC = HtmlService.createTemplateFromFile('vehicle_check');
+    return tplVC.evaluate()
       .setTitle('แบบฟอร์มตรวจยานพาหนะ FM1-SOH3-S04-6103')
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+      .addMetaTag('viewport', 'width=device-width, initial-scale=1.0');
   }
 
   // index / report — template
@@ -59,7 +63,8 @@ function doGet(e) {
   tpl.page = page;
   return tpl.evaluate()
     .setTitle('ระบบตรวจงานแก้ไฟฟ้าขัดข้อง กฟต.2')
-    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1.0');
 }
 
 function include(filename) {

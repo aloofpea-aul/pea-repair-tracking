@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ระบบตรวจงานแก้ไฟฟ้าขัดข้อง</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Sarabun',sans-serif;}
@@ -87,30 +87,19 @@ tbody td{padding:10px 12px;}
 }
 </style>
 
-<style id="mobile-first">
-/* === MOBILE FIRST OVERRIDE === */
-html { font-size: 18px !important; }
-body { font-size: 18px !important; -webkit-text-size-adjust: 100% !important; }
-input, select, textarea, button {
-  font-size: 16px !important;
-  -webkit-appearance: none;
-}
-/* Make buttons finger-friendly */
-button { min-height: 44px; }
-input[type=text], input[type=number], input[type=date], select {
-  min-height: 48px !important;
-  padding: 10px 12px !important;
-}
-/* Desktop override */
-@media (min-width: 900px) {
-  html { font-size: 14px !important; }
-  body { font-size: 14px !important; }
-  input, select, textarea, button { font-size: 14px !important; }
-  button { min-height: auto; }
-  input[type=text], input[type=number], input[type=date], select {
-    min-height: auto !important;
-    padding: 7px 10px !important;
-  }
+
+
+<style id="desktop-override">
+/* Mobile default */
+html,body { font-size: 18px !important; }
+/* Desktop scaling */
+@media(min-width: 768px){
+  html,body { font-size: 14px !important; }
+  .topbar, .tb { padding: 10px 20px !important; }
+  .btn, .tbtn { font-size: 13px !important; padding: 8px 14px !important; min-height: auto !important; }
+  table { font-size: 13px !important; }
+  input, select, textarea { font-size: 13px !important; min-height: auto !important; padding: 7px 10px !important; }
+  .container { max-width: 1100px; margin: 0 auto; }
 }
 </style>
 </head>
