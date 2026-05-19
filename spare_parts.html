@@ -471,6 +471,48 @@ function renderTable(){
 
 function ft(){renderTable();}
 renderTable();
+
+// ===== localStorage persistence for count mode =====
+function saveCountData() {
+  try {
+    localStorage.setItem('spare_actuals_'+QTY_FIELD, JSON.stringify(actuals));
+  } catch(e) {}
+}
+function loadCountData() {
+  try {
+    var saved = localStorage.getItem('spare_actuals_'+QTY_FIELD);
+    if (saved) {
+      actuals = JSON.parse(saved);
+      renderTable();
+      updateSummary();
+    }
+  } catch(e) {}
+}
+
+// Patch onActualChange and tickFull to auto-save
+var _origOnActualChange = onActualChange;
+onActualChange = function(no, val) {
+  _origOnActualChange(no, val);
+  saveCountData();
+};
+var _origTickFull = tickFull;
+tickFull = function(no, approved) {
+  _origTickFull(no, approved);
+  saveCountData();
+};
+var _origClearAll = clearAll;
+clearAll = function() {
+  _origClearAll();
+  saveCountData();
+};
+var _origSetTypeFilter = setTypeFilter;
+setTypeFilter = function() {
+  _origSetTypeFilter();
+  loadCountData();
+};
+
+// Load on start
+loadCountData();
 </script>
 </body>
 </html>
