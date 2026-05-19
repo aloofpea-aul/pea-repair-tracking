@@ -143,7 +143,8 @@ window.addEventListener('scroll',function(){
 });
 
 google.script.run
-  .withSuccessHandler(render)
+  .withFailureHandler(function(e){showPageError(e.message);})
+    .withSuccessHandler(render)
   .withFailureHandler(function(e){
     document.getElementById('content').innerHTML='<div class="empty">&#10060; '+e.message+'</div>';
   })
@@ -215,6 +216,19 @@ function ft(){
     r.style.display=((!q||r.dataset.n.includes(q))&&(!t||r.dataset.t===t)&&(!p||r.dataset.p===p)&&(!s||r.dataset.s===s))?'':'none';
   });
 }
+
+function showPageError(msg) {
+  var el = document.getElementById('pageErrorMsg');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'pageErrorMsg';
+    el.style.cssText = 'background:#fee2e2;color:#dc2626;padding:14px 18px;font-size:15px;border-radius:8px;margin:12px;border:1px solid #fca5a5;';
+    document.body.insertBefore(el, document.body.firstChild.nextSibling || document.body.firstChild);
+  }
+  el.innerHTML = '&#10060; เกิดข้อผิดพลาด: ' + msg + '<br><small>ลองรีเฟรชหน้า หรือแจ้งผู้ดูแลระบบ</small>';
+  el.style.display = 'block';
+}
+
 </script>
 </body>
 </html>

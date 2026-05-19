@@ -213,8 +213,15 @@ html,body { font-size: 18px !important; }
 
 <script>
 var EXEC_URL='';
-google.script.run.withSuccessHandler(function(u){EXEC_URL=u;}).getScriptUrl();
-function goHome(){google.script.run.withSuccessHandler(function(u){window.top.location.href=u+'?page=index';}).getScriptUrl();}
+google.script.run.withSuccessHandler(function(u){EXEC_URL=u;}).withFailureHandler(function(){}).getScriptUrl();
+function showPageError(msg){
+  var el=document.getElementById('pageErrorMsg');
+  if(!el){el=document.createElement('div');el.id='pageErrorMsg';
+    el.style.cssText='background:#fee2e2;color:#dc2626;padding:14px 18px;font-size:15px;border-radius:8px;margin:12px;border:1px solid #fca5a5;display:none;';
+    document.body.insertBefore(el,document.body.children[1]||document.body.children[0]);}
+  el.innerHTML='&#10060; '+msg;el.style.display='block';
+}
+function goHome(){google.script.run.withSuccessHandler(function(u){window.top.location.href=u+'?page=index';}).withFailureHandler(showPageError).getScriptUrl();}
 window.addEventListener('scroll',function(){
   document.getElementById('btnTop').style.display=window.scrollY<200?'none':'block';
   document.getElementById('btnBot').style.display=(window.scrollY+window.innerHeight>=document.body.scrollHeight-50)?'none':'block';

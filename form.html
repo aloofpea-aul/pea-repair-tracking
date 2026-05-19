@@ -228,6 +228,7 @@ function loadPrevInspection(stationId) {
   if(!stationId) return;
 
   google.script.run
+    .withFailureHandler(function(e){showPageError(e.message);})
     .withSuccessHandler(function(data){
       if(!data) return;
       prevInspection = data.inspection;
@@ -655,6 +656,7 @@ function submitForm(){
   var btn=document.getElementById('saveBtn');
   btn.disabled=true;btn.textContent='กำลังบันทึก...';
   google.script.run
+    .withFailureHandler(function(e){showPageError(e.message);})
     .withSuccessHandler(function(res){
       if(res.success){
         showToast('บันทึกสำเร็จ! '+res.total_score+'/'+res.max_score+' คะแนน ('+res.percent+'%) เกรด '+res.grade,'ok');
@@ -675,10 +677,24 @@ document.addEventListener('DOMContentLoaded',function(){
   document.getElementById('idate').value=new Date().toISOString().slice(0,10);
   buildCatGrid();buildItems();buildExtraForms();updateTotals();
   google.script.run
+    .withFailureHandler(function(e){showPageError(e.message);})
     .withSuccessHandler(loadStations)
     .withFailureHandler(function(e){loadStations([]);console.error(e.message);})
     .getStations();
 });
+
+function showPageError(msg) {
+  var el = document.getElementById('pageErrorMsg');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'pageErrorMsg';
+    el.style.cssText = 'background:#fee2e2;color:#dc2626;padding:14px 18px;font-size:15px;border-radius:8px;margin:12px;border:1px solid #fca5a5;';
+    document.body.insertBefore(el, document.body.firstChild.nextSibling || document.body.firstChild);
+  }
+  el.innerHTML = '&#10060; เกิดข้อผิดพลาด: ' + msg + '<br><small>ลองรีเฟรชหน้า หรือแจ้งผู้ดูแลระบบ</small>';
+  el.style.display = 'block';
+}
+
 </script>
 </body>
 </html>

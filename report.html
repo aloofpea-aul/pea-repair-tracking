@@ -295,7 +295,8 @@ function closePrint(){
 
 // Load data
 google.script.run
-  .withSuccessHandler(renderAll)
+  .withFailureHandler(function(e){showPageError(e.message);})
+    .withSuccessHandler(renderAll)
   .withFailureHandler(function(e){
     ['lm','s','xs'].forEach(function(k){
       var c=document.getElementById('tab-'+k).querySelector('.container');
@@ -303,6 +304,19 @@ google.script.run
     });
   })
   .getReportData();
+
+function showPageError(msg) {
+  var el = document.getElementById('pageErrorMsg');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'pageErrorMsg';
+    el.style.cssText = 'background:#fee2e2;color:#dc2626;padding:14px 18px;font-size:15px;border-radius:8px;margin:12px;border:1px solid #fca5a5;';
+    document.body.insertBefore(el, document.body.firstChild.nextSibling || document.body.firstChild);
+  }
+  el.innerHTML = '&#10060; เกิดข้อผิดพลาด: ' + msg + '<br><small>ลองรีเฟรชหน้า หรือแจ้งผู้ดูแลระบบ</small>';
+  el.style.display = 'block';
+}
+
 </script>
 </body>
 </html>
