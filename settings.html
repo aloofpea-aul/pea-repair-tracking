@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>ตั้งค่าคณะกรรมการตรวจ</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Sarabun',sans-serif;}
@@ -76,6 +76,33 @@ body{background:#f0f4f8;color:#1a2b3c;}
   .note-input{font-size:13px;padding:8px 10px;}
   .btn-q{width:28px;height:28px;font-size:13px;}
   .criteria-box{font-size:12.5px;}
+}
+</style>
+
+<style id="mobile-first">
+/* === MOBILE FIRST OVERRIDE === */
+html { font-size: 18px !important; }
+body { font-size: 18px !important; -webkit-text-size-adjust: 100% !important; }
+input, select, textarea, button {
+  font-size: 16px !important;
+  -webkit-appearance: none;
+}
+/* Make buttons finger-friendly */
+button { min-height: 44px; }
+input[type=text], input[type=number], input[type=date], select {
+  min-height: 48px !important;
+  padding: 10px 12px !important;
+}
+/* Desktop override */
+@media (min-width: 900px) {
+  html { font-size: 14px !important; }
+  body { font-size: 14px !important; }
+  input, select, textarea, button { font-size: 14px !important; }
+  button { min-height: auto; }
+  input[type=text], input[type=number], input[type=date], select {
+    min-height: auto !important;
+    padding: 7px 10px !important;
+  }
 }
 </style>
 </head>
